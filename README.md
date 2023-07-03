@@ -37,10 +37,11 @@ If you have nfnl installed in Neovim you should be able to just modify Fennel fi
 
 So you'll need the following to use the full development suite:
 
- - The [Fennel][] compiler (as in, `fennel` is executable at your CLI, installed by your package manager).
+ - A Lua runtime of some kind.
  - [Babashka][].
  - [Entr][] if you want to use file watching.
- - A Lua runtime of some kind.
+
+The development bootstrap tools use the vendored copy of Fennel at `lua/nfnl/fennel.lua`, so you don't need to bring your own. The bootstrap tools should only really ever be required during the initial development of this plugin or if something has gone catastrophically wrong. Normally having nfnl installed and editing the .fnl files should be enough.
 
 ## Unlicensed
 
