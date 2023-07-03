@@ -1,7 +1,7 @@
 #!/usr/bin/env bb
 ;; vi: ft=clojure
 
-(ns script.bootstrap
+(ns script.fennel
   (:require [clojure.string :as str]
             [clojure.set :as set]
             [babashka.cli :as cli]

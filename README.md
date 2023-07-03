@@ -29,6 +29,17 @@ TODO
 
 TODO
 
+## Development
+
+If you have nfnl installed in Neovim you should be able to just modify Fennel files and have them get recompiled automatically for you. If you run into issues though you can execute `script/bootstrap-dev` to run a file watching Fennel compiler and `script/bootstrap` to compile everything with a one off command. Both of these lean on `script/fennel.bb` which is a smart Fennel compiler wrapper written in [Babashka][].
+
+So you'll need the following to use the full development suite:
+
+ - The [Fennel][] compiler (as in, `fennel` is executable at your CLI, installed by your package manager).
+ - [Babashka][].
+ - [Entr][] if you want to use file watching.
+ - A Lua runtime of some kind.
+
 ## Unlicensed
 
 Find the full [Unlicense][] in the `UNLICENSE` file, but here's a snippet.
@@ -43,3 +54,5 @@ Find the full [Unlicense][] in the `UNLICENSE` file, but here's a snippet.
 [Conjure]: https://github.com/Olical/conjure
 [Unlicense]: http://unlicense.org/
 [ripgrep]: https://github.com/BurntSushi/ripgrep
+[Babashka]: https://babashka.org/
+[Entr]: https://eradman.com/entrproject/

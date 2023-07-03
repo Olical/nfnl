@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+script/fennel.bb --files | entr script/fennel.bb --compile
