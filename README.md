@@ -2,6 +2,8 @@
 
 Enhance your [Neovim][] experience with [Fennel][]. A streamlined successor to [Aniseed][] without the Clojure like syntax provided by the Aniseed macros.
 
+You might also want to consider [Hotpot][], a fully featured and highly configurable plugin that does a similar thing. I intend on keeping nfnl minimal and just enough for my personal use, so Hotpot may be better for you if any of my strong opinions don't align with yours. If however you like my single minded design philosophy and don't mind the lack of options, read on!
+
 ## Opinions
 
 nfnl has strong opinions about Fennel to Lua compilation within Neovim. It makes the following strong assertions that I know some people will not like, but they're for good reasons:
@@ -56,3 +58,4 @@ Find the full [Unlicense][] in the `UNLICENSE` file, but here's a snippet.
 [ripgrep]: https://github.com/BurntSushi/ripgrep
 [Babashka]: https://babashka.org/
 [Entr]: https://eradman.com/entrproject/
+[Hotpot]: https://github.com/rktjmp/hotpot.nvim
