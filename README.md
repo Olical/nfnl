@@ -39,4 +39,4 @@ Find the full [Unlicense][] in the `UNLICENSE` file, but here's a snippet.
 [Fennel]: https://fennel-lang.org/
 [Aniseed]: https://github.com/Olical/aniseed
 [Conjure]: https://github.com/Olical/conjure
-[Unlicense]: http://unlicense.org/[unlicense]
+[Unlicense]: http://unlicense.org/
