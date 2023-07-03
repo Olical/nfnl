@@ -15,6 +15,8 @@ nfnl has strong opinions about Fennel to Lua compilation within Neovim. It makes
 
 By compiling on write to `*.fnl` and committing your `*.lua` you only need to load this plugin while working on Fennel files and you can ship your software to any user without including Fennel's compiler. All users of your code get to load the final Lua code which is stable and predictable. You also get the added bonus of being able to revert or checkout to specific commits with the Fennel and Lua staying in perfect sync without any recompilation.
 
+You can add `*.lua` to your `.ignore` file to exclude it from things like [ripgrep][] which works nicely with various Neovim tools.
+
 ## Standard library
 
 Aniseed shipped with a fairly sprawling standard library of useful modules and functions, this wasn't reusable due to the fact that it relied on custom Aniseed specific macros. nfnl includes all of the same modules without the custom macros (as well as some new goodies imported from [Conjure][]) so you can use them in your plugins or standalone Lua processes that aren't attached to Neovim at all.
@@ -40,3 +42,4 @@ Find the full [Unlicense][] in the `UNLICENSE` file, but here's a snippet.
 [Aniseed]: https://github.com/Olical/aniseed
 [Conjure]: https://github.com/Olical/conjure
 [Unlicense]: http://unlicense.org/
+[ripgrep]: https://github.com/BurntSushi/ripgrep
