@@ -1,3 +1,217 @@
+#!/usr/bin/env lua
+package.preload["fennel.binary"] = package.preload["fennel.binary"] or function(...)
+  local fennel = require("fennel")
+  local _local_787_ = require("fennel.utils")
+  local warn = _local_787_["warn"]
+  local copy = _local_787_["copy"]
+  local function shellout(command)
+    local f = io.popen(command)
+    local stdout = f:read("*all")
+    return (f:close() and stdout)
+  end
+  local function execute(cmd)
+    local _788_ = os.execute(cmd)
+    if (_788_ == 0) then
+      return true
+    elseif (_788_ == true) then
+      return true
+    else
+      return nil
+    end
+  end
+  local function string__3ec_hex_literal(characters)
+    local hex = {}
+    for character in characters:gmatch(".") do
+      table.insert(hex, ("0x%02x"):format(string.byte(character)))
+    end
+    return table.concat(hex, ", ")
+  end
+  local c_shim = "#ifdef __cplusplus\nextern \"C\" {\n#endif\n#include <lauxlib.h>\n#include <lua.h>\n#include <lualib.h>\n#ifdef __cplusplus\n}\n#endif\n#include <signal.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n\n#if LUA_VERSION_NUM == 501\n  #define LUA_OK 0\n#endif\n\n/* Copied from lua.c */\n\nstatic lua_State *globalL = NULL;\n\nstatic void lstop (lua_State *L, lua_Debug *ar) {\n  (void)ar;  /* unused arg. */\n  lua_sethook(L, NULL, 0, 0);  /* reset hook */\n  luaL_error(L, \"interrupted!\");\n}\n\nstatic void laction (int i) {\n  signal(i, SIG_DFL); /* if another SIGINT happens, terminate process */\n  lua_sethook(globalL, lstop, LUA_MASKCALL | LUA_MASKRET | LUA_MASKCOUNT, 1);\n}\n\nstatic void createargtable (lua_State *L, char **argv, int argc, int script) {\n  int i, narg;\n  if (script == argc) script = 0;  /* no script name? */\n  narg = argc - (script + 1);  /* number of positive indices */\n  lua_createtable(L, narg, script + 1);\n  for (i = 0; i < argc; i++) {\n    lua_pushstring(L, argv[i]);\n    lua_rawseti(L, -2, i - script);\n  }\n  lua_setglobal(L, \"arg\");\n}\n\nstatic int msghandler (lua_State *L) {\n  const char *msg = lua_tostring(L, 1);\n  if (msg == NULL) {  /* is error object not a string? */\n    if (luaL_callmeta(L, 1, \"__tostring\") &&  /* does it have a metamethod */\n        lua_type(L, -1) == LUA_TSTRING)  /* that produces a string? */\n      return 1;  /* that is the message */\n    else\n      msg = lua_pushfstring(L, \"(error object is a %%s value)\",\n                            luaL_typename(L, 1));\n  }\n  /* Call debug.traceback() instead of luaL_traceback() for Lua 5.1 compat. */\n  lua_getglobal(L, \"debug\");\n  lua_getfield(L, -1, \"traceback\");\n  /* debug */\n  lua_remove(L, -2);\n  lua_pushstring(L, msg);\n  /* original msg */\n  lua_remove(L, -3);\n  lua_pushinteger(L, 2);  /* skip this function and traceback */\n  lua_call(L, 2, 1); /* call debug.traceback */\n  return 1;  /* return the traceback */\n}\n\nstatic int docall (lua_State *L, int narg, int nres) {\n  int status;\n  int base = lua_gettop(L) - narg;  /* function index */\n  lua_pushcfunction(L, msghandler);  /* push message handler */\n  lua_insert(L, base);  /* put it under function and args */\n  globalL = L;  /* to be available to 'laction' */\n  signal(SIGINT, laction);  /* set C-signal handler */\n  status = lua_pcall(L, narg, nres, base);\n  signal(SIGINT, SIG_DFL); /* reset C-signal handler */\n  lua_remove(L, base);  /* remove message handler from the stack */\n  return status;\n}\n\nint main(int argc, char *argv[]) {\n lua_State *L = luaL_newstate();\n luaL_openlibs(L);\n createargtable(L, argv, argc, 0);\n\n static const unsigned char lua_loader_program[] = {\n%s\n};\n  if(luaL_loadbuffer(L, (const char*)lua_loader_program,\n                     sizeof(lua_loader_program), \"%s\") != LUA_OK) {\n    fprintf(stderr, \"luaL_loadbuffer: %%s\\n\", lua_tostring(L, -1));\n    lua_close(L);\n    return 1;\n  }\n\n  /* lua_bundle */\n  lua_newtable(L);\n  static const unsigned char lua_require_1[] = {\n  %s\n  };\n  lua_pushlstring(L, (const char*)lua_require_1, sizeof(lua_require_1));\n  lua_setfield(L, -2, \"%s\");\n\n%s\n\n  if (docall(L, 1, LUA_MULTRET)) {\n    const char *errmsg = lua_tostring(L, 1);\n    if (errmsg) {\n      fprintf(stderr, \"%%s\\n\", errmsg);\n    }\n    lua_close(L);\n    return 1;\n  }\n  lua_close(L);\n  return 0;\n}"
+  local function compile_fennel(filename, options)
+    local f
+    if (filename == "-") then
+      f = io.stdin
+    else
+      f = assert(io.open(filename, "rb"))
+    end
+    local lua_code = fennel["compile-string"](f:read("*a"), options)
+    f:close()
+    return lua_code
+  end
+  local function module_name(open, rename, used_renames)
+    local require_name
+    do
+      local _791_ = rename[open]
+      if (nil ~= _791_) then
+        local renamed = _791_
+        used_renames[open] = true
+        require_name = renamed
+      elseif true then
+        local _ = _791_
+        require_name = open
+      else
+        require_name = nil
+      end
+    end
+    return (require_name:sub(1, 1) .. require_name:sub(2):gsub("_", "."))
+  end
+  local function native_loader(native, _3foptions)
+    local opts = (_3foptions or {["rename-modules"] = {}})
+    local rename = (opts["rename-modules"] or {})
+    local used_renames = {}
+    local nm = (os.getenv("NM") or "nm")
+    local out = {"  /* native libraries */"}
+    for _, path in ipairs(native) do
+      local opens = {}
+      for open in shellout((nm .. " " .. path)):gmatch("[^dDt] _?luaopen_([%a%p%d]+)") do
+        table.insert(opens, open)
+      end
+      if (0 == #opens) then
+        warn((("Native module %s did not contain any luaopen_* symbols. " .. "Did you mean to use --native-library instead of --native-module?")):format(path))
+      else
+      end
+      for _0, open in ipairs(opens) do
+        table.insert(out, ("  int luaopen_%s(lua_State *L);"):format(open))
+        table.insert(out, ("  lua_pushcfunction(L, luaopen_%s);"):format(open))
+        table.insert(out, ("  lua_setfield(L, -2, \"%s\");\n"):format(module_name(open, rename, used_renames)))
+      end
+    end
+    for key, val in pairs(rename) do
+      if not used_renames[key] then
+        warn((("unused --rename-native-module %s %s argument. " .. "Did you mean to include a native module?")):format(key, val))
+      else
+      end
+    end
+    return table.concat(out, "\n")
+  end
+  local function fennel__3ec(filename, native, options)
+    local basename = filename:gsub("(.*[\\/])(.*)", "%2")
+    local basename_noextension = (basename:match("(.+)%.") or basename)
+    local dotpath = filename:gsub("^%.%/", ""):gsub("[\\/]", ".")
+    local dotpath_noextension = (dotpath:match("(.+)%.") or dotpath)
+    local fennel_loader
+    local _795_
+    do
+      _795_ = "(do (local bundle_2_auto ...) (fn loader_3_auto [name_4_auto] (match (or (. bundle_2_auto name_4_auto) (. bundle_2_auto (.. name_4_auto \".init\"))) (mod_5_auto ? (= \"function\" (type mod_5_auto))) mod_5_auto (mod_5_auto ? (= \"string\" (type mod_5_auto))) (assert (if (= _VERSION \"Lua 5.1\") (loadstring mod_5_auto name_4_auto) (load mod_5_auto name_4_auto))) nil (values nil (: \"\n\\tmodule '%%s' not found in fennel bundle\" \"format\" name_4_auto)))) (table.insert (or package.loaders package.searchers) 2 loader_3_auto) ((assert (loader_3_auto \"%s\")) ((or unpack table.unpack) arg)))"
+    end
+    fennel_loader = _795_:format(dotpath_noextension)
+    local lua_loader = fennel["compile-string"](fennel_loader)
+    local _let_796_ = options
+    local rename_modules = _let_796_["rename-modules"]
+    return c_shim:format(string__3ec_hex_literal(lua_loader), basename_noextension, string__3ec_hex_literal(compile_fennel(filename, options)), dotpath_noextension, native_loader(native, {["rename-modules"] = rename_modules}))
+  end
+  local function write_c(filename, native, options)
+    local out_filename = (filename .. "_binary.c")
+    local f = assert(io.open(out_filename, "w+"))
+    f:write(fennel__3ec(filename, native, options))
+    f:close()
+    return out_filename
+  end
+  local function compile_binary(lua_c_path, executable_name, static_lua, lua_include_dir, native)
+    local cc = (os.getenv("CC") or "cc")
+    local rdynamic, bin_extension, ldl_3f = nil, nil, nil
+    local _798_
+    do
+      local _797_ = shellout((cc .. " -dumpmachine"))
+      if (nil ~= _797_) then
+        _798_ = _797_:match("mingw")
+      else
+        _798_ = _797_
+      end
+    end
+    if _798_ then
+      rdynamic, bin_extension, ldl_3f = "", ".exe", false
+    else
+      rdynamic, bin_extension, ldl_3f = "-rdynamic", "", true
+    end
+    local compile_command
+    local _801_
+    if ldl_3f then
+      _801_ = "-ldl"
+    else
+      _801_ = ""
+    end
+    compile_command = {cc, "-Os", lua_c_path, table.concat(native, " "), static_lua, rdynamic, "-lm", _801_, "-o", (executable_name .. bin_extension), "-I", lua_include_dir, os.getenv("CC_OPTS")}
+    if os.getenv("FENNEL_DEBUG") then
+      print("Compiling with", table.concat(compile_command, " "))
+    else
+    end
+    if not execute(table.concat(compile_command, " ")) then
+      print("failed:", table.concat(compile_command, " "))
+      os.exit(1)
+    else
+    end
+    if not os.getenv("FENNEL_DEBUG") then
+      os.remove(lua_c_path)
+    else
+    end
+    return os.exit(0)
+  end
+  local function native_path_3f(path)
+    local extension, version_extension = path:match("%.(%a+)(%.?%d*)$")
+    if (version_extension and (version_extension ~= "") and not version_extension:match("%.%d+")) then
+      return false
+    else
+      local _806_ = extension
+      if (_806_ == "a") then
+        return path
+      elseif (_806_ == "o") then
+        return path
+      elseif (_806_ == "so") then
+        return path
+      elseif (_806_ == "dylib") then
+        return path
+      elseif true then
+        local _ = _806_
+        return false
+      else
+        return nil
+      end
+    end
+  end
+  local function extract_native_args(args)
+    local native = {modules = {}, libraries = {}, ["rename-modules"] = {}}
+    for i = #args, 1, -1 do
+      if ("--native-module" == args[i]) then
+        local path = assert(native_path_3f(table.remove(args, (i + 1))))
+        table.insert(native.modules, 1, path)
+        table.insert(native.libraries, 1, path)
+        table.remove(args, i)
+      else
+      end
+      if ("--native-library" == args[i]) then
+        table.insert(native.libraries, 1, assert(native_path_3f(table.remove(args, (i + 1)))))
+        table.remove(args, i)
+      else
+      end
+      if ("--rename-native-module" == args[i]) then
+        local original = table.remove(args, (i + 1))
+        local new = table.remove(args, (i + 1))
+        do end (native["rename-modules"])[original] = new
+        table.remove(args, i)
+      else
+      end
+    end
+    if (0 < #args) then
+      print(table.concat(args, " "))
+      error(("Unknown args: " .. table.concat(args, " ")))
+    else
+    end
+    return native
+  end
+  local function compile(filename, executable_name, static_lua, lua_include_dir, options, args)
+    local _let_813_ = extract_native_args(args)
+    local modules = _let_813_["modules"]
+    local libraries = _let_813_["libraries"]
+    local rename_modules = _let_813_["rename-modules"]
+    local opts = {["rename-modules"] = rename_modules}
+    copy(options, opts)
+    return compile_binary(write_c(filename, modules, opts), executable_name, static_lua, lua_include_dir, libraries)
+  end
+  local help = "\nUsage: %s --compile-binary FILE OUT STATIC_LUA_LIB LUA_INCLUDE_DIR\n\nCompile a binary from your Fennel program.\n\nRequires a C compiler, a copy of liblua, and Lua's dev headers. Implies\nthe --require-as-include option.\n\n  FILE: the Fennel source being compiled.\n  OUT: the name of the executable to generate\n  STATIC_LUA_LIB: the path to the Lua library to use in the executable\n  LUA_INCLUDE_DIR: the path to the directory of Lua C header files\n\nFor example, on a Debian system, to compile a file called program.fnl using\nLua 5.3, you would use this:\n\n    $ %s --compile-binary program.fnl program \\\n        /usr/lib/x86_64-linux-gnu/liblua5.3.a /usr/include/lua5.3\n\nThe program will be compiled to Lua, then compiled to C, then compiled to\nmachine code. You can set the CC environment variable to change the compiler\nused (default: cc) or set CC_OPTS to pass in compiler options. For example\nset CC_OPTS=-static to generate a binary with static linking.\n\nThis method is currently limited to programs do not transitively require Lua\nmodules. Requiring a Lua module directly will work, but requiring a Lua module\nwhich requires another will fail.\n\nTo include C libraries that contain Lua modules, add --native-module path/to.so,\nand to include C libraries without modules, use --native-library path/to.so.\nThese options are unstable, barely tested, and even more likely to break.\n\nIf you need to change the require name that a given native module is referenced\nas, you can use the --rename-native-module ORIGINAL NEW. ORIGINAL should be the\nsuffix of the luaopen_* symbol in the native module. NEW should be the string\nyou wish to pass to require to require the given native module. This can be used\nto handle cases where the name of an object file does not match the name of the\nluaopen_* symbol(s) within it. For example, the Lua readline bindings include a\nreadline.lua file which is usually required as \"readline\", and a C-readline.so\nfile which is required in the Lua half of the bindings like so:\n\n    require 'C-readline'\n\nHowever, the symbol within the C-readline.so file is named luaopen_readline, so\nby default --compile-binary will make it so you can require it as \"readline\",\nwhich collides with the name of the readline.lua file and doesn't match the\nrequire call within readline.lua. In order to include the module within your\ncompiled binary and have it get picked up by readline.lua correctly, you can\nspecify the name used to refer to it in a require call by compiling it like\nso (this is assuming that program.fnl requires the Lua bindings):\n\n    $ %s --compile-binary program.fnl program \\\n        /usr/lib/x86_64-linux-gnu/liblua5.3.a /usr/include/lua5.3 \\\n        --native-module C-readline.so \\\n        --rename-native-module readline C-readline\n"
+  return {compile = compile, help = help}
+end
+local fennel
 package.preload["fennel.repl"] = package.preload["fennel.repl"] or function(...)
   local utils = require("fennel.utils")
   local parser = require("fennel.parser")
@@ -4132,7 +4346,6 @@ package.preload["fennel.parser"] = package.preload["fennel.parser"] or function(
   end
   return {granulate = granulate, parser = parser, ["string-stream"] = string_stream, ["sym-char?"] = sym_char_3f}
 end
-local utils
 package.preload["fennel.view"] = package.preload["fennel.view"] or function(...)
   local type_order = {number = 1, boolean = 2, string = 3, table = 4, ["function"] = 5, userdata = 6, thread = 7}
   local default_opts = {["one-line?"] = false, ["detect-cycles?"] = true, ["empty-as-sequence?"] = false, ["metamethod?"] = true, ["prefer-colon?"] = false, ["escape-newlines?"] = false, ["utf8?"] = true, ["line-length"] = 80, depth = 128, ["max-sparse-gap"] = 10}
@@ -5332,916 +5545,1234 @@ package.preload["fennel.utils"] = package.preload["fennel.utils"] or function(..
   end
   return {warn = warn, allpairs = allpairs, stablepairs = stablepairs, copy = copy, ["get-in"] = get_in, kvmap = kvmap, map = map, ["walk-tree"] = walk_tree, ["member?"] = member_3f, maxn = maxn, ["every?"] = every_3f, list = list, sequence = sequence, sym = sym, varg = varg, expr = expr, comment = comment_2a, ["comment?"] = comment_3f, ["expr?"] = expr_3f, ["list?"] = list_3f, ["multi-sym?"] = multi_sym_3f, ["sequence?"] = sequence_3f, ["sym?"] = sym_3f, ["table?"] = table_3f, ["varg?"] = varg_3f, ["quoted?"] = quoted_3f, ["string?"] = string_3f, ["idempotent-expr?"] = idempotent_expr_3f, ["valid-lua-identifier?"] = valid_lua_identifier_3f, ["lua-keywords"] = lua_keywords, hook = hook, ["hook-opts"] = hook_opts, ["propagate-options"] = propagate_options, root = root, ["debug-on?"] = debug_on_3f, ["ast-source"] = ast_source, version = version, ["runtime-version"] = runtime_version, len = len, path = table.concat({"./?.fnl", "./?/init.fnl", getenv("FENNEL_PATH")}, ";"), ["macro-path"] = table.concat({"./?.fnl", "./?/init-macros.fnl", "./?/init.fnl", getenv("FENNEL_MACRO_PATH")}, ";")}
 end
-utils = require("fennel.utils")
-local parser = require("fennel.parser")
-local compiler = require("fennel.compiler")
-local specials = require("fennel.specials")
-local repl = require("fennel.repl")
-local view = require("fennel.view")
-local function eval_env(env, opts)
-  if (env == "_COMPILER") then
-    local env0 = specials["make-compiler-env"](nil, compiler.scopes.compiler, {}, opts)
+package.preload["fennel"] = package.preload["fennel"] or function(...)
+  local utils = require("fennel.utils")
+  local parser = require("fennel.parser")
+  local compiler = require("fennel.compiler")
+  local specials = require("fennel.specials")
+  local repl = require("fennel.repl")
+  local view = require("fennel.view")
+  local function eval_env(env, opts)
+    if (env == "_COMPILER") then
+      local env0 = specials["make-compiler-env"](nil, compiler.scopes.compiler, {}, opts)
+      if (opts.allowedGlobals == nil) then
+        opts.allowedGlobals = specials["current-global-names"](env0)
+      else
+      end
+      return specials["wrap-env"](env0)
+    else
+      return (env and specials["wrap-env"](env))
+    end
+  end
+  local function eval_opts(options, str)
+    local opts = utils.copy(options)
     if (opts.allowedGlobals == nil) then
-      opts.allowedGlobals = specials["current-global-names"](env0)
+      opts.allowedGlobals = specials["current-global-names"](opts.env)
     else
     end
-    return specials["wrap-env"](env0)
-  else
-    return (env and specials["wrap-env"](env))
-  end
-end
-local function eval_opts(options, str)
-  local opts = utils.copy(options)
-  if (opts.allowedGlobals == nil) then
-    opts.allowedGlobals = specials["current-global-names"](opts.env)
-  else
-  end
-  if (not opts.filename and not opts.source) then
-    opts.source = str
-  else
-  end
-  if (opts.env == "_COMPILER") then
-    opts.scope = compiler["make-scope"](compiler.scopes.compiler)
-  else
-  end
-  return opts
-end
-local function eval(str, options, ...)
-  local opts = eval_opts(options, str)
-  local env = eval_env(opts.env, opts)
-  local lua_source = compiler["compile-string"](str, opts)
-  local loader
-  local function _753_(...)
-    if opts.filename then
-      return ("@" .. opts.filename)
+    if (not opts.filename and not opts.source) then
+      opts.source = str
     else
-      return str
     end
+    if (opts.env == "_COMPILER") then
+      opts.scope = compiler["make-scope"](compiler.scopes.compiler)
+    else
+    end
+    return opts
   end
-  loader = specials["load-code"](lua_source, env, _753_(...))
-  opts.filename = nil
-  return loader(...)
+  local function eval(str, options, ...)
+    local opts = eval_opts(options, str)
+    local env = eval_env(opts.env, opts)
+    local lua_source = compiler["compile-string"](str, opts)
+    local loader
+    local function _753_(...)
+      if opts.filename then
+        return ("@" .. opts.filename)
+      else
+        return str
+      end
+    end
+    loader = specials["load-code"](lua_source, env, _753_(...))
+    opts.filename = nil
+    return loader(...)
+  end
+  local function dofile_2a(filename, options, ...)
+    local opts = utils.copy(options)
+    local f = assert(io.open(filename, "rb"))
+    local source = assert(f:read("*all"), ("Could not read " .. filename))
+    f:close()
+    opts.filename = filename
+    return eval(source, opts, ...)
+  end
+  local function syntax()
+    local body_3f = {"when", "with-open", "collect", "icollect", "fcollect", "lambda", "\206\187", "macro", "match", "match-try", "case", "case-try", "accumulate", "faccumulate", "doto"}
+    local binding_3f = {"collect", "icollect", "fcollect", "each", "for", "let", "with-open", "accumulate", "faccumulate"}
+    local define_3f = {"fn", "lambda", "\206\187", "var", "local", "macro", "macros", "global"}
+    local out = {}
+    for k, v in pairs(compiler.scopes.global.specials) do
+      local metadata = (compiler.metadata[v] or {})
+      do end (out)[k] = {["special?"] = true, ["body-form?"] = metadata["fnl/body-form?"], ["binding-form?"] = utils["member?"](k, binding_3f), ["define?"] = utils["member?"](k, define_3f)}
+    end
+    for k, v in pairs(compiler.scopes.global.macros) do
+      out[k] = {["macro?"] = true, ["body-form?"] = utils["member?"](k, body_3f), ["binding-form?"] = utils["member?"](k, binding_3f), ["define?"] = utils["member?"](k, define_3f)}
+    end
+    for k, v in pairs(_G) do
+      local _754_ = type(v)
+      if (_754_ == "function") then
+        out[k] = {["global?"] = true, ["function?"] = true}
+      elseif (_754_ == "table") then
+        for k2, v2 in pairs(v) do
+          if (("function" == type(v2)) and (k ~= "_G")) then
+            out[(k .. "." .. k2)] = {["function?"] = true, ["global?"] = true}
+          else
+          end
+        end
+        out[k] = {["global?"] = true}
+      else
+      end
+    end
+    return out
+  end
+  local mod = {list = utils.list, ["list?"] = utils["list?"], sym = utils.sym, ["sym?"] = utils["sym?"], ["multi-sym?"] = utils["multi-sym?"], sequence = utils.sequence, ["sequence?"] = utils["sequence?"], ["table?"] = utils["table?"], comment = utils.comment, ["comment?"] = utils["comment?"], varg = utils.varg, ["varg?"] = utils["varg?"], ["sym-char?"] = parser["sym-char?"], parser = parser.parser, compile = compiler.compile, ["compile-string"] = compiler["compile-string"], ["compile-stream"] = compiler["compile-stream"], eval = eval, repl = repl, view = view, dofile = dofile_2a, ["load-code"] = specials["load-code"], doc = specials.doc, metadata = compiler.metadata, traceback = compiler.traceback, version = utils.version, ["runtime-version"] = utils["runtime-version"], ["ast-source"] = utils["ast-source"], path = utils.path, ["macro-path"] = utils["macro-path"], ["macro-loaded"] = specials["macro-loaded"], ["macro-searchers"] = specials["macro-searchers"], ["search-module"] = specials["search-module"], ["make-searcher"] = specials["make-searcher"], searcher = specials["make-searcher"](), syntax = syntax, gensym = compiler.gensym, scope = compiler["make-scope"], mangle = compiler["global-mangling"], unmangle = compiler["global-unmangling"], compile1 = compiler.compile1, ["string-stream"] = parser["string-stream"], granulate = parser.granulate, loadCode = specials["load-code"], make_searcher = specials["make-searcher"], makeSearcher = specials["make-searcher"], searchModule = specials["search-module"], macroPath = utils["macro-path"], macroSearchers = specials["macro-searchers"], macroLoaded = specials["macro-loaded"], compileStream = compiler["compile-stream"], compileString = compiler["compile-string"], stringStream = parser["string-stream"], runtimeVersion = utils["runtime-version"]}
+  mod.install = function(_3fopts)
+    table.insert((package.searchers or package.loaders), specials["make-searcher"](_3fopts))
+    return mod
+  end
+  utils["fennel-module"] = mod
+  do
+    local module_name = "fennel.macros"
+    local _
+    local function _757_()
+      return mod
+    end
+    package.preload[module_name] = _757_
+    _ = nil
+    local env
+    do
+      local _758_ = specials["make-compiler-env"](nil, compiler.scopes.compiler, {})
+      do end (_758_)["utils"] = utils
+      _758_["fennel"] = mod
+      env = _758_
+    end
+    local built_ins = eval([===[;; These macros are awkward because their definition cannot rely on the any
+    ;; built-in macros, only special forms. (no when, no icollect, etc)
+    
+    (fn copy [t]
+      (let [out []]
+        (each [_ v (ipairs t)] (table.insert out v))
+        (setmetatable out (getmetatable t))))
+    
+    (fn ->* [val ...]
+      "Thread-first macro.
+    Take the first value and splice it into the second form as its first argument.
+    The value of the second form is spliced into the first arg of the third, etc."
+      (var x val)
+      (each [_ e (ipairs [...])]
+        (let [elt (if (list? e) (copy e) (list e))]
+          (table.insert elt 2 x)
+          (set x elt)))
+      x)
+    
+    (fn ->>* [val ...]
+      "Thread-last macro.
+    Same as ->, except splices the value into the last position of each form
+    rather than the first."
+      (var x val)
+      (each [_ e (ipairs [...])]
+        (let [elt (if (list? e) (copy e) (list e))]
+          (table.insert elt x)
+          (set x elt)))
+      x)
+    
+    (fn -?>* [val ?e ...]
+      "Nil-safe thread-first macro.
+    Same as -> except will short-circuit with nil when it encounters a nil value."
+      (if (= nil ?e)
+          val
+          (let [el (if (list? ?e) (copy ?e) (list ?e))
+                tmp (gensym)]
+            (table.insert el 2 tmp)
+            `(let [,tmp ,val]
+               (if (not= nil ,tmp)
+                   (-?> ,el ,...)
+                   ,tmp)))))
+    
+    (fn -?>>* [val ?e ...]
+      "Nil-safe thread-last macro.
+    Same as ->> except will short-circuit with nil when it encounters a nil value."
+      (if (= nil ?e)
+          val
+          (let [el (if (list? ?e) (copy ?e) (list ?e))
+                tmp (gensym)]
+            (table.insert el tmp)
+            `(let [,tmp ,val]
+               (if (not= ,tmp nil)
+                   (-?>> ,el ,...)
+                   ,tmp)))))
+    
+    (fn ?dot [tbl ...]
+      "Nil-safe table look up.
+    Same as . (dot), except will short-circuit with nil when it encounters
+    a nil value in any of subsequent keys."
+      (let [head (gensym :t)
+            lookups `(do
+                       (var ,head ,tbl)
+                       ,head)]
+        (each [_ k (ipairs [...])]
+          ;; Kinda gnarly to reassign in place like this, but it emits the best lua.
+          ;; With this impl, it emits a flat, concise, and readable set of ifs
+          (table.insert lookups (# lookups) `(if (not= nil ,head)
+                                               (set ,head (. ,head ,k)))))
+        lookups))
+    
+    (fn doto* [val ...]
+      "Evaluate val and splice it into the first argument of subsequent forms."
+      (assert (not= val nil) "missing subject")
+      (let [rebind? (or (not (sym? val))
+                        (multi-sym? val))
+            name (if rebind? (gensym)            val)
+            form (if rebind? `(let [,name ,val]) `(do))]
+        (each [_ elt (ipairs [...])]
+          (let [elt (if (list? elt) (copy elt) (list elt))]
+            (table.insert elt 2 name)
+            (table.insert form elt)))
+        (table.insert form name)
+        form))
+    
+    (fn when* [condition body1 ...]
+      "Evaluate body for side-effects only when condition is truthy."
+      (assert body1 "expected body")
+      `(if ,condition
+           (do
+             ,body1
+             ,...)))
+    
+    (fn with-open* [closable-bindings ...]
+      "Like `let`, but invokes (v:close) on each binding after evaluating the body.
+    The body is evaluated inside `xpcall` so that bound values will be closed upon
+    encountering an error before propagating it."
+      (let [bodyfn `(fn []
+                      ,...)
+            closer `(fn close-handlers# [ok# ...]
+                      (if ok# ... (error ... 0)))
+            traceback `(. (or package.loaded.fennel debug) :traceback)]
+        (for [i 1 (length closable-bindings) 2]
+          (assert (sym? (. closable-bindings i))
+                  "with-open only allows symbols in bindings")
+          (table.insert closer 4 `(: ,(. closable-bindings i) :close)))
+        `(let ,closable-bindings
+           ,closer
+           (close-handlers# (_G.xpcall ,bodyfn ,traceback)))))
+    
+    (fn extract-into [iter-tbl]
+      (var (into iter-out found?) (values [] (copy iter-tbl)))
+      (for [i (length iter-tbl) 2 -1]
+        (let [item (. iter-tbl i)]
+          (if (or (= `&into item)
+                  (= :into  item))
+              (do
+                (assert (not found?) "expected only one &into clause")
+                (set found? true)
+                (set into (. iter-tbl (+ i 1)))
+                (table.remove iter-out i)
+                (table.remove iter-out i)))))
+      (assert (or (not found?) (sym? into) (table? into) (list? into))
+              "expected table, function call, or symbol in &into clause")
+      (values into iter-out))
+    
+    (fn collect* [iter-tbl key-expr value-expr ...]
+      "Return a table made by running an iterator and evaluating an expression that
+    returns key-value pairs to be inserted sequentially into the table.  This can
+    be thought of as a table comprehension. The body should provide two expressions
+    (used as key and value) or nil, which causes it to be omitted.
+    
+    For example,
+      (collect [k v (pairs {:apple \"red\" :orange \"orange\"})]
+        (values v k))
+    returns
+      {:red \"apple\" :orange \"orange\"}
+    
+    Supports an &into clause after the iterator to put results in an existing table.
+    Supports early termination with an &until clause."
+      (assert (and (sequence? iter-tbl) (<= 2 (length iter-tbl)))
+              "expected iterator binding table")
+      (assert (not= nil key-expr) "expected key and value expression")
+      (assert (= nil ...)
+              "expected 1 or 2 body expressions; wrap multiple expressions with do")
+      (let [kv-expr (if (= nil value-expr) key-expr `(values ,key-expr ,value-expr))
+            (into iter) (extract-into iter-tbl)]
+        `(let [tbl# ,into]
+           (each ,iter
+             (let [(k# v#) ,kv-expr]
+               (if (and (not= k# nil) (not= v# nil))
+                 (tset tbl# k# v#))))
+           tbl#)))
+    
+    (fn seq-collect [how iter-tbl value-expr ...]
+      "Common part between icollect and fcollect for producing sequential tables.
+    
+    Iteration code only differs in using the for or each keyword, the rest
+    of the generated code is identical."
+      (assert (not= nil value-expr) "expected table value expression")
+      (assert (= nil ...)
+              "expected exactly one body expression. Wrap multiple expressions in do")
+      (let [(into iter) (extract-into iter-tbl)]
+        `(let [tbl# ,into]
+           ;; believe it or not, using a var here has a pretty good performance
+           ;; boost: https://p.hagelb.org/icollect-performance.html
+           (var i# (length tbl#))
+           (,how ,iter
+                 (let [val# ,value-expr]
+                   (when (not= nil val#)
+                     (set i# (+ i# 1))
+                     (tset tbl# i# val#))))
+           tbl#)))
+    
+    (fn icollect* [iter-tbl value-expr ...]
+      "Return a sequential table made by running an iterator and evaluating an
+    expression that returns values to be inserted sequentially into the table.
+    This can be thought of as a table comprehension. If the body evaluates to nil
+    that element is omitted.
+    
+    For example,
+      (icollect [_ v (ipairs [1 2 3 4 5])]
+        (when (not= v 3)
+          (* v v)))
+    returns
+      [1 4 16 25]
+    
+    Supports an &into clause after the iterator to put results in an existing table.
+    Supports early termination with an &until clause."
+      (assert (and (sequence? iter-tbl) (<= 2 (length iter-tbl)))
+              "expected iterator binding table")
+      (seq-collect 'each iter-tbl value-expr ...))
+    
+    (fn fcollect* [iter-tbl value-expr ...]
+      "Return a sequential table made by advancing a range as specified by
+    for, and evaluating an expression that returns values to be inserted
+    sequentially into the table.  This can be thought of as a range
+    comprehension. If the body evaluates to nil that element is omitted.
+    
+    For example,
+      (fcollect [i 1 10 2]
+        (when (not= i 3)
+          (* i i)))
+    returns
+      [1 25 49 81]
+    
+    Supports an &into clause after the range to put results in an existing table.
+    Supports early termination with an &until clause."
+      (assert (and (sequence? iter-tbl) (< 2 (length iter-tbl)))
+              "expected range binding table")
+      (seq-collect 'for iter-tbl value-expr ...))
+    
+    (fn accumulate-impl [for? iter-tbl body ...]
+      (assert (and (sequence? iter-tbl) (<= 4 (length iter-tbl)))
+              "expected initial value and iterator binding table")
+      (assert (not= nil body) "expected body expression")
+      (assert (= nil ...)
+              "expected exactly one body expression. Wrap multiple expressions with do")
+      (let [[accum-var accum-init] iter-tbl
+            iter (sym (if for? "for" "each"))] ; accumulate or faccumulate?
+        `(do
+           (var ,accum-var ,accum-init)
+           (,iter ,[(unpack iter-tbl 3)]
+                  (set ,accum-var ,body))
+           ,(if (list? accum-var)
+              (list (sym :values) (unpack accum-var))
+              accum-var))))
+    
+    (fn accumulate* [iter-tbl body ...]
+      "Accumulation macro.
+    
+    It takes a binding table and an expression as its arguments.  In the binding
+    table, the first form starts out bound to the second value, which is an initial
+    accumulator. The rest are an iterator binding table in the format `each` takes.
+    
+    It runs through the iterator in each step of which the given expression is
+    evaluated, and the accumulator is set to the value of the expression. It
+    eventually returns the final value of the accumulator.
+    
+    For example,
+      (accumulate [total 0
+                   _ n (pairs {:apple 2 :orange 3})]
+        (+ total n))
+    returns 5"
+      (accumulate-impl false iter-tbl body ...))
+    
+    (fn faccumulate* [iter-tbl body ...]
+      "Identical to accumulate, but after the accumulator the binding table is the
+    same as `for` instead of `each`. Like collect to fcollect, will iterate over a
+    numerical range like `for` rather than an iterator."
+      (accumulate-impl true iter-tbl body ...))
+    
+    (fn double-eval-safe? [x type]
+      (or (= :number type) (= :string type) (= :boolean type)
+          (and (sym? x) (not (multi-sym? x)))))
+    
+    (fn partial* [f ...]
+      "Return a function with all arguments partially applied to f."
+      (assert f "expected a function to partially apply")
+      (let [bindings []
+            args []]
+        (each [_ arg (ipairs [...])]
+          (if (double-eval-safe? arg (type arg))
+            (table.insert args arg)
+            (let [name (gensym)]
+              (table.insert bindings name)
+              (table.insert bindings arg)
+              (table.insert args name))))
+        (let [body (list f (unpack args))]
+          (table.insert body _VARARG)
+          ;; only use the extra let if we need double-eval protection
+          (if (= 0 (length bindings))
+              `(fn [,_VARARG] ,body)
+              `(let ,bindings
+                 (fn [,_VARARG] ,body))))))
+    
+    (fn pick-args* [n f]
+      "Create a function of arity n that applies its arguments to f.
+    
+    For example,
+      (pick-args 2 func)
+    expands to
+      (fn [_0_ _1_] (func _0_ _1_))"
+      (if (and _G.io _G.io.stderr)
+          (_G.io.stderr:write
+           "-- WARNING: pick-args is deprecated and will be removed in the future.\n"))
+      (assert (and (= (type n) :number) (= n (math.floor n)) (<= 0 n))
+              (.. "Expected n to be an integer literal >= 0, got " (tostring n)))
+      (let [bindings []]
+        (for [i 1 n]
+          (tset bindings i (gensym)))
+        `(fn ,bindings
+           (,f ,(unpack bindings)))))
+    
+    (fn pick-values* [n ...]
+      "Evaluate to exactly n values.
+    
+    For example,
+      (pick-values 2 ...)
+    expands to
+      (let [(_0_ _1_) ...]
+        (values _0_ _1_))"
+      (assert (and (= :number (type n)) (<= 0 n) (= n (math.floor n)))
+              (.. "Expected n to be an integer >= 0, got " (tostring n)))
+      (let [let-syms (list)
+            let-values (if (= 1 (select "#" ...)) ... `(values ,...))]
+        (for [i 1 n]
+          (table.insert let-syms (gensym)))
+        (if (= n 0) `(values)
+            `(let [,let-syms ,let-values]
+               (values ,(unpack let-syms))))))
+    
+    (fn lambda* [...]
+      "Function literal with nil-checked arguments.
+    Like `fn`, but will throw an exception if a declared argument is passed in as
+    nil, unless that argument's name begins with a question mark."
+      (let [args [...]
+            has-internal-name? (sym? (. args 1))
+            arglist (if has-internal-name? (. args 2) (. args 1))
+            docstring-position (if has-internal-name? 3 2)
+            has-docstring? (and (< docstring-position (length args))
+                                (= :string (type (. args docstring-position))))
+            arity-check-position (- 4 (if has-internal-name? 0 1)
+                                    (if has-docstring? 0 1))
+            empty-body? (< (length args) arity-check-position)]
+        (fn check! [a]
+          (if (table? a)
+              (each [_ a (pairs a)]
+                (check! a))
+              (let [as (tostring a)]
+                (and (not (as:match "^?")) (not= as "&") (not= as "_")
+                     (not= as "...") (not= as "&as")))
+              (table.insert args arity-check-position
+                            `(_G.assert (not= nil ,a)
+                                        ,(: "Missing argument %s on %s:%s" :format
+                                            (tostring a)
+                                            (or a.filename :unknown)
+                                            (or a.line "?"))))))
+    
+        (assert (= :table (type arglist)) "expected arg list")
+        (each [_ a (ipairs arglist)]
+          (check! a))
+        (if empty-body?
+            (table.insert args (sym :nil)))
+        `(fn ,(unpack args))))
+    
+    (fn macro* [name ...]
+      "Define a single macro."
+      (assert (sym? name) "expected symbol for macro name")
+      (local args [...])
+      `(macros {,(tostring name) (fn ,(unpack args))}))
+    
+    (fn macrodebug* [form return?]
+      "Print the resulting form after performing macroexpansion.
+    With a second argument, returns expanded form as a string instead of printing."
+      (let [handle (if return? `do `print)]
+        `(,handle ,(view (macroexpand form _SCOPE)))))
+    
+    (fn import-macros* [binding1 module-name1 ...]
+      "Bind a table of macros from each macro module according to a binding form.
+    Each binding form can be either a symbol or a k/v destructuring table.
+    Example:
+      (import-macros mymacros                 :my-macros    ; bind to symbol
+                     {:macro1 alias : macro2} :proj.macros) ; import by name"
+      (assert (and binding1 module-name1 (= 0 (% (select "#" ...) 2)))
+              "expected even number of binding/modulename pairs")
+      (for [i 1 (select "#" binding1 module-name1 ...) 2]
+        ;; delegate the actual loading of the macros to the require-macros
+        ;; special which already knows how to set up the compiler env and stuff.
+        ;; this is weird because require-macros is deprecated but it works.
+        (let [(binding modname) (select i binding1 module-name1 ...)
+              scope (get-scope)
+              ;; if the module-name is an expression (and not just a string) we
+              ;; patch our expression to have the correct source filename so
+              ;; require-macros can pass it down when resolving the module-name.
+              expr `(import-macros ,modname)
+              filename (if (list? modname) (. modname 1 :filename) :unknown)
+              _ (tset expr :filename filename)
+              macros* (_SPECIALS.require-macros expr scope {} binding)]
+          (if (sym? binding)
+              ;; bind whole table of macros to table bound to symbol
+              (tset scope.macros (. binding 1) macros*)
+              ;; 1-level table destructuring for importing individual macros
+              (table? binding)
+              (each [macro-name [import-key] (pairs binding)]
+                (assert (= :function (type (. macros* macro-name)))
+                        (.. "macro " macro-name " not found in module "
+                            (tostring modname)))
+                (tset scope.macros import-key (. macros* macro-name))))))
+      nil)
+    
+    {:-> ->*
+     :->> ->>*
+     :-?> -?>*
+     :-?>> -?>>*
+     :?. ?dot
+     :doto doto*
+     :when when*
+     :with-open with-open*
+     :collect collect*
+     :icollect icollect*
+     :fcollect fcollect*
+     :accumulate accumulate*
+     :faccumulate faccumulate*
+     :partial partial*
+     :lambda lambda*
+     :λ lambda*
+     :pick-args pick-args*
+     :pick-values pick-values*
+     :macro macro*
+     :macrodebug macrodebug*
+     :import-macros import-macros*}
+    ]===], {env = env, scope = compiler.scopes.compiler, useMetadata = true, filename = "src/fennel/macros.fnl", moduleName = module_name})
+    local _0
+    for k, v in pairs(built_ins) do
+      compiler.scopes.global.macros[k] = v
+    end
+    _0 = nil
+    local match_macros = eval([===[;;; Pattern matching
+    ;; This is separated out so we can use the "core" macros during the
+    ;; implementation of pattern matching.
+    
+    (fn copy [t] (collect [k v (pairs t)] k v))
+    
+    (fn with [opts k]
+      (doto (copy opts) (tset k true)))
+    
+    (fn without [opts k]
+      (doto (copy opts) (tset k nil)))
+    
+    (fn case-values [vals pattern unifications case-pattern opts]
+      (let [condition `(and)
+            bindings []]
+        (each [i pat (ipairs pattern)]
+          (let [(subcondition subbindings) (case-pattern [(. vals i)] pat
+                                                          unifications (without opts :multival?))]
+            (table.insert condition subcondition)
+            (icollect [_ b (ipairs subbindings) &into bindings] b)))
+        (values condition bindings)))
+    
+    (fn case-table [val pattern unifications case-pattern opts]
+      (let [condition `(and (= (_G.type ,val) :table))
+            bindings []]
+        (each [k pat (pairs pattern)]
+          (if (= pat `&)
+              (let [rest-pat (. pattern (+ k 1))
+                    rest-val `(select ,k ((or table.unpack _G.unpack) ,val))
+                    subcondition (case-table `(pick-values 1 ,rest-val)
+                                              rest-pat unifications case-pattern
+                                              (without opts :multival?))]
+                (if (not (sym? rest-pat))
+                    (table.insert condition subcondition))
+                (assert (= nil (. pattern (+ k 2)))
+                        "expected & rest argument before last parameter")
+                (table.insert bindings rest-pat)
+                (table.insert bindings [rest-val]))
+              (= k `&as)
+              (do
+                (table.insert bindings pat)
+                (table.insert bindings val))
+              (and (= :number (type k)) (= `&as pat))
+              (do
+                (assert (= nil (. pattern (+ k 2)))
+                        "expected &as argument before last parameter")
+                (table.insert bindings (. pattern (+ k 1)))
+                (table.insert bindings val))
+              ;; don't process the pattern right after &/&as; already got it
+              (or (not= :number (type k)) (and (not= `&as (. pattern (- k 1)))
+                                               (not= `& (. pattern (- k 1)))))
+              (let [subval `(. ,val ,k)
+                    (subcondition subbindings) (case-pattern [subval] pat
+                                                              unifications
+                                                              (without opts :multival?))]
+                (table.insert condition subcondition)
+                (icollect [_ b (ipairs subbindings) &into bindings] b))))
+        (values condition bindings)))
+    
+    (fn case-guard [vals condition guards unifications case-pattern opts]
+      (if (= 0 (length guards))
+        (case-pattern vals condition unifications opts)
+        (let [(pcondition bindings) (case-pattern vals condition unifications opts)
+              condition `(and ,(unpack guards))]
+           (values `(and ,pcondition
+                         (let ,bindings
+                           ,condition)) bindings))))
+    
+    (fn symbols-in-pattern [pattern]
+      "gives the set of symbols inside a pattern"
+      (if (list? pattern)
+          (let [result {}]
+            (each [_ child-pattern (ipairs pattern)]
+              (collect [name symbol (pairs (symbols-in-pattern child-pattern)) &into result]
+                name symbol))
+            result)
+          (sym? pattern)
+          (if (and (not= pattern `or)
+                   (not= pattern `where)
+                   (not= pattern `?)
+                   (not= pattern `nil))
+              {(tostring pattern) pattern}
+              {})
+          (= (type pattern) :table)
+          (let [result {}]
+            (each [key-pattern value-pattern (pairs pattern)]
+              (collect [name symbol (pairs (symbols-in-pattern key-pattern)) &into result]
+                name symbol)
+              (collect [name symbol (pairs (symbols-in-pattern value-pattern)) &into result]
+                name symbol))
+            result)
+          {}))
+    
+    (fn symbols-in-every-pattern [pattern-list infer-unification?]
+      "gives a list of symbols that are present in every pattern in the list"
+      (let [?symbols (accumulate [?symbols nil
+                                  _ pattern (ipairs pattern-list)]
+                       (let [in-pattern (symbols-in-pattern pattern)]
+                         (if ?symbols
+                           (do
+                             (each [name symbol (pairs ?symbols)]
+                               (when (not (. in-pattern name))
+                                 (tset ?symbols name nil)))
+                             ?symbols)
+                           in-pattern)))]
+        (icollect [_ symbol (pairs (or ?symbols {}))]
+          (if (not (and infer-unification?
+                        (in-scope? symbol)))
+            symbol))))
+    
+    (fn case-or [vals pattern guards unifications case-pattern opts]
+      (let [pattern [(unpack pattern 2)]
+            bindings (symbols-in-every-pattern pattern opts.infer-unification?)] ;; TODO opts.infer-unification instead of opts.unification?
+        (if (= 0 (length bindings))
+          ;; no bindings special case generates simple code
+          (let [condition
+                (icollect [i subpattern (ipairs pattern) &into `(or)]
+                  (let [(subcondition subbindings) (case-pattern vals subpattern unifications opts)]
+                    subcondition))]
+            (values
+              (if (= 0 (length guards))
+                condition
+                `(and ,condition ,(unpack guards)))
+              []))
+          ;; case with bindings is handled specially, and returns three values instead of two
+          (let [matched? (gensym :matched?)
+                bindings-mangled (icollect [_ binding (ipairs bindings)]
+                                   (gensym (tostring binding)))
+                pre-bindings `(if)]
+            (each [i subpattern (ipairs pattern)]
+              (let [(subcondition subbindings) (case-guard vals subpattern guards {} case-pattern opts)]
+                (table.insert pre-bindings subcondition)
+                (table.insert pre-bindings `(let ,subbindings
+                                              (values true ,(unpack bindings))))))
+            (values matched?
+                    [`(,(unpack bindings)) `(values ,(unpack bindings-mangled))]
+                    [`(,matched? ,(unpack bindings-mangled)) pre-bindings])))))
+    
+    (fn case-pattern [vals pattern unifications opts top-level?]
+      "Take the AST of values and a single pattern and returns a condition
+    to determine if it matches as well as a list of bindings to
+    introduce for the duration of the body if it does match."
+    
+      ;; This function returns the following values (multival):
+      ;; a "condition", which is an expression that determines whether the
+      ;;   pattern should match,
+      ;; a "bindings", which bind all of the symbols used in a pattern
+      ;; an optional "pre-bindings", which is a list of bindings that happen
+      ;;   before the condition and bindings are evaluated. These should only
+      ;;   come from a (case-or). In this case there should be no recursion:
+      ;;   the call stack should be case-condition > case-pattern > case-or
+      ;;
+      ;; Here are the expected flags in the opts table:
+      ;;   :infer-unification? boolean - if the pattern should guess when to unify  (ie, match -> true, case -> false)
+      ;;   :multival? boolean - if the pattern can contain multivals  (in order to disallow patterns like [(1 2)])
+      ;;   :in-where? boolean - if the pattern is surrounded by (where)  (where opts into more pattern features)
+      ;;   :legacy-guard-allowed? boolean - if the pattern should allow `(a ? b) patterns
+    
+      ;; we have to assume we're matching against multiple values here until we
+      ;; know we're either in a multi-valued clause (in which case we know the #
+      ;; of vals) or we're not, in which case we only care about the first one.
+      (let [[val] vals]
+        (if (and (sym? pattern)
+                 (or (= pattern `nil)
+                     (and opts.infer-unification?
+                          (in-scope? pattern)
+                          (not= pattern `_))
+                     (and opts.infer-unification?
+                          (multi-sym? pattern)
+                          (in-scope? (. (multi-sym? pattern) 1)))))
+            (values `(= ,val ,pattern) [])
+            ;; unify a local we've seen already
+            (and (sym? pattern) (. unifications (tostring pattern)))
+            (values `(= ,(. unifications (tostring pattern)) ,val) [])
+            ;; bind a fresh local
+            (sym? pattern)
+            (let [wildcard? (: (tostring pattern) :find "^_")]
+              (if (not wildcard?) (tset unifications (tostring pattern) val))
+              (values (if (or wildcard? (string.find (tostring pattern) "^?")) true
+                          `(not= ,(sym :nil) ,val)) [pattern val]))
+            ;; opt-in unify with (=)
+            (and (list? pattern)
+                 (= (. pattern 1) `=)
+                 (sym? (. pattern 2)))
+            (let [bind (. pattern 2)]
+              (assert-compile (= 2 (length pattern)) "(=) should take only one argument" pattern)
+              (assert-compile (not opts.infer-unification?) "(=) cannot be used inside of match" pattern)
+              (assert-compile opts.in-where? "(=) must be used in (where) patterns" pattern)
+              (assert-compile (and (sym? bind) (not= bind `nil) "= has to bind to a symbol" bind))
+              (values `(= ,val ,bind) []))
+            ;; where-or clause
+            (and (list? pattern) (= (. pattern 1) `where) (list? (. pattern 2)) (= (. pattern 2 1) `or))
+            (do
+              (assert-compile top-level? "can't nest (where) pattern" pattern)
+              (case-or vals (. pattern 2) [(unpack pattern 3)] unifications case-pattern (with opts :in-where?)))
+            ;; where clause
+            (and (list? pattern) (= (. pattern 1) `where))
+            (do
+              (assert-compile top-level? "can't nest (where) pattern" pattern)
+              (case-guard vals (. pattern 2) [(unpack pattern 3)] unifications case-pattern (with opts :in-where?)))
+            ;; or clause (not allowed on its own)
+            (and (list? pattern) (= (. pattern 1) `or))
+            (do
+              (assert-compile top-level? "can't nest (or) pattern" pattern)
+              ;; This assertion can be removed to make patterns more permissive
+              (assert-compile false "(or) must be used in (where) patterns" pattern)
+              (case-or vals pattern [] unifications case-pattern opts))
+            ;; guard clause
+            (and (list? pattern) (= (. pattern 2) `?))
+            (do
+              (assert-compile opts.legacy-guard-allowed? "legacy guard clause not supported in case" pattern)
+              (case-guard vals (. pattern 1) [(unpack pattern 3)] unifications case-pattern opts))
+            ;; multi-valued patterns (represented as lists)
+            (list? pattern)
+            (do
+              (assert-compile opts.multival? "can't nest multi-value destructuring" pattern)
+              (case-values vals pattern unifications case-pattern opts))
+            ;; table patterns
+            (= (type pattern) :table)
+            (case-table val pattern unifications case-pattern opts)
+            ;; literal value
+            (values `(= ,val ,pattern) []))))
+    
+    (fn add-pre-bindings [out pre-bindings]
+      "Decide when to switch from the current `if` AST to a new one"
+      (if pre-bindings
+          ;; `out` no longer needs to grow.
+          ;; Instead, a new tail `if` AST is introduced, which is where the rest of
+          ;; the clauses will get appended. This way, all future clauses have the
+          ;; pre-bindings in scope.
+          (let [tail `(if)]
+            (table.insert out true)
+            (table.insert out `(let ,pre-bindings ,tail))
+            tail)
+          ;; otherwise, keep growing the current `if` AST.
+          out))
+    
+    (fn case-condition [vals clauses match?]
+      "Construct the actual `if` AST for the given match values and clauses."
+      ;; root is the original `if` AST.
+      ;; out is the `if` AST that is currently being grown.
+      (let [root `(if)]
+        (faccumulate [out root
+                      i 1 (length clauses) 2]
+          (let [pattern (. clauses i)
+                body (. clauses (+ i 1))
+                (condition bindings pre-bindings) (case-pattern vals pattern {}
+                                                                {:multival? true
+                                                                 :infer-unification? match?
+                                                                 :legacy-guard-allowed? match?}
+                                                                true)
+                out (add-pre-bindings out pre-bindings)]
+            ;; grow the `if` AST by one extra condition
+            (table.insert out condition)
+            (table.insert out `(let ,bindings
+                                ,body))
+            out))
+        root))
+    
+    (fn count-case-multival [pattern]
+      "Identify the amount of multival values that a pattern requires."
+      (if (and (list? pattern) (= (. pattern 2) `?))
+          (count-case-multival (. pattern 1))
+          (and (list? pattern) (= (. pattern 1) `where))
+          (count-case-multival (. pattern 2))
+          (and (list? pattern) (= (. pattern 1) `or))
+          (accumulate [longest 0
+                       _ child-pattern (ipairs pattern)]
+            (math.max longest (count-case-multival child-pattern)))
+          (list? pattern)
+          (length pattern)
+          1))
+    
+    (fn case-val-syms [clauses]
+      "What is the length of the largest multi-valued clause? return a list of that
+    many gensyms."
+      (let [patterns (fcollect [i 1 (length clauses) 2]
+                       (. clauses i))
+            sym-count (accumulate [longest 0
+                                   _ pattern (ipairs patterns)]
+                        (math.max longest (count-case-multival pattern)))]
+        (fcollect [i 1 sym-count &into (list)]
+          (gensym))))
+    
+    (fn case-impl [match? val ...]
+      "The shared implementation of case and match."
+      (assert (not= val nil) "missing subject")
+      (assert (= 0 (math.fmod (select :# ...) 2))
+              "expected even number of pattern/body pairs")
+      (assert (not= 0 (select :# ...))
+              "expected at least one pattern/body pair")
+      (let [clauses [...]
+            vals (case-val-syms clauses)]
+        ;; protect against multiple evaluation of the value, bind against as
+        ;; many values as we ever match against in the clauses.
+        (list `let [vals val] (case-condition vals clauses match?))))
+    
+    (fn case* [val ...]
+      "Perform pattern matching on val. See reference for details.
+    
+    Syntax:
+    
+    (case data-expression
+      pattern body
+      (where pattern guards*) body
+      (or pattern patterns*) body
+      (where (or pattern patterns*) guards*) body
+      ;; legacy:
+      (pattern ? guards*) body)"
+      (case-impl false val ...))
+    
+    (fn match* [val ...]
+      "Perform pattern matching on val, automatically unifying on variables in
+    local scope. See reference for details.
+    
+    Syntax:
+    
+    (match data-expression
+      pattern body
+      (where pattern guards*) body
+      (or pattern patterns*) body
+      (where (or pattern patterns*) guards*) body
+      ;; legacy:
+      (pattern ? guards*) body)"
+      (case-impl true val ...))
+    
+    (fn case-try-step [how expr else pattern body ...]
+      (if (= nil pattern body)
+          expr
+          ;; unlike regular match, we can't know how many values the value
+          ;; might evaluate to, so we have to capture them all in ... via IIFE
+          ;; to avoid double-evaluation.
+          `((fn [...]
+              (,how ...
+                ,pattern ,(case-try-step how body else ...)
+                ,(unpack else)))
+            ,expr)))
+    
+    (fn case-try-impl [how expr pattern body ...]
+      (let [clauses [pattern body ...]
+            last (. clauses (length clauses))
+            catch (if (= `catch (and (= :table (type last)) (. last 1)))
+                     (let [[_ & e] (table.remove clauses)] e) ; remove `catch sym
+                     [`_# `...])]
+        (assert (= 0 (math.fmod (length clauses) 2))
+                "expected every pattern to have a body")
+        (assert (= 0 (math.fmod (length catch) 2))
+                "expected every catch pattern to have a body")
+        (case-try-step how expr catch (unpack clauses))))
+    
+    (fn case-try* [expr pattern body ...]
+      "Perform chained pattern matching for a sequence of steps which might fail.
+    
+    The values from the initial expression are matched against the first pattern.
+    If they match, the first body is evaluated and its values are matched against
+    the second pattern, etc.
+    
+    If there is a (catch pat1 body1 pat2 body2 ...) form at the end, any mismatch
+    from the steps will be tried against these patterns in sequence as a fallback
+    just like a normal match. If there is no catch, the mismatched values will be
+    returned as the value of the entire expression."
+      (case-try-impl `case expr pattern body ...))
+    
+    (fn match-try* [expr pattern body ...]
+      "Perform chained pattern matching for a sequence of steps which might fail.
+    
+    The values from the initial expression are matched against the first pattern.
+    If they match, the first body is evaluated and its values are matched against
+    the second pattern, etc.
+    
+    If there is a (catch pat1 body1 pat2 body2 ...) form at the end, any mismatch
+    from the steps will be tried against these patterns in sequence as a fallback
+    just like a normal match. If there is no catch, the mismatched values will be
+    returned as the value of the entire expression."
+      (case-try-impl `match expr pattern body ...))
+    
+    {:case case*
+     :case-try case-try*
+     :match match*
+     :match-try match-try*}
+    ]===], {env = env, scope = compiler.scopes.compiler, allowedGlobals = false, useMetadata = true, filename = "src/fennel/match.fnl", moduleName = module_name})
+    for k, v in pairs(match_macros) do
+      compiler.scopes.global.macros[k] = v
+    end
+    package.preload[module_name] = nil
+  end
+  return mod
 end
-local function dofile_2a(filename, options, ...)
-  local opts = utils.copy(options)
-  local f = assert(io.open(filename, "rb"))
-  local source = assert(f:read("*all"), ("Could not read " .. filename))
-  f:close()
-  opts.filename = filename
-  return eval(source, opts, ...)
+fennel = require("fennel")
+local unpack = (table.unpack or _G.unpack)
+local help = "\nUsage: fennel [FLAG] [FILE]\n\nRun fennel, a lisp programming language for the Lua runtime.\n\n  --repl                  : Command to launch an interactive repl session\n  --compile FILES (-c)    : Command to AOT compile files, writing Lua to stdout\n  --eval SOURCE (-e)      : Command to evaluate source code and print the result\n\n  --no-searcher           : Skip installing package.searchers entry\n  --indent VAL            : Indent compiler output with VAL\n  --add-package-path PATH : Add PATH to package.path for finding Lua modules\n  --add-fennel-path  PATH : Add PATH to fennel.path for finding Fennel modules\n  --add-macro-path   PATH : Add PATH to fennel.macro-path for macro modules\n  --globals G1[,G2...]    : Allow these globals in addition to standard ones\n  --globals-only G1[,G2]  : Same as above, but exclude standard ones\n  --require-as-include    : Inline required modules in the output\n  --skip-include M1[,M2]  : Omit certain modules from output when included\n  --use-bit-lib           : Use LuaJITs bit library instead of operators\n  --metadata              : Enable function metadata, even in compiled output\n  --no-metadata           : Disable function metadata, even in REPL\n  --correlate             : Make Lua output line numbers match Fennel input\n  --load FILE (-l)        : Load the specified FILE before executing the command\n  --lua LUA_EXE           : Run in a child process with LUA_EXE\n  --no-fennelrc           : Skip loading ~/.fennelrc when launching repl\n  --raw-errors            : Disable friendly compile error reporting\n  --plugin FILE           : Activate the compiler plugin in FILE\n  --compile-binary FILE\n      OUT LUA_LIB LUA_DIR : Compile FILE to standalone binary OUT\n  --compile-binary --help : Display further help for compiling binaries\n  --no-compiler-sandbox   : Do not limit compiler environment to minimal sandbox\n\n  --help (-h)             : Display this text\n  --version (-v)          : Show version\n\nGlobals are not checked when doing AOT (ahead-of-time) compilation unless\nthe --globals-only or --globals flag is provided. Use --globals \"*\" to disable\nstrict globals checking in other contexts.\n\nMetadata is typically considered a development feature and is not recommended\nfor production. It is used for docstrings and enabled by default in the REPL.\n\nWhen not given a command, runs the file given as the first argument.\nWhen given neither command nor file, launches a repl.\n\nUse the NO_COLOR environment variable to disable escape codes in error messages.\n\nIf ~/.fennelrc exists, it will be loaded before launching a repl."
+local options = {plugins = {}}
+local function pack(...)
+  local _759_ = {...}
+  _759_["n"] = select("#", ...)
+  return _759_
 end
-local function syntax()
-  local body_3f = {"when", "with-open", "collect", "icollect", "fcollect", "lambda", "\206\187", "macro", "match", "match-try", "case", "case-try", "accumulate", "faccumulate", "doto"}
-  local binding_3f = {"collect", "icollect", "fcollect", "each", "for", "let", "with-open", "accumulate", "faccumulate"}
-  local define_3f = {"fn", "lambda", "\206\187", "var", "local", "macro", "macros", "global"}
-  local out = {}
-  for k, v in pairs(compiler.scopes.global.specials) do
-    local metadata = (compiler.metadata[v] or {})
-    do end (out)[k] = {["special?"] = true, ["body-form?"] = metadata["fnl/body-form?"], ["binding-form?"] = utils["member?"](k, binding_3f), ["define?"] = utils["member?"](k, define_3f)}
+local function dosafely(f, ...)
+  local args = {...}
+  local result
+  local function _760_()
+    return f(unpack(args))
   end
-  for k, v in pairs(compiler.scopes.global.macros) do
-    out[k] = {["macro?"] = true, ["body-form?"] = utils["member?"](k, body_3f), ["binding-form?"] = utils["member?"](k, binding_3f), ["define?"] = utils["member?"](k, define_3f)}
+  result = pack(xpcall(_760_, fennel.traceback))
+  if not result[1] then
+    do end (io.stderr):write((result[2] .. "\n"))
+    os.exit(1)
+  else
   end
-  for k, v in pairs(_G) do
-    local _754_ = type(v)
-    if (_754_ == "function") then
-      out[k] = {["global?"] = true, ["function?"] = true}
-    elseif (_754_ == "table") then
-      for k2, v2 in pairs(v) do
-        if (("function" == type(v2)) and (k ~= "_G")) then
-          out[(k .. "." .. k2)] = {["function?"] = true, ["global?"] = true}
+  return unpack(result, 2, result.n)
+end
+local function allow_globals(names, actual_globals)
+  if (names == "*") then
+    options.allowedGlobals = false
+    return nil
+  else
+    do
+      local tbl_16_auto = {}
+      local i_17_auto = #tbl_16_auto
+      for g in names:gmatch("([^,]+),?") do
+        local val_18_auto = g
+        if (nil ~= val_18_auto) then
+          i_17_auto = (i_17_auto + 1)
+          do end (tbl_16_auto)[i_17_auto] = val_18_auto
         else
         end
       end
-      out[k] = {["global?"] = true}
+      options.allowedGlobals = tbl_16_auto
+    end
+    for global_name in pairs(actual_globals) do
+      table.insert(options.allowedGlobals, global_name)
+    end
+    return nil
+  end
+end
+local function handle_load(i)
+  local file = table.remove(arg, (i + 1))
+  dosafely(fennel.dofile, file, options)
+  return table.remove(arg, i)
+end
+local function handle_lua(i)
+  table.remove(arg, i)
+  local tgt_lua = table.remove(arg, i)
+  local cmd = {string.format("%s %s", tgt_lua, (arg[0] or "fennel"))}
+  for i0 = 1, #arg do
+    table.insert(cmd, string.format("%q", arg[i0]))
+  end
+  local ok = os.execute(table.concat(cmd, " "))
+  local _764_
+  if ok then
+    _764_ = 0
+  else
+    _764_ = 1
+  end
+  return os.exit(_764_, true)
+end
+assert(arg, "Using the launcher from non-CLI context; use fennel.lua instead.")
+for i = #arg, 1, -1 do
+  local _766_ = arg[i]
+  if (_766_ == "--lua") then
+    handle_lua(i)
+  else
+  end
+end
+do
+  local commands = {["--repl"] = true, ["--compile"] = true, ["-c"] = true, ["--compile-binary"] = true, ["--eval"] = true, ["-e"] = true, ["-v"] = true, ["--version"] = true, ["--help"] = true, ["-h"] = true, ["-"] = true}
+  local i = 1
+  while (arg[i] and not options["ignore-options"]) do
+    local _768_ = arg[i]
+    if (_768_ == "--no-searcher") then
+      options["no-searcher"] = true
+      table.remove(arg, i)
+    elseif (_768_ == "--indent") then
+      options.indent = table.remove(arg, (i + 1))
+      if (options.indent == "false") then
+        options.indent = false
+      else
+      end
+      table.remove(arg, i)
+    elseif (_768_ == "--add-package-path") then
+      local entry = table.remove(arg, (i + 1))
+      package.path = (entry .. ";" .. package.path)
+      table.remove(arg, i)
+    elseif (_768_ == "--add-fennel-path") then
+      local entry = table.remove(arg, (i + 1))
+      fennel.path = (entry .. ";" .. fennel.path)
+      table.remove(arg, i)
+    elseif (_768_ == "--add-macro-path") then
+      local entry = table.remove(arg, (i + 1))
+      fennel["macro-path"] = (entry .. ";" .. fennel["macro-path"])
+      table.remove(arg, i)
+    elseif (_768_ == "--load") then
+      handle_load(i)
+    elseif (_768_ == "-l") then
+      handle_load(i)
+    elseif (_768_ == "--no-fennelrc") then
+      options.fennelrc = false
+      table.remove(arg, i)
+    elseif (_768_ == "--correlate") then
+      options.correlate = true
+      table.remove(arg, i)
+    elseif (_768_ == "--check-unused-locals") then
+      options.checkUnusedLocals = true
+      table.remove(arg, i)
+    elseif (_768_ == "--globals") then
+      allow_globals(table.remove(arg, (i + 1)), _G)
+      table.remove(arg, i)
+    elseif (_768_ == "--globals-only") then
+      allow_globals(table.remove(arg, (i + 1)), {})
+      table.remove(arg, i)
+    elseif (_768_ == "--require-as-include") then
+      options.requireAsInclude = true
+      table.remove(arg, i)
+    elseif (_768_ == "--skip-include") then
+      local skip_names = table.remove(arg, (i + 1))
+      local skip
+      do
+        local tbl_16_auto = {}
+        local i_17_auto = #tbl_16_auto
+        for m in skip_names:gmatch("([^,]+)") do
+          local val_18_auto = m
+          if (nil ~= val_18_auto) then
+            i_17_auto = (i_17_auto + 1)
+            do end (tbl_16_auto)[i_17_auto] = val_18_auto
+          else
+          end
+        end
+        skip = tbl_16_auto
+      end
+      options.skipInclude = skip
+      table.remove(arg, i)
+    elseif (_768_ == "--use-bit-lib") then
+      options.useBitLib = true
+      table.remove(arg, i)
+    elseif (_768_ == "--metadata") then
+      options.useMetadata = true
+      table.remove(arg, i)
+    elseif (_768_ == "--no-metadata") then
+      options.useMetadata = false
+      table.remove(arg, i)
+    elseif (_768_ == "--no-compiler-sandbox") then
+      options["compiler-env"] = _G
+      table.remove(arg, i)
+    elseif (_768_ == "--raw-errors") then
+      options.unfriendly = true
+      table.remove(arg, i)
+    elseif (_768_ == "--plugin") then
+      local opts = {env = "_COMPILER", useMetadata = true, ["compiler-env"] = _G}
+      local plugin = fennel.dofile(table.remove(arg, (i + 1)), opts)
+      table.insert(options.plugins, 1, plugin)
+      table.remove(arg, i)
+    elseif true then
+      local _ = _768_
+      if not commands[arg[i]] then
+        options["ignore-options"] = true
+        i = (i + 1)
+      else
+      end
+      i = (i + 1)
     else
     end
   end
-  return out
 end
-local mod = {list = utils.list, ["list?"] = utils["list?"], sym = utils.sym, ["sym?"] = utils["sym?"], ["multi-sym?"] = utils["multi-sym?"], sequence = utils.sequence, ["sequence?"] = utils["sequence?"], ["table?"] = utils["table?"], comment = utils.comment, ["comment?"] = utils["comment?"], varg = utils.varg, ["varg?"] = utils["varg?"], ["sym-char?"] = parser["sym-char?"], parser = parser.parser, compile = compiler.compile, ["compile-string"] = compiler["compile-string"], ["compile-stream"] = compiler["compile-stream"], eval = eval, repl = repl, view = view, dofile = dofile_2a, ["load-code"] = specials["load-code"], doc = specials.doc, metadata = compiler.metadata, traceback = compiler.traceback, version = utils.version, ["runtime-version"] = utils["runtime-version"], ["ast-source"] = utils["ast-source"], path = utils.path, ["macro-path"] = utils["macro-path"], ["macro-loaded"] = specials["macro-loaded"], ["macro-searchers"] = specials["macro-searchers"], ["search-module"] = specials["search-module"], ["make-searcher"] = specials["make-searcher"], searcher = specials["make-searcher"](), syntax = syntax, gensym = compiler.gensym, scope = compiler["make-scope"], mangle = compiler["global-mangling"], unmangle = compiler["global-unmangling"], compile1 = compiler.compile1, ["string-stream"] = parser["string-stream"], granulate = parser.granulate, loadCode = specials["load-code"], make_searcher = specials["make-searcher"], makeSearcher = specials["make-searcher"], searchModule = specials["search-module"], macroPath = utils["macro-path"], macroSearchers = specials["macro-searchers"], macroLoaded = specials["macro-loaded"], compileStream = compiler["compile-stream"], compileString = compiler["compile-string"], stringStream = parser["string-stream"], runtimeVersion = utils["runtime-version"]}
-mod.install = function(_3fopts)
-  table.insert((package.searchers or package.loaders), specials["make-searcher"](_3fopts))
-  return mod
+local searcher_opts = {}
+if not options["no-searcher"] then
+  for k, v in pairs(options) do
+    searcher_opts[k] = v
+  end
+  table.insert((package.loaders or package.searchers), fennel["make-searcher"](searcher_opts))
+else
 end
-utils["fennel-module"] = mod
-do
-  local module_name = "fennel.macros"
-  local _
-  local function _757_()
-    return mod
+local function load_initfile()
+  local home = (os.getenv("HOME") or "/")
+  local xdg_config_home = (os.getenv("XDG_CONFIG_HOME") or (home .. "/.config"))
+  local xdg_initfile = (xdg_config_home .. "/fennel/fennelrc")
+  local home_initfile = (home .. "/.fennelrc")
+  local init = io.open(xdg_initfile, "rb")
+  local init_filename
+  if init then
+    init_filename = xdg_initfile
+  else
+    init_filename = home_initfile
   end
-  package.preload[module_name] = _757_
-  _ = nil
-  local env
-  do
-    local _758_ = specials["make-compiler-env"](nil, compiler.scopes.compiler, {})
-    do end (_758_)["utils"] = utils
-    _758_["fennel"] = mod
-    env = _758_
+  local init0 = (init or io.open(home_initfile, "rb"))
+  if init0 then
+    init0:close()
+    return dosafely(fennel.dofile, init_filename, options, options, fennel)
+  else
+    return nil
   end
-  local built_ins = eval([===[;; These macros are awkward because their definition cannot rely on the any
-  ;; built-in macros, only special forms. (no when, no icollect, etc)
-  
-  (fn copy [t]
-    (let [out []]
-      (each [_ v (ipairs t)] (table.insert out v))
-      (setmetatable out (getmetatable t))))
-  
-  (fn ->* [val ...]
-    "Thread-first macro.
-  Take the first value and splice it into the second form as its first argument.
-  The value of the second form is spliced into the first arg of the third, etc."
-    (var x val)
-    (each [_ e (ipairs [...])]
-      (let [elt (if (list? e) (copy e) (list e))]
-        (table.insert elt 2 x)
-        (set x elt)))
-    x)
-  
-  (fn ->>* [val ...]
-    "Thread-last macro.
-  Same as ->, except splices the value into the last position of each form
-  rather than the first."
-    (var x val)
-    (each [_ e (ipairs [...])]
-      (let [elt (if (list? e) (copy e) (list e))]
-        (table.insert elt x)
-        (set x elt)))
-    x)
-  
-  (fn -?>* [val ?e ...]
-    "Nil-safe thread-first macro.
-  Same as -> except will short-circuit with nil when it encounters a nil value."
-    (if (= nil ?e)
-        val
-        (let [el (if (list? ?e) (copy ?e) (list ?e))
-              tmp (gensym)]
-          (table.insert el 2 tmp)
-          `(let [,tmp ,val]
-             (if (not= nil ,tmp)
-                 (-?> ,el ,...)
-                 ,tmp)))))
-  
-  (fn -?>>* [val ?e ...]
-    "Nil-safe thread-last macro.
-  Same as ->> except will short-circuit with nil when it encounters a nil value."
-    (if (= nil ?e)
-        val
-        (let [el (if (list? ?e) (copy ?e) (list ?e))
-              tmp (gensym)]
-          (table.insert el tmp)
-          `(let [,tmp ,val]
-             (if (not= ,tmp nil)
-                 (-?>> ,el ,...)
-                 ,tmp)))))
-  
-  (fn ?dot [tbl ...]
-    "Nil-safe table look up.
-  Same as . (dot), except will short-circuit with nil when it encounters
-  a nil value in any of subsequent keys."
-    (let [head (gensym :t)
-          lookups `(do
-                     (var ,head ,tbl)
-                     ,head)]
-      (each [_ k (ipairs [...])]
-        ;; Kinda gnarly to reassign in place like this, but it emits the best lua.
-        ;; With this impl, it emits a flat, concise, and readable set of ifs
-        (table.insert lookups (# lookups) `(if (not= nil ,head)
-                                             (set ,head (. ,head ,k)))))
-      lookups))
-  
-  (fn doto* [val ...]
-    "Evaluate val and splice it into the first argument of subsequent forms."
-    (assert (not= val nil) "missing subject")
-    (let [rebind? (or (not (sym? val))
-                      (multi-sym? val))
-          name (if rebind? (gensym)            val)
-          form (if rebind? `(let [,name ,val]) `(do))]
-      (each [_ elt (ipairs [...])]
-        (let [elt (if (list? elt) (copy elt) (list elt))]
-          (table.insert elt 2 name)
-          (table.insert form elt)))
-      (table.insert form name)
-      form))
-  
-  (fn when* [condition body1 ...]
-    "Evaluate body for side-effects only when condition is truthy."
-    (assert body1 "expected body")
-    `(if ,condition
-         (do
-           ,body1
-           ,...)))
-  
-  (fn with-open* [closable-bindings ...]
-    "Like `let`, but invokes (v:close) on each binding after evaluating the body.
-  The body is evaluated inside `xpcall` so that bound values will be closed upon
-  encountering an error before propagating it."
-    (let [bodyfn `(fn []
-                    ,...)
-          closer `(fn close-handlers# [ok# ...]
-                    (if ok# ... (error ... 0)))
-          traceback `(. (or package.loaded.fennel debug) :traceback)]
-      (for [i 1 (length closable-bindings) 2]
-        (assert (sym? (. closable-bindings i))
-                "with-open only allows symbols in bindings")
-        (table.insert closer 4 `(: ,(. closable-bindings i) :close)))
-      `(let ,closable-bindings
-         ,closer
-         (close-handlers# (_G.xpcall ,bodyfn ,traceback)))))
-  
-  (fn extract-into [iter-tbl]
-    (var (into iter-out found?) (values [] (copy iter-tbl)))
-    (for [i (length iter-tbl) 2 -1]
-      (let [item (. iter-tbl i)]
-        (if (or (= `&into item)
-                (= :into  item))
-            (do
-              (assert (not found?) "expected only one &into clause")
-              (set found? true)
-              (set into (. iter-tbl (+ i 1)))
-              (table.remove iter-out i)
-              (table.remove iter-out i)))))
-    (assert (or (not found?) (sym? into) (table? into) (list? into))
-            "expected table, function call, or symbol in &into clause")
-    (values into iter-out))
-  
-  (fn collect* [iter-tbl key-expr value-expr ...]
-    "Return a table made by running an iterator and evaluating an expression that
-  returns key-value pairs to be inserted sequentially into the table.  This can
-  be thought of as a table comprehension. The body should provide two expressions
-  (used as key and value) or nil, which causes it to be omitted.
-  
-  For example,
-    (collect [k v (pairs {:apple \"red\" :orange \"orange\"})]
-      (values v k))
-  returns
-    {:red \"apple\" :orange \"orange\"}
-  
-  Supports an &into clause after the iterator to put results in an existing table.
-  Supports early termination with an &until clause."
-    (assert (and (sequence? iter-tbl) (<= 2 (length iter-tbl)))
-            "expected iterator binding table")
-    (assert (not= nil key-expr) "expected key and value expression")
-    (assert (= nil ...)
-            "expected 1 or 2 body expressions; wrap multiple expressions with do")
-    (let [kv-expr (if (= nil value-expr) key-expr `(values ,key-expr ,value-expr))
-          (into iter) (extract-into iter-tbl)]
-      `(let [tbl# ,into]
-         (each ,iter
-           (let [(k# v#) ,kv-expr]
-             (if (and (not= k# nil) (not= v# nil))
-               (tset tbl# k# v#))))
-         tbl#)))
-  
-  (fn seq-collect [how iter-tbl value-expr ...]
-    "Common part between icollect and fcollect for producing sequential tables.
-  
-  Iteration code only differs in using the for or each keyword, the rest
-  of the generated code is identical."
-    (assert (not= nil value-expr) "expected table value expression")
-    (assert (= nil ...)
-            "expected exactly one body expression. Wrap multiple expressions in do")
-    (let [(into iter) (extract-into iter-tbl)]
-      `(let [tbl# ,into]
-         ;; believe it or not, using a var here has a pretty good performance
-         ;; boost: https://p.hagelb.org/icollect-performance.html
-         (var i# (length tbl#))
-         (,how ,iter
-               (let [val# ,value-expr]
-                 (when (not= nil val#)
-                   (set i# (+ i# 1))
-                   (tset tbl# i# val#))))
-         tbl#)))
-  
-  (fn icollect* [iter-tbl value-expr ...]
-    "Return a sequential table made by running an iterator and evaluating an
-  expression that returns values to be inserted sequentially into the table.
-  This can be thought of as a table comprehension. If the body evaluates to nil
-  that element is omitted.
-  
-  For example,
-    (icollect [_ v (ipairs [1 2 3 4 5])]
-      (when (not= v 3)
-        (* v v)))
-  returns
-    [1 4 16 25]
-  
-  Supports an &into clause after the iterator to put results in an existing table.
-  Supports early termination with an &until clause."
-    (assert (and (sequence? iter-tbl) (<= 2 (length iter-tbl)))
-            "expected iterator binding table")
-    (seq-collect 'each iter-tbl value-expr ...))
-  
-  (fn fcollect* [iter-tbl value-expr ...]
-    "Return a sequential table made by advancing a range as specified by
-  for, and evaluating an expression that returns values to be inserted
-  sequentially into the table.  This can be thought of as a range
-  comprehension. If the body evaluates to nil that element is omitted.
-  
-  For example,
-    (fcollect [i 1 10 2]
-      (when (not= i 3)
-        (* i i)))
-  returns
-    [1 25 49 81]
-  
-  Supports an &into clause after the range to put results in an existing table.
-  Supports early termination with an &until clause."
-    (assert (and (sequence? iter-tbl) (< 2 (length iter-tbl)))
-            "expected range binding table")
-    (seq-collect 'for iter-tbl value-expr ...))
-  
-  (fn accumulate-impl [for? iter-tbl body ...]
-    (assert (and (sequence? iter-tbl) (<= 4 (length iter-tbl)))
-            "expected initial value and iterator binding table")
-    (assert (not= nil body) "expected body expression")
-    (assert (= nil ...)
-            "expected exactly one body expression. Wrap multiple expressions with do")
-    (let [[accum-var accum-init] iter-tbl
-          iter (sym (if for? "for" "each"))] ; accumulate or faccumulate?
-      `(do
-         (var ,accum-var ,accum-init)
-         (,iter ,[(unpack iter-tbl 3)]
-                (set ,accum-var ,body))
-         ,(if (list? accum-var)
-            (list (sym :values) (unpack accum-var))
-            accum-var))))
-  
-  (fn accumulate* [iter-tbl body ...]
-    "Accumulation macro.
-  
-  It takes a binding table and an expression as its arguments.  In the binding
-  table, the first form starts out bound to the second value, which is an initial
-  accumulator. The rest are an iterator binding table in the format `each` takes.
-  
-  It runs through the iterator in each step of which the given expression is
-  evaluated, and the accumulator is set to the value of the expression. It
-  eventually returns the final value of the accumulator.
-  
-  For example,
-    (accumulate [total 0
-                 _ n (pairs {:apple 2 :orange 3})]
-      (+ total n))
-  returns 5"
-    (accumulate-impl false iter-tbl body ...))
-  
-  (fn faccumulate* [iter-tbl body ...]
-    "Identical to accumulate, but after the accumulator the binding table is the
-  same as `for` instead of `each`. Like collect to fcollect, will iterate over a
-  numerical range like `for` rather than an iterator."
-    (accumulate-impl true iter-tbl body ...))
-  
-  (fn double-eval-safe? [x type]
-    (or (= :number type) (= :string type) (= :boolean type)
-        (and (sym? x) (not (multi-sym? x)))))
-  
-  (fn partial* [f ...]
-    "Return a function with all arguments partially applied to f."
-    (assert f "expected a function to partially apply")
-    (let [bindings []
-          args []]
-      (each [_ arg (ipairs [...])]
-        (if (double-eval-safe? arg (type arg))
-          (table.insert args arg)
-          (let [name (gensym)]
-            (table.insert bindings name)
-            (table.insert bindings arg)
-            (table.insert args name))))
-      (let [body (list f (unpack args))]
-        (table.insert body _VARARG)
-        ;; only use the extra let if we need double-eval protection
-        (if (= 0 (length bindings))
-            `(fn [,_VARARG] ,body)
-            `(let ,bindings
-               (fn [,_VARARG] ,body))))))
-  
-  (fn pick-args* [n f]
-    "Create a function of arity n that applies its arguments to f.
-  
-  For example,
-    (pick-args 2 func)
-  expands to
-    (fn [_0_ _1_] (func _0_ _1_))"
-    (if (and _G.io _G.io.stderr)
-        (_G.io.stderr:write
-         "-- WARNING: pick-args is deprecated and will be removed in the future.\n"))
-    (assert (and (= (type n) :number) (= n (math.floor n)) (<= 0 n))
-            (.. "Expected n to be an integer literal >= 0, got " (tostring n)))
-    (let [bindings []]
-      (for [i 1 n]
-        (tset bindings i (gensym)))
-      `(fn ,bindings
-         (,f ,(unpack bindings)))))
-  
-  (fn pick-values* [n ...]
-    "Evaluate to exactly n values.
-  
-  For example,
-    (pick-values 2 ...)
-  expands to
-    (let [(_0_ _1_) ...]
-      (values _0_ _1_))"
-    (assert (and (= :number (type n)) (<= 0 n) (= n (math.floor n)))
-            (.. "Expected n to be an integer >= 0, got " (tostring n)))
-    (let [let-syms (list)
-          let-values (if (= 1 (select "#" ...)) ... `(values ,...))]
-      (for [i 1 n]
-        (table.insert let-syms (gensym)))
-      (if (= n 0) `(values)
-          `(let [,let-syms ,let-values]
-             (values ,(unpack let-syms))))))
-  
-  (fn lambda* [...]
-    "Function literal with nil-checked arguments.
-  Like `fn`, but will throw an exception if a declared argument is passed in as
-  nil, unless that argument's name begins with a question mark."
-    (let [args [...]
-          has-internal-name? (sym? (. args 1))
-          arglist (if has-internal-name? (. args 2) (. args 1))
-          docstring-position (if has-internal-name? 3 2)
-          has-docstring? (and (< docstring-position (length args))
-                              (= :string (type (. args docstring-position))))
-          arity-check-position (- 4 (if has-internal-name? 0 1)
-                                  (if has-docstring? 0 1))
-          empty-body? (< (length args) arity-check-position)]
-      (fn check! [a]
-        (if (table? a)
-            (each [_ a (pairs a)]
-              (check! a))
-            (let [as (tostring a)]
-              (and (not (as:match "^?")) (not= as "&") (not= as "_")
-                   (not= as "...") (not= as "&as")))
-            (table.insert args arity-check-position
-                          `(_G.assert (not= nil ,a)
-                                      ,(: "Missing argument %s on %s:%s" :format
-                                          (tostring a)
-                                          (or a.filename :unknown)
-                                          (or a.line "?"))))))
-  
-      (assert (= :table (type arglist)) "expected arg list")
-      (each [_ a (ipairs arglist)]
-        (check! a))
-      (if empty-body?
-          (table.insert args (sym :nil)))
-      `(fn ,(unpack args))))
-  
-  (fn macro* [name ...]
-    "Define a single macro."
-    (assert (sym? name) "expected symbol for macro name")
-    (local args [...])
-    `(macros {,(tostring name) (fn ,(unpack args))}))
-  
-  (fn macrodebug* [form return?]
-    "Print the resulting form after performing macroexpansion.
-  With a second argument, returns expanded form as a string instead of printing."
-    (let [handle (if return? `do `print)]
-      `(,handle ,(view (macroexpand form _SCOPE)))))
-  
-  (fn import-macros* [binding1 module-name1 ...]
-    "Bind a table of macros from each macro module according to a binding form.
-  Each binding form can be either a symbol or a k/v destructuring table.
-  Example:
-    (import-macros mymacros                 :my-macros    ; bind to symbol
-                   {:macro1 alias : macro2} :proj.macros) ; import by name"
-    (assert (and binding1 module-name1 (= 0 (% (select "#" ...) 2)))
-            "expected even number of binding/modulename pairs")
-    (for [i 1 (select "#" binding1 module-name1 ...) 2]
-      ;; delegate the actual loading of the macros to the require-macros
-      ;; special which already knows how to set up the compiler env and stuff.
-      ;; this is weird because require-macros is deprecated but it works.
-      (let [(binding modname) (select i binding1 module-name1 ...)
-            scope (get-scope)
-            ;; if the module-name is an expression (and not just a string) we
-            ;; patch our expression to have the correct source filename so
-            ;; require-macros can pass it down when resolving the module-name.
-            expr `(import-macros ,modname)
-            filename (if (list? modname) (. modname 1 :filename) :unknown)
-            _ (tset expr :filename filename)
-            macros* (_SPECIALS.require-macros expr scope {} binding)]
-        (if (sym? binding)
-            ;; bind whole table of macros to table bound to symbol
-            (tset scope.macros (. binding 1) macros*)
-            ;; 1-level table destructuring for importing individual macros
-            (table? binding)
-            (each [macro-name [import-key] (pairs binding)]
-              (assert (= :function (type (. macros* macro-name)))
-                      (.. "macro " macro-name " not found in module "
-                          (tostring modname)))
-              (tset scope.macros import-key (. macros* macro-name))))))
-    nil)
-  
-  {:-> ->*
-   :->> ->>*
-   :-?> -?>*
-   :-?>> -?>>*
-   :?. ?dot
-   :doto doto*
-   :when when*
-   :with-open with-open*
-   :collect collect*
-   :icollect icollect*
-   :fcollect fcollect*
-   :accumulate accumulate*
-   :faccumulate faccumulate*
-   :partial partial*
-   :lambda lambda*
-   :λ lambda*
-   :pick-args pick-args*
-   :pick-values pick-values*
-   :macro macro*
-   :macrodebug macrodebug*
-   :import-macros import-macros*}
-  ]===], {env = env, scope = compiler.scopes.compiler, useMetadata = true, filename = "src/fennel/macros.fnl", moduleName = module_name})
-  local _0
-  for k, v in pairs(built_ins) do
-    compiler.scopes.global.macros[k] = v
-  end
-  _0 = nil
-  local match_macros = eval([===[;;; Pattern matching
-  ;; This is separated out so we can use the "core" macros during the
-  ;; implementation of pattern matching.
-  
-  (fn copy [t] (collect [k v (pairs t)] k v))
-  
-  (fn with [opts k]
-    (doto (copy opts) (tset k true)))
-  
-  (fn without [opts k]
-    (doto (copy opts) (tset k nil)))
-  
-  (fn case-values [vals pattern unifications case-pattern opts]
-    (let [condition `(and)
-          bindings []]
-      (each [i pat (ipairs pattern)]
-        (let [(subcondition subbindings) (case-pattern [(. vals i)] pat
-                                                        unifications (without opts :multival?))]
-          (table.insert condition subcondition)
-          (icollect [_ b (ipairs subbindings) &into bindings] b)))
-      (values condition bindings)))
-  
-  (fn case-table [val pattern unifications case-pattern opts]
-    (let [condition `(and (= (_G.type ,val) :table))
-          bindings []]
-      (each [k pat (pairs pattern)]
-        (if (= pat `&)
-            (let [rest-pat (. pattern (+ k 1))
-                  rest-val `(select ,k ((or table.unpack _G.unpack) ,val))
-                  subcondition (case-table `(pick-values 1 ,rest-val)
-                                            rest-pat unifications case-pattern
-                                            (without opts :multival?))]
-              (if (not (sym? rest-pat))
-                  (table.insert condition subcondition))
-              (assert (= nil (. pattern (+ k 2)))
-                      "expected & rest argument before last parameter")
-              (table.insert bindings rest-pat)
-              (table.insert bindings [rest-val]))
-            (= k `&as)
-            (do
-              (table.insert bindings pat)
-              (table.insert bindings val))
-            (and (= :number (type k)) (= `&as pat))
-            (do
-              (assert (= nil (. pattern (+ k 2)))
-                      "expected &as argument before last parameter")
-              (table.insert bindings (. pattern (+ k 1)))
-              (table.insert bindings val))
-            ;; don't process the pattern right after &/&as; already got it
-            (or (not= :number (type k)) (and (not= `&as (. pattern (- k 1)))
-                                             (not= `& (. pattern (- k 1)))))
-            (let [subval `(. ,val ,k)
-                  (subcondition subbindings) (case-pattern [subval] pat
-                                                            unifications
-                                                            (without opts :multival?))]
-              (table.insert condition subcondition)
-              (icollect [_ b (ipairs subbindings) &into bindings] b))))
-      (values condition bindings)))
-  
-  (fn case-guard [vals condition guards unifications case-pattern opts]
-    (if (= 0 (length guards))
-      (case-pattern vals condition unifications opts)
-      (let [(pcondition bindings) (case-pattern vals condition unifications opts)
-            condition `(and ,(unpack guards))]
-         (values `(and ,pcondition
-                       (let ,bindings
-                         ,condition)) bindings))))
-  
-  (fn symbols-in-pattern [pattern]
-    "gives the set of symbols inside a pattern"
-    (if (list? pattern)
-        (let [result {}]
-          (each [_ child-pattern (ipairs pattern)]
-            (collect [name symbol (pairs (symbols-in-pattern child-pattern)) &into result]
-              name symbol))
-          result)
-        (sym? pattern)
-        (if (and (not= pattern `or)
-                 (not= pattern `where)
-                 (not= pattern `?)
-                 (not= pattern `nil))
-            {(tostring pattern) pattern}
-            {})
-        (= (type pattern) :table)
-        (let [result {}]
-          (each [key-pattern value-pattern (pairs pattern)]
-            (collect [name symbol (pairs (symbols-in-pattern key-pattern)) &into result]
-              name symbol)
-            (collect [name symbol (pairs (symbols-in-pattern value-pattern)) &into result]
-              name symbol))
-          result)
-        {}))
-  
-  (fn symbols-in-every-pattern [pattern-list infer-unification?]
-    "gives a list of symbols that are present in every pattern in the list"
-    (let [?symbols (accumulate [?symbols nil
-                                _ pattern (ipairs pattern-list)]
-                     (let [in-pattern (symbols-in-pattern pattern)]
-                       (if ?symbols
-                         (do
-                           (each [name symbol (pairs ?symbols)]
-                             (when (not (. in-pattern name))
-                               (tset ?symbols name nil)))
-                           ?symbols)
-                         in-pattern)))]
-      (icollect [_ symbol (pairs (or ?symbols {}))]
-        (if (not (and infer-unification?
-                      (in-scope? symbol)))
-          symbol))))
-  
-  (fn case-or [vals pattern guards unifications case-pattern opts]
-    (let [pattern [(unpack pattern 2)]
-          bindings (symbols-in-every-pattern pattern opts.infer-unification?)] ;; TODO opts.infer-unification instead of opts.unification?
-      (if (= 0 (length bindings))
-        ;; no bindings special case generates simple code
-        (let [condition
-              (icollect [i subpattern (ipairs pattern) &into `(or)]
-                (let [(subcondition subbindings) (case-pattern vals subpattern unifications opts)]
-                  subcondition))]
-          (values
-            (if (= 0 (length guards))
-              condition
-              `(and ,condition ,(unpack guards)))
-            []))
-        ;; case with bindings is handled specially, and returns three values instead of two
-        (let [matched? (gensym :matched?)
-              bindings-mangled (icollect [_ binding (ipairs bindings)]
-                                 (gensym (tostring binding)))
-              pre-bindings `(if)]
-          (each [i subpattern (ipairs pattern)]
-            (let [(subcondition subbindings) (case-guard vals subpattern guards {} case-pattern opts)]
-              (table.insert pre-bindings subcondition)
-              (table.insert pre-bindings `(let ,subbindings
-                                            (values true ,(unpack bindings))))))
-          (values matched?
-                  [`(,(unpack bindings)) `(values ,(unpack bindings-mangled))]
-                  [`(,matched? ,(unpack bindings-mangled)) pre-bindings])))))
-  
-  (fn case-pattern [vals pattern unifications opts top-level?]
-    "Take the AST of values and a single pattern and returns a condition
-  to determine if it matches as well as a list of bindings to
-  introduce for the duration of the body if it does match."
-  
-    ;; This function returns the following values (multival):
-    ;; a "condition", which is an expression that determines whether the
-    ;;   pattern should match,
-    ;; a "bindings", which bind all of the symbols used in a pattern
-    ;; an optional "pre-bindings", which is a list of bindings that happen
-    ;;   before the condition and bindings are evaluated. These should only
-    ;;   come from a (case-or). In this case there should be no recursion:
-    ;;   the call stack should be case-condition > case-pattern > case-or
-    ;;
-    ;; Here are the expected flags in the opts table:
-    ;;   :infer-unification? boolean - if the pattern should guess when to unify  (ie, match -> true, case -> false)
-    ;;   :multival? boolean - if the pattern can contain multivals  (in order to disallow patterns like [(1 2)])
-    ;;   :in-where? boolean - if the pattern is surrounded by (where)  (where opts into more pattern features)
-    ;;   :legacy-guard-allowed? boolean - if the pattern should allow `(a ? b) patterns
-  
-    ;; we have to assume we're matching against multiple values here until we
-    ;; know we're either in a multi-valued clause (in which case we know the #
-    ;; of vals) or we're not, in which case we only care about the first one.
-    (let [[val] vals]
-      (if (and (sym? pattern)
-               (or (= pattern `nil)
-                   (and opts.infer-unification?
-                        (in-scope? pattern)
-                        (not= pattern `_))
-                   (and opts.infer-unification?
-                        (multi-sym? pattern)
-                        (in-scope? (. (multi-sym? pattern) 1)))))
-          (values `(= ,val ,pattern) [])
-          ;; unify a local we've seen already
-          (and (sym? pattern) (. unifications (tostring pattern)))
-          (values `(= ,(. unifications (tostring pattern)) ,val) [])
-          ;; bind a fresh local
-          (sym? pattern)
-          (let [wildcard? (: (tostring pattern) :find "^_")]
-            (if (not wildcard?) (tset unifications (tostring pattern) val))
-            (values (if (or wildcard? (string.find (tostring pattern) "^?")) true
-                        `(not= ,(sym :nil) ,val)) [pattern val]))
-          ;; opt-in unify with (=)
-          (and (list? pattern)
-               (= (. pattern 1) `=)
-               (sym? (. pattern 2)))
-          (let [bind (. pattern 2)]
-            (assert-compile (= 2 (length pattern)) "(=) should take only one argument" pattern)
-            (assert-compile (not opts.infer-unification?) "(=) cannot be used inside of match" pattern)
-            (assert-compile opts.in-where? "(=) must be used in (where) patterns" pattern)
-            (assert-compile (and (sym? bind) (not= bind `nil) "= has to bind to a symbol" bind))
-            (values `(= ,val ,bind) []))
-          ;; where-or clause
-          (and (list? pattern) (= (. pattern 1) `where) (list? (. pattern 2)) (= (. pattern 2 1) `or))
-          (do
-            (assert-compile top-level? "can't nest (where) pattern" pattern)
-            (case-or vals (. pattern 2) [(unpack pattern 3)] unifications case-pattern (with opts :in-where?)))
-          ;; where clause
-          (and (list? pattern) (= (. pattern 1) `where))
-          (do
-            (assert-compile top-level? "can't nest (where) pattern" pattern)
-            (case-guard vals (. pattern 2) [(unpack pattern 3)] unifications case-pattern (with opts :in-where?)))
-          ;; or clause (not allowed on its own)
-          (and (list? pattern) (= (. pattern 1) `or))
-          (do
-            (assert-compile top-level? "can't nest (or) pattern" pattern)
-            ;; This assertion can be removed to make patterns more permissive
-            (assert-compile false "(or) must be used in (where) patterns" pattern)
-            (case-or vals pattern [] unifications case-pattern opts))
-          ;; guard clause
-          (and (list? pattern) (= (. pattern 2) `?))
-          (do
-            (assert-compile opts.legacy-guard-allowed? "legacy guard clause not supported in case" pattern)
-            (case-guard vals (. pattern 1) [(unpack pattern 3)] unifications case-pattern opts))
-          ;; multi-valued patterns (represented as lists)
-          (list? pattern)
-          (do
-            (assert-compile opts.multival? "can't nest multi-value destructuring" pattern)
-            (case-values vals pattern unifications case-pattern opts))
-          ;; table patterns
-          (= (type pattern) :table)
-          (case-table val pattern unifications case-pattern opts)
-          ;; literal value
-          (values `(= ,val ,pattern) []))))
-  
-  (fn add-pre-bindings [out pre-bindings]
-    "Decide when to switch from the current `if` AST to a new one"
-    (if pre-bindings
-        ;; `out` no longer needs to grow.
-        ;; Instead, a new tail `if` AST is introduced, which is where the rest of
-        ;; the clauses will get appended. This way, all future clauses have the
-        ;; pre-bindings in scope.
-        (let [tail `(if)]
-          (table.insert out true)
-          (table.insert out `(let ,pre-bindings ,tail))
-          tail)
-        ;; otherwise, keep growing the current `if` AST.
-        out))
-  
-  (fn case-condition [vals clauses match?]
-    "Construct the actual `if` AST for the given match values and clauses."
-    ;; root is the original `if` AST.
-    ;; out is the `if` AST that is currently being grown.
-    (let [root `(if)]
-      (faccumulate [out root
-                    i 1 (length clauses) 2]
-        (let [pattern (. clauses i)
-              body (. clauses (+ i 1))
-              (condition bindings pre-bindings) (case-pattern vals pattern {}
-                                                              {:multival? true
-                                                               :infer-unification? match?
-                                                               :legacy-guard-allowed? match?}
-                                                              true)
-              out (add-pre-bindings out pre-bindings)]
-          ;; grow the `if` AST by one extra condition
-          (table.insert out condition)
-          (table.insert out `(let ,bindings
-                              ,body))
-          out))
-      root))
-  
-  (fn count-case-multival [pattern]
-    "Identify the amount of multival values that a pattern requires."
-    (if (and (list? pattern) (= (. pattern 2) `?))
-        (count-case-multival (. pattern 1))
-        (and (list? pattern) (= (. pattern 1) `where))
-        (count-case-multival (. pattern 2))
-        (and (list? pattern) (= (. pattern 1) `or))
-        (accumulate [longest 0
-                     _ child-pattern (ipairs pattern)]
-          (math.max longest (count-case-multival child-pattern)))
-        (list? pattern)
-        (length pattern)
-        1))
-  
-  (fn case-val-syms [clauses]
-    "What is the length of the largest multi-valued clause? return a list of that
-  many gensyms."
-    (let [patterns (fcollect [i 1 (length clauses) 2]
-                     (. clauses i))
-          sym-count (accumulate [longest 0
-                                 _ pattern (ipairs patterns)]
-                      (math.max longest (count-case-multival pattern)))]
-      (fcollect [i 1 sym-count &into (list)]
-        (gensym))))
-  
-  (fn case-impl [match? val ...]
-    "The shared implementation of case and match."
-    (assert (not= val nil) "missing subject")
-    (assert (= 0 (math.fmod (select :# ...) 2))
-            "expected even number of pattern/body pairs")
-    (assert (not= 0 (select :# ...))
-            "expected at least one pattern/body pair")
-    (let [clauses [...]
-          vals (case-val-syms clauses)]
-      ;; protect against multiple evaluation of the value, bind against as
-      ;; many values as we ever match against in the clauses.
-      (list `let [vals val] (case-condition vals clauses match?))))
-  
-  (fn case* [val ...]
-    "Perform pattern matching on val. See reference for details.
-  
-  Syntax:
-  
-  (case data-expression
-    pattern body
-    (where pattern guards*) body
-    (or pattern patterns*) body
-    (where (or pattern patterns*) guards*) body
-    ;; legacy:
-    (pattern ? guards*) body)"
-    (case-impl false val ...))
-  
-  (fn match* [val ...]
-    "Perform pattern matching on val, automatically unifying on variables in
-  local scope. See reference for details.
-  
-  Syntax:
-  
-  (match data-expression
-    pattern body
-    (where pattern guards*) body
-    (or pattern patterns*) body
-    (where (or pattern patterns*) guards*) body
-    ;; legacy:
-    (pattern ? guards*) body)"
-    (case-impl true val ...))
-  
-  (fn case-try-step [how expr else pattern body ...]
-    (if (= nil pattern body)
-        expr
-        ;; unlike regular match, we can't know how many values the value
-        ;; might evaluate to, so we have to capture them all in ... via IIFE
-        ;; to avoid double-evaluation.
-        `((fn [...]
-            (,how ...
-              ,pattern ,(case-try-step how body else ...)
-              ,(unpack else)))
-          ,expr)))
-  
-  (fn case-try-impl [how expr pattern body ...]
-    (let [clauses [pattern body ...]
-          last (. clauses (length clauses))
-          catch (if (= `catch (and (= :table (type last)) (. last 1)))
-                   (let [[_ & e] (table.remove clauses)] e) ; remove `catch sym
-                   [`_# `...])]
-      (assert (= 0 (math.fmod (length clauses) 2))
-              "expected every pattern to have a body")
-      (assert (= 0 (math.fmod (length catch) 2))
-              "expected every catch pattern to have a body")
-      (case-try-step how expr catch (unpack clauses))))
-  
-  (fn case-try* [expr pattern body ...]
-    "Perform chained pattern matching for a sequence of steps which might fail.
-  
-  The values from the initial expression are matched against the first pattern.
-  If they match, the first body is evaluated and its values are matched against
-  the second pattern, etc.
-  
-  If there is a (catch pat1 body1 pat2 body2 ...) form at the end, any mismatch
-  from the steps will be tried against these patterns in sequence as a fallback
-  just like a normal match. If there is no catch, the mismatched values will be
-  returned as the value of the entire expression."
-    (case-try-impl `case expr pattern body ...))
-  
-  (fn match-try* [expr pattern body ...]
-    "Perform chained pattern matching for a sequence of steps which might fail.
-  
-  The values from the initial expression are matched against the first pattern.
-  If they match, the first body is evaluated and its values are matched against
-  the second pattern, etc.
-  
-  If there is a (catch pat1 body1 pat2 body2 ...) form at the end, any mismatch
-  from the steps will be tried against these patterns in sequence as a fallback
-  just like a normal match. If there is no catch, the mismatched values will be
-  returned as the value of the entire expression."
-    (case-try-impl `match expr pattern body ...))
-  
-  {:case case*
-   :case-try case-try*
-   :match match*
-   :match-try match-try*}
-  ]===], {env = env, scope = compiler.scopes.compiler, allowedGlobals = false, useMetadata = true, filename = "src/fennel/match.fnl", moduleName = module_name})
-  for k, v in pairs(match_macros) do
-    compiler.scopes.global.macros[k] = v
-  end
-  package.preload[module_name] = nil
 end
-return mod
+local function repl()
+  local readline_3f = (("dumb" ~= os.getenv("TERM")) and pcall(require, "readline"))
+  searcher_opts.useMetadata = (false ~= options.useMetadata)
+  if (false ~= options.fennelrc) then
+    options["fennelrc"] = load_initfile
+  else
+  end
+  print(("Welcome to " .. fennel["runtime-version"]() .. "!"))
+  print("Use ,help to see available commands.")
+  if (not readline_3f and ("dumb" ~= os.getenv("TERM"))) then
+    print("Try installing readline via luarocks for a better repl experience.")
+  else
+  end
+  return fennel.repl(options)
+end
+local function eval(form)
+  local _778_
+  if (form == "-") then
+    _778_ = (io.stdin):read("*a")
+  else
+    _778_ = form
+  end
+  return print(dosafely(fennel.eval, _778_, options))
+end
+local function compile(files)
+  for _, filename in ipairs(files) do
+    options.filename = filename
+    local f
+    if (filename == "-") then
+      f = io.stdin
+    else
+      f = assert(io.open(filename, "rb"))
+    end
+    do
+      local _781_, _782_ = nil, nil
+      local function _783_()
+        return fennel["compile-string"](f:read("*a"), options)
+      end
+      _781_, _782_ = xpcall(_783_, fennel.traceback)
+      if ((_781_ == true) and (nil ~= _782_)) then
+        local val = _782_
+        print(val)
+      elseif (true and (nil ~= _782_)) then
+        local _0 = _781_
+        local msg = _782_
+        do end (io.stderr):write((msg .. "\n"))
+        os.exit(1)
+      else
+      end
+    end
+    f:close()
+  end
+  return nil
+end
+local _785_ = arg
+local function _786_(...)
+  return (0 == #arg)
+end
+if ((_G.type(_785_) == "table") and _786_(...)) then
+  return repl()
+elseif ((_G.type(_785_) == "table") and ((_785_)[1] == "--repl")) then
+  return repl()
+elseif ((_G.type(_785_) == "table") and ((_785_)[1] == "--compile")) then
+  local files = {select(2, (table.unpack or _G.unpack)(_785_))}
+  return compile(files)
+elseif ((_G.type(_785_) == "table") and ((_785_)[1] == "-c")) then
+  local files = {select(2, (table.unpack or _G.unpack)(_785_))}
+  return compile(files)
+elseif ((_G.type(_785_) == "table") and ((_785_)[1] == "--compile-binary") and (nil ~= (_785_)[2]) and (nil ~= (_785_)[3]) and (nil ~= (_785_)[4]) and (nil ~= (_785_)[5])) then
+  local filename = (_785_)[2]
+  local out = (_785_)[3]
+  local static_lua = (_785_)[4]
+  local lua_include_dir = (_785_)[5]
+  local args = {select(6, (table.unpack or _G.unpack)(_785_))}
+  local bin = require("fennel.binary")
+  options.filename = filename
+  options.requireAsInclude = true
+  return bin.compile(filename, out, static_lua, lua_include_dir, options, args)
+elseif ((_G.type(_785_) == "table") and ((_785_)[1] == "--compile-binary")) then
+  local cmd = (arg[0] or "fennel")
+  return print(((require("fennel.binary")).help):format(cmd, cmd, cmd))
+elseif ((_G.type(_785_) == "table") and ((_785_)[1] == "--eval") and (nil ~= (_785_)[2])) then
+  local form = (_785_)[2]
+  return eval(form)
+elseif ((_G.type(_785_) == "table") and ((_785_)[1] == "-e") and (nil ~= (_785_)[2])) then
+  local form = (_785_)[2]
+  return eval(form)
+else
+  local function _814_(...)
+    local a = (_785_)[1]
+    return ((a == "-v") or (a == "--version"))
+  end
+  if (((_G.type(_785_) == "table") and (nil ~= (_785_)[1])) and _814_(...)) then
+    local a = (_785_)[1]
+    return print(fennel["runtime-version"]())
+  elseif ((_G.type(_785_) == "table") and ((_785_)[1] == "--help")) then
+    return print(help)
+  elseif ((_G.type(_785_) == "table") and ((_785_)[1] == "-h")) then
+    return print(help)
+  elseif ((_G.type(_785_) == "table") and ((_785_)[1] == "-")) then
+    local args = {select(2, (table.unpack or _G.unpack)(_785_))}
+    return dosafely(fennel.eval, (io.stdin):read("*a"))
+  elseif ((_G.type(_785_) == "table") and (nil ~= (_785_)[1])) then
+    local filename = (_785_)[1]
+    local args = {select(2, (table.unpack or _G.unpack)(_785_))}
+    arg[-2] = arg[-1]
+    arg[-1] = arg[0]
+    arg[0] = table.remove(arg, 1)
+    return dosafely(fennel.dofile, filename, options, unpack(args))
+  else
+    return nil
+  end
+end

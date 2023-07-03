@@ -35,7 +35,7 @@
              {:out :string
               :err :string
               :continue true}
-             "lua" "lua/nfnl/fennel.lua" "--compile" src-path)]
+             "lua" "script/fennel.lua" "--compile" src-path)]
         (if (zero? exit)
           out
           {:cognitect.anomalies/category :cognitect.anomalies/fault
