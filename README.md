@@ -50,6 +50,8 @@ Find the full [Unlicense][] in the `UNLICENSE` file, but here's a snippet.
 >
 > Anyone is free to copy, modify, publish, use, compile, sell, or distribute this software, either in source code form or as a compiled binary, for any purpose, commercial or non-commercial, and by any means.
 
+`lua/nfnl/fennel` is excluded from this licensing, it's downloaded from the [Fennel][] website and retains any license used by the original author. We vendor it within this tool to simplify the user experience.
+
 [Neovim]: https://neovim.io/
 [Fennel]: https://fennel-lang.org/
 [Aniseed]: https://github.com/Olical/aniseed
