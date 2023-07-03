@@ -1,6 +1,6 @@
 # nfnl (WIP, don't use, thanks)
 
-Enhance your [Neovim][] experience with [Fennel][]. A streamlined successor to [Aniseed][] without the Clojure like syntactic opinions provided by the Aniseed macros.
+Enhance your [Neovim][] experience with [Fennel][]. A streamlined successor to [Aniseed][] without the Clojure like syntax provided by the Aniseed macros.
 
 ## Opinions
 
