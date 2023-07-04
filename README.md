@@ -33,15 +33,17 @@ TODO
 
 ## Development
 
-If you have nfnl installed in Neovim you should be able to just modify Fennel files and have them get recompiled automatically for you. If you run into issues though you can execute `script/bootstrap-dev` to run a file watching Fennel compiler and `script/bootstrap` to compile everything with a one off command. Both of these lean on `script/fennel.bb` which is a smart Fennel compiler wrapper written in [Babashka][].
+If you have nfnl installed in Neovim you should be able to just modify Fennel files and have them get recompiled automatically for you. So nfnl is compiled with nfnl. This does however mean you can perform an Oopsie and break nfnl, rendering it useless to recompile itself with fixed code.
+
+If you run into issues like this, you can execute `script/bootstrap-dev` to run a file watching Fennel compiler and `script/bootstrap` to compile everything with a one off command. Both of these lean on `script/fennel.bb` which is a smart Fennel compiler wrapper written in [Babashka][]. This wrapper relies on the bundled Fennel compiler at `script/fennel.lua`, so it will ignore any Fennel version installed at the system level on the CLI.
 
 So you'll need the following to use the full development suite:
 
- - A Lua runtime of some kind.
- - [Babashka][].
- - [Entr][] if you want to use file watching.
+ - A Lua runtime of some kind to execute `script/fennel.lua`.
+ - [Babashka][] to execute `script/fennel.bb`.
+ - [Entr][] if you want to use file watching with `script/bootstrap-dev`.
 
-The development bootstrap tools use the vendored copy of Fennel at `lua/nfnl/fennel.lua`, so you don't need to bring your own. The bootstrap tools should only really ever be required during the initial development of this plugin or if something has gone catastrophically wrong. Normally having nfnl installed and editing the .fnl files should be enough.
+The bootstrap tools should only really ever be required during the initial development of this plugin or if something has gone catastrophically wrong. Normally having nfnl installed and editing the `.fnl` files should be enough.
 
 ## Unlicensed
 
