@@ -2,11 +2,12 @@
 (local fennel (autoload :nfnl.fennel))
 (local core (autoload :nfnl.core))
 (local fs (autoload :nfnl.fs))
+(local str (autoload :nfnl.string))
 
 (fn get-buf-content-as-string [buf]
-  (table.concat
-    (vim.api.nvim_buf_get_lines (or buf 0) 0 -1 false)
-    "\n"))
+  (str.join
+    "\n"
+    (vim.api.nvim_buf_get_lines (or buf 0) 0 -1 false)))
 
 (fn buf-write-post-callback [ev]
   (let [(ok res) (pcall
