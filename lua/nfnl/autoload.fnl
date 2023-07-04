@@ -1,17 +1,6 @@
 (local module-key :nfnl/autoload-module)
 (local enabled-key :nfnl/autoload-enabled?)
 
-(fn prepare [name]
-  (let [res {enabled-key true
-             module-key false}]
-    {:res res
-     :ensure (fn []
-               (if (. res module-key)
-                 (. res module-key)
-                 (let [m (require name)]
-                   (tset res module-key m)
-                   m)))}))
-
 (fn autoload [name]
   "Like autoload from Vim Script! A replacement for require that will load the
   module when you first use it.
@@ -25,7 +14,14 @@
   requiring is a function or anything other than a table you need to use the
   normal require."
 
-  (let [{: res : ensure} (prepare name)]
+  (let [res {enabled-key true
+             module-key false}
+        ensure (fn []
+                 (if (. res module-key)
+                   (. res module-key)
+                   (let [m (require name)]
+                     (tset res module-key m)
+                     m)))]
     (setmetatable
       res
 

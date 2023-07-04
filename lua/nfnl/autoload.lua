@@ -1,7 +1,8 @@
 local module_key = "nfnl/autoload-module"
 local enabled_key = "nfnl/autoload-enabled?"
-local function prepare(name)
+local function autoload(name)
   local res = {[enabled_key] = true, [module_key] = false}
+  local ensure
   local function _1_()
     if res[module_key] then
       return res[module_key]
@@ -11,22 +12,17 @@ local function prepare(name)
       return m
     end
   end
-  return {res = res, ensure = _1_}
-end
-local function autoload(name)
-  local _let_3_ = prepare(name)
-  local res = _let_3_["res"]
-  local ensure = _let_3_["ensure"]
-  local function _4_(t, ...)
+  ensure = _1_
+  local function _3_(t, ...)
     return ensure()(...)
   end
-  local function _5_(t, k)
+  local function _4_(t, k)
     return ensure()[k]
   end
-  local function _6_(t, k, v)
+  local function _5_(t, k, v)
     ensure()[k] = v
     return nil
   end
-  return setmetatable(res, {__call = _4_, __index = _5_, __newindex = _6_})
+  return setmetatable(res, {__call = _3_, __index = _4_, __newindex = _5_})
 end
 return autoload
