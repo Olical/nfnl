@@ -18,17 +18,27 @@
       (core.spit (fs.replace-extension (. ev :file) "lua") res)
       (error res))))
 
-(fn setup [opts]
-  (local opts (or opts {}))
+(local default-config
+  {:compile_on_write true})
 
-  (when (not= false (. opts :compile_on_write))
-    (let [agid (vim.api.nvim_create_augroup "nfnl" {})]
-      (vim.api.nvim_create_autocmd
-        ["BufWritePost"]
-        {:pattern ["*.fnl"]
-         :callback buf-write-post-callback}))))
+(fn cfg-fn [t]
+  (fn [path]
+    (core.get-in
+      t path
+      (core.get-in default-config path))))
+
+(fn setup [opts]
+  (let [cfg (cfg-fn opts)]
+    (when (cfg [:compile_on_write])
+      (let [agid (vim.api.nvim_create_augroup "nfnl" {})]
+        (vim.api.nvim_create_autocmd
+          ["BufWritePost"]
+          {:group agid
+           :pattern ["*.fnl"]
+           :callback buf-write-post-callback})))))
 
 (comment
   (setup))
 
-{: setup}
+{: setup
+ : default-config}

@@ -14,14 +14,21 @@ local function buf_write_post_callback(ev)
     return error(res)
   end
 end
+local default_config = {compile_on_write = true}
+local function cfg_fn(t)
+  local function _2_(path)
+    return core["get-in"](t, path, core["get-in"](default_config, path))
+  end
+  return _2_
+end
 local function setup(opts)
-  local opts0 = (opts or {})
-  if (false ~= (opts0).compile_on_write) then
+  local cfg = cfg_fn(opts)
+  if cfg({"compile_on_write"}) then
     local agid = vim.api.nvim_create_augroup("nfnl", {})
-    return vim.api.nvim_create_autocmd({"BufWritePost"}, {pattern = {"*.fnl"}, callback = buf_write_post_callback})
+    return vim.api.nvim_create_autocmd({"BufWritePost"}, {group = agid, pattern = {"*.fnl"}, callback = buf_write_post_callback})
   else
     return nil
   end
 end
 --[[ (setup) ]]
-return {setup = setup}
+return {setup = setup, ["default-config"] = default_config}
