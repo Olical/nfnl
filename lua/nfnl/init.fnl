@@ -1,37 +1,31 @@
-(local fennel (require :nfnl.fennel))
+(local autoload (require :nfnl.autoload))
+(local fennel (autoload :nfnl.fennel))
+(local core (autoload :nfnl.core))
+(local fs (autoload :nfnl.fs))
 
-;; TODO Port Aniseed in properly.
-(fn spit [path content]
-  "Spit the string into the file."
-  (match (io.open path "w")
-    (nil msg) (error (.. "Could not open file: " msg))
-    f (do
-        (f:write content)
-        (f:close)
-        nil)))
-;; --------
-
-(fn fname-root [path]
-  (vim.fn.fnamemodify path ":r"))
-
-(fn get-buf-content [buf]
+(fn get-buf-content-as-string [buf]
   (table.concat
-    (vim.api.nvim_buf_get_lines buf 0 -1 false)
+    (vim.api.nvim_buf_get_lines (or buf 0) 0 -1 false)
     "\n"))
 
+(fn buf-write-post-callback [ev]
+  (let [(ok res) (pcall
+                   fennel.compileString
+                   (get-buf-content-as-string (. ev :buf))
+                   {:filename (. ev :file)})]
+    (if ok
+      (core.spit (fs.replace-extension (. ev :file) "lua") res)
+      (error res))))
+
 (fn setup [opts]
-  (let [agid (vim.api.nvim_create_augroup "nfnl" {})]
-    (vim.api.nvim_create_autocmd
-      ["BufWritePost"]
-      {:pattern ["*.fnl"]
-       :callback (fn [ev]
-                   (let [(ok res) (pcall
-                                    fennel.compileString
-                                    (get-buf-content (. ev :buf))
-                                    {:filename (. ev :file)})]
-                     (if ok
-                       (spit (.. (fname-root (. ev :file)) ".lua") res)
-                       (error res))))})))
+  (local opts (or opts {}))
+
+  (when (not= false (. opts :compile_on_write))
+    (let [agid (vim.api.nvim_create_augroup "nfnl" {})]
+      (vim.api.nvim_create_autocmd
+        ["BufWritePost"]
+        {:pattern ["*.fnl"]
+         :callback buf-write-post-callback}))))
 
 (comment
   (setup))
