@@ -26,8 +26,8 @@
       t path
       (core.get-in default-config path))))
 
-(fn setup [opts]
-  (let [cfg (cfg-fn opts)]
+(fn setup [config]
+  (let [cfg (cfg-fn config)]
     (when (cfg [:compile_on_write])
       (let [agid (vim.api.nvim_create_augroup "nfnl" {})]
         (vim.api.nvim_create_autocmd

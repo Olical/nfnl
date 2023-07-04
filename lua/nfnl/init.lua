@@ -21,8 +21,8 @@ local function cfg_fn(t)
   end
   return _2_
 end
-local function setup(opts)
-  local cfg = cfg_fn(opts)
+local function setup(config)
+  local cfg = cfg_fn(config)
   if cfg({"compile_on_write"}) then
     local agid = vim.api.nvim_create_augroup("nfnl", {})
     return vim.api.nvim_create_autocmd({"BufWritePost"}, {group = agid, pattern = {"*.fnl"}, callback = buf_write_post_callback})
