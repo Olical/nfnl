@@ -5,9 +5,8 @@
 (local str (autoload :nfnl.string))
 
 (fn get-buf-content-as-string [buf]
-  (str.join
-    "\n"
-    (vim.api.nvim_buf_get_lines (or buf 0) 0 -1 false)))
+  (->> (vim.api.nvim_buf_get_lines (or buf 0) 0 -1 false)
+       (str.join "\n")))
 
 (fn buf-write-post-callback [ev]
   (let [(ok res) (pcall
