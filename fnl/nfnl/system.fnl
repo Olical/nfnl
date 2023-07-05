@@ -3,6 +3,7 @@
 (local core (autoload :nfnl.core))
 (local fs (autoload :nfnl.fs))
 (local nvim (autoload :nfnl.nvim))
+(local str (autoload :nfnl.string))
 (local notify (autoload :nfnl.notify))
 
 (local config-file-name ".nfnl")
@@ -89,12 +90,21 @@
     (when rel-nfnl-path
       (let [config-file-path (fs.join-path [cwd rel-nfnl-path])
             root-dir (fs.basename config-file-path)
+            config-source (vim.secure.read config-file-path)
 
             (ok config)
-            (pcall
-              fennel.eval
-              (vim.secure.read config-file-path)
-              {:filename config-file-path})]
+            (if
+              (core.nil? config-source)
+              (values false (.. config-file-path " is not trusted, refusing to compile."))
+
+              (or (str.blank? config-source)
+                  (= "{}" (str.trim config-source)))
+              (values true {})
+
+              (pcall
+                fennel.eval
+                config-source
+                {:filename config-file-path}))]
         (if ok
           (let [cfg (cfg-fn config)]
             (vim.api.nvim_create_autocmd

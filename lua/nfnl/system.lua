@@ -4,6 +4,7 @@ local fennel = autoload("nfnl.fennel")
 local core = autoload("nfnl.core")
 local fs = autoload("nfnl.fs")
 local nvim = autoload("nfnl.nvim")
+local str = autoload("nfnl.string")
 local notify = autoload("nfnl.notify")
 local config_file_name = ".nfnl"
 local default_config = {compiler_options = {}, source_file_patterns = {fs["join-path"]({"fnl", "**", "*.fnl"})}}
@@ -50,13 +51,21 @@ local function fennel_filetype_callback(ev)
   if rel_nfnl_path then
     local config_file_path = fs["join-path"]({cwd, rel_nfnl_path})
     local root_dir = fs.basename(config_file_path)
-    local ok, config = pcall(fennel.eval, vim.secure.read(config_file_path), {filename = config_file_path})
+    local config_source = vim.secure.read(config_file_path)
+    local ok, config = nil, nil
+    if core["nil?"](config_source) then
+      ok, config = false, (config_file_path .. " is not trusted, refusing to compile.")
+    elseif (str["blank?"](config_source) or ("{}" == str.trim(config_source))) then
+      ok, config = true, {}
+    else
+      ok, config = pcall(fennel.eval, config_source, {filename = config_file_path})
+    end
     if ok then
       local cfg = cfg_fn(config)
-      local function _5_(_241)
+      local function _6_(_241)
         return fs["join-path"]({root_dir, _241})
       end
-      return vim.api.nvim_create_autocmd({"BufWritePost"}, {group = vim.api.nvim_create_augroup(("nfnl-dir-" .. root_dir), {}), pattern = core.map(_5_, cfg({"source_file_patterns"})), callback = fennel_buf_write_post_callback_fn(root_dir, cfg)})
+      return vim.api.nvim_create_autocmd({"BufWritePost"}, {group = vim.api.nvim_create_augroup(("nfnl-dir-" .. root_dir), {}), pattern = core.map(_6_, cfg({"source_file_patterns"})), callback = fennel_buf_write_post_callback_fn(root_dir, cfg)})
     else
       return notify.error(config)
     end
