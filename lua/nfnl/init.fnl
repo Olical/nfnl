@@ -10,7 +10,12 @@
 (local default-config
   {;; Passed to fennel.compileString when your code is compiled.
    ;; See https://fennel-lang.org/api for more information.
-   :compiler_options {}})
+   :compiler_options {}
+
+   ;; A sequential table of patterns (autocmd pattern syntax) of files that
+   ;; should be compiled. This is used as configuration for the BufWritePost
+   ;; autocmd, so it'll only apply to buffers you're interested in.
+   :source_file_patterns [(fs.join-path ["lua" "**" "*.fnl"])]})
 
 (fn cfg-fn [t]
   "Builds a cfg fetcher for the config table t. Returns a function that takes a
@@ -35,34 +40,40 @@
     (or (core.nil? header)
         (not (core.nil? (header:find header-marker 1 true))))))
 
-(fn fennel-buf-write-post-callback-fn [root-dir config]
+(fn fnl-path->lua-path [fnl-path]
+  (-> fnl-path
+      (fs.replace-extension "lua")
+      (fs.replace-dirs "fnl" "lua")))
+
+(fn fennel-buf-write-post-callback-fn [root-dir cfg]
   "Builds a function to be called on buf write. Adheres to the config passed
   into this outer function."
 
-  (let [cfg (cfg-fn config)]
-    (fn [ev]
-      "Called when we write a Fennel file located under a directory containing a
-      .nfnl file. It compiles the Fennel to Lua and writes it into another file
-      according to the .nfnl file configuration."
+  (fn [ev]
+    "Called when we write a Fennel file located under a directory containing a
+    .nfnl file. It compiles the Fennel to Lua and writes it into another file
+    according to the .nfnl file configuration."
 
-      (let [file-name (. ev :file)
-            rel-file-name (file-name:sub (+ 2 (root-dir:len)))
-            destination-path (fs.replace-extension file-name "lua")
+    (let [file-name (. ev :file)
+          rel-file-name (file-name:sub (+ 2 (root-dir:len)))
+          destination-path (fnl-path->lua-path file-name)
 
-            (ok res)
-            (pcall
-              fennel.compileString
-              (nvim.get-buf-content-as-string (. ev :buf))
-              (core.merge
-                (cfg [:compiler_options])
-                {:filename file-name}))]
-        (if ok
-          (if (safe-target? destination-path)
+          (ok res)
+          (pcall
+            fennel.compileString
+            (nvim.get-buf-content-as-string (. ev :buf))
+            (core.merge
+              {:filename file-name}
+              (cfg [:compiler_options])))]
+      (if ok
+        (if (safe-target? destination-path)
+          (do
+            (fs.mkdirp (fs.basename destination-path))
             (core.spit
               destination-path
-              (with-header rel-file-name res))
-            (notify.warn destination-path " was not compiled by nfnl. Delete it manually if you wish to compile into this file."))
-          (notify.error res))))))
+              (with-header rel-file-name res)))
+          (notify.warn destination-path " was not compiled by nfnl. Delete it manually if you wish to compile into this file."))
+        (notify.error res)))))
 
 (fn fennel-filetype-callback [ev]
   "Called whenever we enter a Fennel file. It walks up the tree to find a .nfnl
@@ -85,11 +96,12 @@
               (vim.secure.read config-file-path)
               {:filename config-file-path})]
         (if ok
-          (vim.api.nvim_create_autocmd
-            ["BufWritePost"]
-            {:group (vim.api.nvim_create_augroup (.. "nfnl-dir-" root-dir) {})
-             :pattern (fs.join-path [root-dir "*.fnl"])
-             :callback (fennel-buf-write-post-callback-fn root-dir config)})
+          (let [cfg (cfg-fn config)]
+            (vim.api.nvim_create_autocmd
+              ["BufWritePost"]
+              {:group (vim.api.nvim_create_augroup (.. "nfnl-dir-" root-dir) {})
+               :pattern (core.map #(fs.join-path [root-dir $]) (cfg [:source_file_patterns]))
+               :callback (fennel-buf-write-post-callback-fn root-dir cfg)}))
           (notify.error config))))))
 
 (fn setup []
