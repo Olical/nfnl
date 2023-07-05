@@ -79,7 +79,7 @@
       -1)))
 
 (defn fnl->lua-path [fnl-path]
-  (str/replace (str (fs/strip-ext fnl-path) ".lua") #"/fnl/" "/lua/"))
+  (str/replace (str (fs/strip-ext fnl-path) ".lua") "/fnl/" "/lua/"))
 
 (defn compile-changed-fennel-files!
   "Find changed Fennel files that are newer than their Lua counterpart and compile them."
