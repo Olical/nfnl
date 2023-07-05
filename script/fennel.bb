@@ -78,8 +78,8 @@
     (catch Exception _e
       -1)))
 
-(defn fnl->lua-ext [fnl-path]
-  (str (fs/strip-ext fnl-path) ".lua"))
+(defn fnl->lua-path [fnl-path]
+  (str/replace (str (fs/strip-ext fnl-path) ".lua") #"/fnl/" "/lua/"))
 
 (defn compile-changed-fennel-files!
   "Find changed Fennel files that are newer than their Lua counterpart and compile them."
@@ -96,12 +96,12 @@
            (fs/delete lua-path)))
        (set/difference
         (set lua-paths)
-        (set (map fnl->lua-ext fnl-paths))
+        (set (map fnl->lua-path fnl-paths))
         (set (mapcat glob prune)))))
 
     (run!
      (fn [fnl-path]
-       (let [lua-path (fnl->lua-ext fnl-path)]
+       (let [lua-path (fnl->lua-path fnl-path)]
          (when (> (last-modified-time-ms-safe fnl-path)
                   (last-modified-time-ms-safe lua-path))
            (println "[compile]" fnl-path)
