@@ -17,8 +17,5 @@
       {:file (vim.fn.expand "%")
        :buf (vim.api.nvim_get_current_buf)})))
 
-(comment
-  (setup))
-
 {: setup
  :default-config system.default-config}

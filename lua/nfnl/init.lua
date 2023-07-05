@@ -9,5 +9,4 @@ local function setup()
     return nil
   end
 end
---[[ (setup) ]]
 return {setup = setup, ["default-config"] = system["default-config"]}
