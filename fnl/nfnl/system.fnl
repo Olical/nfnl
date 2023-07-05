@@ -79,7 +79,8 @@
 (fn load-config [dir]
   "Attempt to find and load the .nfnl config file relative to the given dir.
   Returns an empty table when there's issues or if there isn't a config file.
-  If there's some valid config you'll get {:config {...} :root-dir ...} back."
+  If there's some valid config you'll get table containing config, cfg (fn) and
+  root-dir back."
 
   (let [found (fs.findfile config-file-name (.. dir ";"))]
     (when found
@@ -102,7 +103,8 @@
                 {:filename config-file-path}))]
         (if ok
           {: config
-           : root-dir}
+           : root-dir
+           :cfg (cfg-fn config)}
           (do
             (notify.error config)
             {}))))))
@@ -117,15 +119,14 @@
 
   (let [file-path (fs.full-path (. ev :file))
         file-dir (fs.basename file-path)
-        {: config : root-dir} (load-config file-dir)]
+        {: config : root-dir : cfg} (load-config file-dir)]
 
     (when config
-      (let [cfg (cfg-fn config)]
-        (vim.api.nvim_create_autocmd
-          ["BufWritePost"]
-          {:group (vim.api.nvim_create_augroup (.. "nfnl-dir-" root-dir) {})
-           :pattern (core.map #(fs.join-path [root-dir $]) (cfg [:source_file_patterns]))
-           :callback (fennel-buf-write-post-callback-fn root-dir cfg)})))))
+      (vim.api.nvim_create_autocmd
+        ["BufWritePost"]
+        {:group (vim.api.nvim_create_augroup (.. "nfnl-dir-" root-dir) {})
+         :pattern (core.map #(fs.join-path [root-dir $]) (cfg [:source_file_patterns]))
+         :callback (fennel-buf-write-post-callback-fn root-dir cfg)}))))
 
 {: default-config
  : fennel-filetype-callback}

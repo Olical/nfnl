@@ -59,7 +59,7 @@ local function load_config(dir)
       ok, config = pcall(fennel.eval, config_source, {filename = config_file_path})
     end
     if ok then
-      return {config = config, ["root-dir"] = root_dir}
+      return {config = config, ["root-dir"] = root_dir, cfg = cfg_fn(config)}
     else
       notify.error(config)
       return {}
@@ -74,8 +74,8 @@ local function fennel_filetype_callback(ev)
   local _let_8_ = load_config(file_dir)
   local config = _let_8_["config"]
   local root_dir = _let_8_["root-dir"]
+  local cfg = _let_8_["cfg"]
   if config then
-    local cfg = cfg_fn(config)
     local function _9_(_241)
       return fs["join-path"]({root_dir, _241})
     end
