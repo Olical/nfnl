@@ -15,7 +15,7 @@
    ;; A sequential table of patterns (autocmd pattern syntax) of files that
    ;; should be compiled. This is used as configuration for the BufWritePost
    ;; autocmd, so it'll only apply to buffers you're interested in.
-   :source_file_patterns [(fs.join-path ["lua" "**" "*.fnl"])]})
+   :source_file_patterns [(fs.join-path ["fnl" "**" "*.fnl"])]})
 
 (fn cfg-fn [t]
   "Builds a cfg fetcher for the config table t. Returns a function that takes a

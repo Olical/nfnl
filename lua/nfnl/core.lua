@@ -1,4 +1,4 @@
--- [nfnl] Compiled from lua/nfnl/core.fnl by https://github.com/Olical/nfnl, do not edit.
+-- [nfnl] Compiled from fnl/nfnl/core.fnl by https://github.com/Olical/nfnl, do not edit.
 local autoload = require("nfnl.autoload")
 local fennel = autoload("nfnl.fennel")
 local function rand(n)

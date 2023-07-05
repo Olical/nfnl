@@ -1,4 +1,4 @@
--- [nfnl] Compiled from lua/nfnl/nvim.fnl by https://github.com/Olical/nfnl, do not edit.
+-- [nfnl] Compiled from fnl/nfnl/nvim.fnl by https://github.com/Olical/nfnl, do not edit.
 local autoload = require("nfnl.autoload")
 local str = autoload("nfnl.string")
 local function get_buf_content_as_string(buf)

@@ -1,4 +1,4 @@
--- [nfnl] Compiled from lua/nfnl/string.fnl by https://github.com/Olical/nfnl, do not edit.
+-- [nfnl] Compiled from fnl/nfnl/string.fnl by https://github.com/Olical/nfnl, do not edit.
 local autoload = require("nfnl.autoload")
 local core = autoload("nfnl.core")
 local function join(...)

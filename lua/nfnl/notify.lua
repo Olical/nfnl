@@ -1,4 +1,4 @@
--- [nfnl] Compiled from lua/nfnl/notify.fnl by https://github.com/Olical/nfnl, do not edit.
+-- [nfnl] Compiled from fnl/nfnl/notify.fnl by https://github.com/Olical/nfnl, do not edit.
 local autoload = require("nfnl.autoload")
 local core = autoload("nfnl.core")
 local function notify(level, ...)

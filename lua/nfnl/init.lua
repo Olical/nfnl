@@ -1,4 +1,4 @@
--- [nfnl] Compiled from lua/nfnl/init.fnl by https://github.com/Olical/nfnl, do not edit.
+-- [nfnl] Compiled from fnl/nfnl/init.fnl by https://github.com/Olical/nfnl, do not edit.
 local autoload = require("nfnl.autoload")
 local fennel = autoload("nfnl.fennel")
 local core = autoload("nfnl.core")
@@ -6,7 +6,7 @@ local fs = autoload("nfnl.fs")
 local nvim = autoload("nfnl.nvim")
 local notify = autoload("nfnl.notify")
 local config_file_name = ".nfnl"
-local default_config = {compiler_options = {}, source_file_patterns = {fs["join-path"]({"lua", "**", "*.fnl"})}}
+local default_config = {compiler_options = {}, source_file_patterns = {fs["join-path"]({"fnl", "**", "*.fnl"})}}
 local function cfg_fn(t)
   local function _1_(path)
     return core["get-in"](t, path, core["get-in"](default_config, path))
