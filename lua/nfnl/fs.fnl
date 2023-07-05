@@ -14,6 +14,12 @@
 (fn replace-extension [path ext]
   (.. (file-name-root path) (.. "." ext)))
 
+(fn read-first-line [path]
+  (let [f (io.open path)
+        line (when f (f:read))]
+    (when f (f:close))
+    line))
+
 (fn relglob [dir expr]
   "Glob all files under dir matching the expression and return the paths
   relative to the dir argument."
@@ -62,4 +68,5 @@
  : path-sep
  : findfile
  : split-path
- : join-path}
+ : join-path
+ : read-first-line}

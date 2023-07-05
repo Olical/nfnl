@@ -1,3 +1,4 @@
+-- [nfnl] Compiled from lua/nfnl/autoload.fnl by https://github.com/Olical/nfnl, do not edit.
 local module_key = "nfnl/autoload-module"
 local enabled_key = "nfnl/autoload-enabled?"
 local function autoload(name)

@@ -115,7 +115,7 @@
                        (notify! (str fnl-path " compilation failed") (::err lua))))
                    (println "[error]" lua)))
                (when (not dry)
-                 (spit lua-path lua)))))))
+                 (spit lua-path (str "-- [nfnl] Compiled by bootstrap script.\n" lua))))))))
      fnl-paths)))
 
 (defn print-fennel-file-paths! [{:keys [root] :or {root "."}}]

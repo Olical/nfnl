@@ -1,3 +1,4 @@
+-- [nfnl] Compiled from lua/nfnl/fs.fnl by https://github.com/Olical/nfnl, do not edit.
 local autoload = require("nfnl.autoload")
 local core = autoload("nfnl.core")
 local str = autoload("nfnl.string")
@@ -13,12 +14,26 @@ end
 local function replace_extension(path, ext)
   return (file_name_root(path) .. ("." .. ext))
 end
+local function read_first_line(path)
+  local f = io.open(path)
+  local line
+  if f then
+    line = f:read()
+  else
+    line = nil
+  end
+  if f then
+    f:close()
+  else
+  end
+  return line
+end
 local function relglob(dir, expr)
   local dir_len = core.inc(string.len(dir))
-  local function _1_(_241)
+  local function _3_(_241)
     return string.sub(_241, dir_len)
   end
-  return core.map(_1_, vim.fn.globpath(dir, expr, true, true))
+  return core.map(_3_, vim.fn.globpath(dir, expr, true, true))
 end
 local function glob_dir_newer_3f(a_dir, b_dir, expr, b_dir_path_fn)
   local newer_3f = false
@@ -48,12 +63,12 @@ local function findfile(name, path)
   end
 end
 local function split_path(path)
-  local function _5_(_241)
+  local function _7_(_241)
     return not core["empty?"](_241)
   end
-  return core.filter(_5_, str.split(path, path_sep))
+  return core.filter(_7_, str.split(path, path_sep))
 end
 local function join_path(parts)
   return str.join(path_sep, core.concat(parts))
 end
-return {basename = basename, ["file-name-root"] = file_name_root, mkdirp = mkdirp, ["replace-extension"] = replace_extension, relglob = relglob, ["glob-dir-newer?"] = glob_dir_newer_3f, ["path-sep"] = path_sep, findfile = findfile, ["split-path"] = split_path, ["join-path"] = join_path}
+return {basename = basename, ["file-name-root"] = file_name_root, mkdirp = mkdirp, ["replace-extension"] = replace_extension, relglob = relglob, ["glob-dir-newer?"] = glob_dir_newer_3f, ["path-sep"] = path_sep, findfile = findfile, ["split-path"] = split_path, ["join-path"] = join_path, ["read-first-line"] = read_first_line}
