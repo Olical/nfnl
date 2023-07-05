@@ -2,16 +2,12 @@
 (local fennel (autoload :nfnl.fennel))
 (local core (autoload :nfnl.core))
 (local fs (autoload :nfnl.fs))
-(local str (autoload :nfnl.string))
-
-(fn get-buf-content-as-string [buf]
-  (->> (vim.api.nvim_buf_get_lines (or buf 0) 0 -1 false)
-       (str.join "\n")))
+(local nvim (autoload :nfnl.nvim))
 
 (fn buf-write-post-callback [ev]
   (let [(ok res) (pcall
                    fennel.compileString
-                   (get-buf-content-as-string (. ev :buf))
+                   (nvim.get-buf-content-as-string (. ev :buf))
                    {:filename (. ev :file)})]
     (if ok
       (core.spit (fs.replace-extension (. ev :file) "lua") res)

@@ -2,12 +2,9 @@ local autoload = require("nfnl.autoload")
 local fennel = autoload("nfnl.fennel")
 local core = autoload("nfnl.core")
 local fs = autoload("nfnl.fs")
-local str = autoload("nfnl.string")
-local function get_buf_content_as_string(buf)
-  return str.join("\n", vim.api.nvim_buf_get_lines((buf or 0), 0, -1, false))
-end
+local nvim = autoload("nfnl.nvim")
 local function buf_write_post_callback(ev)
-  local ok, res = pcall(fennel.compileString, get_buf_content_as_string(ev.buf), {filename = ev.file})
+  local ok, res = pcall(fennel.compileString, nvim["get-buf-content-as-string"](ev.buf), {filename = ev.file})
   if ok then
     return core.spit(fs["replace-extension"](ev.file, "lua"), res)
   else
