@@ -1,5 +1,6 @@
 local autoload = require("nfnl.autoload")
 local core = autoload("nfnl.core")
+local str = autoload("nfnl.string")
 local function basename(path)
   return vim.fn.fnamemodify(path, ":h")
 end
@@ -38,4 +39,21 @@ do
     path_sep = "\\"
   end
 end
-return {basename = basename, ["file-name-root"] = file_name_root, mkdirp = mkdirp, ["replace-extension"] = replace_extension, relglob = relglob, ["glob-dir-newer?"] = glob_dir_newer_3f, ["path-sep"] = path_sep}
+local function findfile(name, path)
+  local res = vim.fn.findfile(name, path)
+  if not core["empty?"](res) then
+    return res
+  else
+    return nil
+  end
+end
+local function split_path(path)
+  local function _5_(_241)
+    return not core["empty?"](_241)
+  end
+  return core.filter(_5_, str.split(path, path_sep))
+end
+local function join_path(parts)
+  return str.join(path_sep, core.concat(parts))
+end
+return {basename = basename, ["file-name-root"] = file_name_root, mkdirp = mkdirp, ["replace-extension"] = replace_extension, relglob = relglob, ["glob-dir-newer?"] = glob_dir_newer_3f, ["path-sep"] = path_sep, findfile = findfile, ["split-path"] = split_path, ["join-path"] = join_path}

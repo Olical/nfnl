@@ -1,5 +1,6 @@
 (local autoload (require :nfnl.autoload))
 (local core (autoload :nfnl.core))
+(local str (autoload :nfnl.string))
 
 (fn basename [path]
   (vim.fn.fnamemodify path ":h"))
@@ -38,10 +39,27 @@
       "/"
       "\\")))
 
+(fn findfile [name path]
+  "Wrapper around Neovim's findfile() that returns nil
+  instead of an empty string."
+  (let [res (vim.fn.findfile name path)]
+    (when (not (core.empty? res))
+      res)))
+
+(fn split-path [path]
+  (->> (str.split path path-sep)
+       (core.filter #(not (core.empty? $)))))
+
+(fn join-path [parts]
+  (str.join path-sep (core.concat parts)))
+
 {: basename
  : file-name-root
  : mkdirp
  : replace-extension
  : relglob
  : glob-dir-newer?
- : path-sep}
+ : path-sep
+ : findfile
+ : split-path
+ : join-path}
