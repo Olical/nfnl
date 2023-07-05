@@ -44,12 +44,10 @@ local function fennel_buf_write_post_callback_fn(root_dir, cfg)
   end
   return _2_
 end
-local function fennel_filetype_callback(ev)
-  local file_path = fs["full-path"](ev.file)
-  local file_dir = fs.basename(file_path)
-  local rel_nfnl_path = fs.findfile(config_file_name, (file_dir .. ";"))
-  if rel_nfnl_path then
-    local config_file_path = fs["full-path"](rel_nfnl_path)
+local function load_config(dir)
+  local found = fs.findfile(config_file_name, (dir .. ";"))
+  if found then
+    local config_file_path = fs["full-path"](found)
     local root_dir = fs.basename(config_file_path)
     local config_source = vim.secure.read(config_file_path)
     local ok, config = nil, nil
@@ -61,14 +59,27 @@ local function fennel_filetype_callback(ev)
       ok, config = pcall(fennel.eval, config_source, {filename = config_file_path})
     end
     if ok then
-      local cfg = cfg_fn(config)
-      local function _6_(_241)
-        return fs["join-path"]({root_dir, _241})
-      end
-      return vim.api.nvim_create_autocmd({"BufWritePost"}, {group = vim.api.nvim_create_augroup(("nfnl-dir-" .. root_dir), {}), pattern = core.map(_6_, cfg({"source_file_patterns"})), callback = fennel_buf_write_post_callback_fn(root_dir, cfg)})
+      return {config = config, ["root-dir"] = root_dir}
     else
-      return notify.error(config)
+      notify.error(config)
+      return {}
     end
+  else
+    return nil
+  end
+end
+local function fennel_filetype_callback(ev)
+  local file_path = fs["full-path"](ev.file)
+  local file_dir = fs.basename(file_path)
+  local _let_8_ = load_config(file_dir)
+  local config = _let_8_["config"]
+  local root_dir = _let_8_["root-dir"]
+  if config then
+    local cfg = cfg_fn(config)
+    local function _9_(_241)
+      return fs["join-path"]({root_dir, _241})
+    end
+    return vim.api.nvim_create_autocmd({"BufWritePost"}, {group = vim.api.nvim_create_augroup(("nfnl-dir-" .. root_dir), {}), pattern = core.map(_9_, cfg({"source_file_patterns"})), callback = fennel_buf_write_post_callback_fn(root_dir, cfg)})
   else
     return nil
   end

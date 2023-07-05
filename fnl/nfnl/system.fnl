@@ -13,7 +13,7 @@
    ;; See https://fennel-lang.org/api for more information.
    :compiler_options {}
 
-   ;; A sequential table of patterns (autocmd pattern syntax) of files that
+   ;; A list of glob patterns (autocmd pattern syntax) of files that
    ;; should be compiled. This is used as configuration for the BufWritePost
    ;; autocmd, so it'll only apply to buffers you're interested in.
    :source_file_patterns [(fs.join-path ["fnl" "**" "*.fnl"])]})
@@ -76,19 +76,14 @@
           (notify.warn destination-path " was not compiled by nfnl. Delete it manually if you wish to compile into this file."))
         (notify.error res)))))
 
-(fn fennel-filetype-callback [ev]
-  "Called whenever we enter a Fennel file. It walks up the tree to find a .nfnl
-  (which can contain configuration). If found, we initialise the compiler
-  autocmd for the directory containing the .nfnl file.
+(fn load-config [dir]
+  "Attempt to find and load the .nfnl config file relative to the given dir.
+  Returns an empty table when there's issues or if there isn't a config file.
+  If there's some valid config you'll get {:config {...} :root-dir ...} back."
 
-  This allows us to edit multiple projects in different directories with
-  different .nfnl configuration, wonderful!"
-
-  (let [file-path (fs.full-path (. ev :file))
-        file-dir (fs.basename file-path)
-        rel-nfnl-path (fs.findfile config-file-name (.. file-dir ";"))]
-    (when rel-nfnl-path
-      (let [config-file-path (fs.full-path rel-nfnl-path)
+  (let [found (fs.findfile config-file-name (.. dir ";"))]
+    (when found
+      (let [config-file-path (fs.full-path found)
             root-dir (fs.basename config-file-path)
             config-source (vim.secure.read config-file-path)
 
@@ -106,13 +101,31 @@
                 config-source
                 {:filename config-file-path}))]
         (if ok
-          (let [cfg (cfg-fn config)]
-            (vim.api.nvim_create_autocmd
-              ["BufWritePost"]
-              {:group (vim.api.nvim_create_augroup (.. "nfnl-dir-" root-dir) {})
-               :pattern (core.map #(fs.join-path [root-dir $]) (cfg [:source_file_patterns]))
-               :callback (fennel-buf-write-post-callback-fn root-dir cfg)}))
-          (notify.error config))))))
+          {: config
+           : root-dir}
+          (do
+            (notify.error config)
+            {}))))))
+
+(fn fennel-filetype-callback [ev]
+  "Called whenever we enter a Fennel file. It walks up the tree to find a .nfnl
+  (which can contain configuration). If found, we initialise the compiler
+  autocmd for the directory containing the .nfnl file.
+
+  This allows us to edit multiple projects in different directories with
+  different .nfnl configuration, wonderful!"
+
+  (let [file-path (fs.full-path (. ev :file))
+        file-dir (fs.basename file-path)
+        {: config : root-dir} (load-config file-dir)]
+
+    (when config
+      (let [cfg (cfg-fn config)]
+        (vim.api.nvim_create_autocmd
+          ["BufWritePost"]
+          {:group (vim.api.nvim_create_augroup (.. "nfnl-dir-" root-dir) {})
+           :pattern (core.map #(fs.join-path [root-dir $]) (cfg [:source_file_patterns]))
+           :callback (fennel-buf-write-post-callback-fn root-dir cfg)})))))
 
 {: default-config
  : fennel-filetype-callback}
