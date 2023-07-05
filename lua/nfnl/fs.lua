@@ -17,12 +17,12 @@ end
 local function read_first_line(path)
   local f = io.open(path)
   local line
-  if f then
+  if core["table?"](f) then
     line = f:read()
   else
     line = nil
   end
-  if f then
+  if core["table?"](f) then
     f:close()
   else
   end
@@ -63,12 +63,19 @@ local function findfile(name, path)
   end
 end
 local function split_path(path)
-  local function _7_(_241)
-    return not core["empty?"](_241)
-  end
-  return core.filter(_7_, str.split(path, path_sep))
+  return str.split(path, path_sep)
 end
 local function join_path(parts)
   return str.join(path_sep, core.concat(parts))
 end
-return {basename = basename, ["file-name-root"] = file_name_root, mkdirp = mkdirp, ["replace-extension"] = replace_extension, relglob = relglob, ["glob-dir-newer?"] = glob_dir_newer_3f, ["path-sep"] = path_sep, findfile = findfile, ["split-path"] = split_path, ["join-path"] = join_path, ["read-first-line"] = read_first_line}
+local function replace_dirs(path, from, to)
+  local function _7_(segment)
+    if (from == segment) then
+      return to
+    else
+      return segment
+    end
+  end
+  return join_path(core.map(_7_, split_path(path)))
+end
+return {basename = basename, ["file-name-root"] = file_name_root, mkdirp = mkdirp, ["replace-extension"] = replace_extension, relglob = relglob, ["glob-dir-newer?"] = glob_dir_newer_3f, ["path-sep"] = path_sep, findfile = findfile, ["split-path"] = split_path, ["join-path"] = join_path, ["read-first-line"] = read_first_line, ["replace-dirs"] = replace_dirs}

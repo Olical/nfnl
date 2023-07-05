@@ -16,8 +16,8 @@
 
 (fn read-first-line [path]
   (let [f (io.open path)
-        line (when f (f:read))]
-    (when f (f:close))
+        line (when (core.table? f) (f:read))]
+    (when (core.table? f) (f:close))
     line))
 
 (fn relglob [dir expr]
@@ -53,11 +53,19 @@
       res)))
 
 (fn split-path [path]
-  (->> (str.split path path-sep)
-       (core.filter #(not (core.empty? $)))))
+  (str.split path path-sep))
 
 (fn join-path [parts]
   (str.join path-sep (core.concat parts)))
+
+(fn replace-dirs [path from to]
+  (->> (split-path path)
+       (core.map
+         (fn [segment]
+           (if (= from segment)
+             to
+             segment)))
+       (join-path)))
 
 {: basename
  : file-name-root
@@ -69,4 +77,5 @@
  : findfile
  : split-path
  : join-path
- : read-first-line}
+ : read-first-line
+ : replace-dirs}
