@@ -45,11 +45,11 @@ local function fennel_buf_write_post_callback_fn(root_dir, cfg)
   return _2_
 end
 local function fennel_filetype_callback(ev)
-  local cwd = vim.fn.getcwd()
-  local file_dir = fs["join-path"]({cwd, fs.basename(ev.file)})
+  local file_path = fs["full-path"](ev.file)
+  local file_dir = fs.basename(file_path)
   local rel_nfnl_path = fs.findfile(config_file_name, (file_dir .. ";"))
   if rel_nfnl_path then
-    local config_file_path = fs["join-path"]({cwd, rel_nfnl_path})
+    local config_file_path = fs["full-path"](rel_nfnl_path)
     local root_dir = fs.basename(config_file_path)
     local config_source = vim.secure.read(config_file_path)
     local ok, config = nil, nil

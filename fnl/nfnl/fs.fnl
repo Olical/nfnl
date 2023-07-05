@@ -8,6 +8,9 @@
 (fn file-name-root [path]
   (vim.fn.fnamemodify path ":r"))
 
+(fn full-path [path]
+  (vim.fn.fnamemodify path ":p"))
+
 (fn mkdirp [dir]
   (vim.fn.mkdir dir "p"))
 
@@ -69,6 +72,7 @@
 
 {: basename
  : file-name-root
+ : full-path
  : mkdirp
  : replace-extension
  : relglob

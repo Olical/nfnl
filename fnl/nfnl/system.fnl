@@ -84,11 +84,11 @@
   This allows us to edit multiple projects in different directories with
   different .nfnl configuration, wonderful!"
 
-  (let [cwd (vim.fn.getcwd)
-        file-dir (fs.join-path [cwd (fs.basename (. ev :file))])
+  (let [file-path (fs.full-path (. ev :file))
+        file-dir (fs.basename file-path)
         rel-nfnl-path (fs.findfile config-file-name (.. file-dir ";"))]
     (when rel-nfnl-path
-      (let [config-file-path (fs.join-path [cwd rel-nfnl-path])
+      (let [config-file-path (fs.full-path rel-nfnl-path)
             root-dir (fs.basename config-file-path)
             config-source (vim.secure.read config-file-path)
 
