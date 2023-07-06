@@ -5,6 +5,7 @@ FNL_NAME=fennel-$FNL_VERSION
 
 # Executable binary
 curl https://fennel-lang.org/downloads/$FNL_NAME >script/fennel.lua
+chmod +x script/fennel.lua
 
 # Compiler / library
 curl https://fennel-lang.org/downloads/$FNL_NAME.tar.gz | tar -zxv $FNL_NAME/fennel.lua
