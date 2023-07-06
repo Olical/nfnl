@@ -39,8 +39,32 @@
           (fs.mkdirp (fs.basename destination-path))
           (core.spit
             destination-path
-            (with-header rel-file-name res)))
-        (notify.warn destination-path " was not compiled by nfnl. Delete it manually if you wish to compile into this file."))
-      (notify.error res))))
+            (with-header rel-file-name res))
+          {:status :ok
+           :source-path path
+           : destination-path})
+        (do
+          (notify.warn destination-path " was not compiled by nfnl. Delete it manually if you wish to compile into this file.")
+          {:status :destination-exists
+           :source-path path
+           : destination-path}))
+      (do
+        (notify.error res)
+        {:status :compilation-error
+         :error res
+         :source-path path
+         : destination-path}))))
 
-{: into-file}
+(fn all-files [{: root-dir : cfg}]
+  (->> (core.mapcat #(fs.relglob root-dir $) (cfg [:source_file_patterns]))
+       (core.map fs.full-path)
+       (core.map
+         (fn [path]
+           (into-file
+             {: root-dir
+              : path
+              : cfg
+              :source (core.slurp path)})))))
+
+{: into-file
+ : all-files}

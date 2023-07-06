@@ -32,7 +32,7 @@ local function read_first_line(path)
   return line
 end
 local function relglob(dir, expr)
-  local dir_len = core.inc(string.len(dir))
+  local dir_len = (2 + string.len(dir))
   local function _3_(_241)
     return string.sub(_241, dir_len)
   end

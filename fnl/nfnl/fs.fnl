@@ -26,7 +26,7 @@
 (fn relglob [dir expr]
   "Glob all files under dir matching the expression and return the paths
   relative to the dir argument."
-  (let [dir-len (core.inc (string.len dir))]
+  (let [dir-len (+ 2 (string.len dir))]
     (->> (vim.fn.globpath dir expr true true)
          (core.map #(string.sub $1 dir-len)))))
 

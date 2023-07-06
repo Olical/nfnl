@@ -27,12 +27,27 @@ local function into_file(_1_)
   if ok then
     if safe_target_3f(destination_path) then
       fs.mkdirp(fs.basename(destination_path))
-      return core.spit(destination_path, with_header(rel_file_name, res))
+      core.spit(destination_path, with_header(rel_file_name, res))
+      return {status = "ok", ["source-path"] = path, ["destination-path"] = destination_path}
     else
-      return notify.warn(destination_path, " was not compiled by nfnl. Delete it manually if you wish to compile into this file.")
+      notify.warn(destination_path, " was not compiled by nfnl. Delete it manually if you wish to compile into this file.")
+      return {status = "destination-exists", ["source-path"] = path, ["destination-path"] = destination_path}
     end
   else
-    return notify.error(res)
+    notify.error(res)
+    return {status = "compilation-error", error = res, ["source-path"] = path, ["destination-path"] = destination_path}
   end
 end
-return {["into-file"] = into_file}
+local function all_files(_5_)
+  local _arg_6_ = _5_
+  local root_dir = _arg_6_["root-dir"]
+  local cfg = _arg_6_["cfg"]
+  local function _7_(path)
+    return into_file({["root-dir"] = root_dir, path = path, cfg = cfg, source = core.slurp(path)})
+  end
+  local function _8_(_241)
+    return fs.relglob(root_dir, _241)
+  end
+  return core.map(_7_, core.map(fs["full-path"], core.mapcat(_8_, cfg({"source_file_patterns"}))))
+end
+return {["into-file"] = into_file, ["all-files"] = all_files}
