@@ -79,7 +79,7 @@
       -1)))
 
 (defn fnl->lua-path [fnl-path]
-  (str/replace (str (fs/strip-ext fnl-path) ".lua") "/fnl/" "/lua/"))
+  (str/replace (str (fs/strip-ext fnl-path) ".lua") #"^fnl/" "lua/"))
 
 (defn compile-changed-fennel-files!
   "Find changed Fennel files that are newer than their Lua counterpart and compile them."
@@ -115,7 +115,7 @@
                        (notify! (str fnl-path " compilation failed") (::err lua))))
                    (println "[error]" lua)))
                (when (not dry)
-                 (spit lua-path (str "-- [nfnl] Compiled by bootstrap script.\n" lua))))))))
+                 (spit lua-path (str "-- [nfnl] Compiled from " fnl-path " by https://github.com/Olical/nfnl, do not edit.\n" lua))))))))
      fnl-paths)))
 
 (defn print-fennel-file-paths! [{:keys [root] :or {root "."}}]
