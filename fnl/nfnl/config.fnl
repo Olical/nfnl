@@ -12,6 +12,24 @@
    ;; See https://fennel-lang.org/api for more information.
    :compiler_options {}
 
+   ;; String to set the compiler's fennel.path to before compilation.
+   :fennel_path (str.join
+                  ";"
+                  ["./?.fnl"
+                   "./?/init.fnl"
+                   "./fnl/?.fnl"
+                   "./fnl/?/init.fnl"])
+
+   ;; String to set the compiler's fennel.macro-path to before compilation.
+   :fennel_macro_path (str.join
+                        ";"
+                        ["./?.fnl"
+                         "./?/init-macros.fnl"
+                         "./?/init.fnl"
+                         "./fnl/?.fnl"
+                         "./fnl/?/init-macros.fnl"
+                         "./fnl/?/init.fnl"])
+
    ;; A list of glob patterns (autocmd pattern syntax) of files that
    ;; should be compiled. This is used as configuration for the BufWritePost
    ;; autocmd, so it'll only apply to buffers you're interested in.
@@ -60,4 +78,5 @@
             (notify.error config)
             {}))))))
 
-{: find-and-load}
+{: find-and-load
+ : default-config}

@@ -4,6 +4,8 @@
 (local fennel (autoload :nfnl.fennel))
 (local notify (autoload :nfnl.notify))
 
+(local mod {})
+
 (local header-marker "[nfnl]")
 
 (fn with-header [file src]
@@ -22,49 +24,64 @@
       (fs.replace-extension "lua")
       (fs.replace-dirs "fnl" "lua")))
 
-(fn into-file [{: root-dir : path : cfg : source}]
-  (let [rel-file-name (path:sub (+ 2 (root-dir:len)))
-        destination-path (fnl-path->lua-path path)
+(fn macro-source? [source]
+  (string.find source "%s*;+%s*%[nfnl%-macro%]"))
 
-        (ok res)
-        (pcall
-          fennel.compileString
-          source
-          (core.merge
-            {:filename path}
-            (cfg [:compiler_options])))]
-    (if ok
-      (if (safe-target? destination-path)
-        (do
-          (fs.mkdirp (fs.basename destination-path))
-          (core.spit
-            destination-path
-            (.. (with-header rel-file-name res) "\n"))
-          {:status :ok
-           :source-path path
-           : destination-path})
-        (do
-          (notify.warn destination-path " was not compiled by nfnl. Delete it manually if you wish to compile into this file.")
-          {:status :destination-exists
-           :source-path path
-           : destination-path}))
-      (do
-        (notify.error res)
-        {:status :compilation-error
-         :error res
-         :source-path path
-         : destination-path}))))
+(fn mod.into-file [{: root-dir : path : cfg : source : batch?}]
+  (let [macro? (macro-source? source)]
+    (if
+      (and macro? batch?)
+      {:status :macros-are-not-compiled
+       :source-path path}
 
-(fn all-files [{: root-dir : cfg}]
+      macro?
+      (mod.all-files {: root-dir : cfg})
+
+      (let [rel-file-name (path:sub (+ 2 (root-dir:len)))
+            destination-path (fnl-path->lua-path path)
+
+            (ok res)
+            (do
+              (set fennel.path (cfg [:fennel_path]))
+              (set fennel.macro-path (cfg [:fennel_macro_path]))
+              (pcall
+                fennel.compileString
+                source
+                (core.merge
+                  {:filename path}
+                  (cfg [:compiler_options]))))]
+        (if ok
+          (if (safe-target? destination-path)
+            (do
+              (fs.mkdirp (fs.basename destination-path))
+              (core.spit
+                destination-path
+                (.. (with-header rel-file-name res) "\n"))
+              {:status :ok
+               :source-path path
+               : destination-path})
+            (do
+              (notify.warn destination-path " was not compiled by nfnl. Delete it manually if you wish to compile into this file.")
+              {:status :destination-exists
+               :source-path path
+               : destination-path}))
+          (do
+            (notify.error res)
+            {:status :compilation-error
+             :error res
+             :source-path path
+             : destination-path}))))))
+
+(fn mod.all-files [{: root-dir : cfg}]
   (->> (core.mapcat #(fs.relglob root-dir $) (cfg [:source_file_patterns]))
        (core.map fs.full-path)
        (core.map
          (fn [path]
-           (into-file
+           (mod.into-file
              {: root-dir
               : path
               : cfg
-              :source (core.slurp path)})))))
+              :source (core.slurp path)
+              :batch? true})))))
 
-{: into-file
- : all-files}
+mod
