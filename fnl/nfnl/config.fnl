@@ -8,19 +8,13 @@
 (local config-file-name ".nfnl.fnl")
 
 (local default-config
-  {;; Passed to fennel.compileString when your code is compiled.
-   ;; See https://fennel-lang.org/api for more information.
-   :compiler-options {}
-
-   ;; String to set the compiler's fennel.path to before compilation.
+  {:compiler-options {}
    :fennel-path (str.join
                   ";"
                   ["./?.fnl"
                    "./?/init.fnl"
                    "./fnl/?.fnl"
                    "./fnl/?/init.fnl"])
-
-   ;; String to set the compiler's fennel.macro-path to before compilation.
    :fennel-macro-path (str.join
                         ";"
                         ["./?.fnl"
@@ -29,10 +23,6 @@
                          "./fnl/?.fnl"
                          "./fnl/?/init-macros.fnl"
                          "./fnl/?/init.fnl"])
-
-   ;; A list of glob patterns (autocmd pattern syntax) of files that
-   ;; should be compiled. This is used as configuration for the BufWritePost
-   ;; autocmd, so it'll only apply to buffers you're interested in.
    :source-file-patterns [(fs.join-path ["fnl" "**" "*.fnl"])]})
 
 (fn cfg-fn [t]
