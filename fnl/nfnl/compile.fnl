@@ -42,14 +42,14 @@
 
             (ok res)
             (do
-              (set fennel.path (cfg [:fennel_path]))
-              (set fennel.macro-path (cfg [:fennel_macro_path]))
+              (set fennel.path (cfg [:fennel-path]))
+              (set fennel.macro-path (cfg [:fennel-macro-path]))
               (pcall
                 fennel.compileString
                 source
                 (core.merge
                   {:filename path}
-                  (cfg [:compiler_options]))))]
+                  (cfg [:compiler-options]))))]
         (if ok
           (if (safe-target? destination-path)
             (do
@@ -73,7 +73,7 @@
              : destination-path}))))))
 
 (fn mod.all-files [{: root-dir : cfg}]
-  (->> (core.mapcat #(fs.relglob root-dir $) (cfg [:source_file_patterns]))
+  (->> (core.mapcat #(fs.relglob root-dir $) (cfg [:source-file-patterns]))
        (core.map fs.full-path)
        (core.map
          (fn [path]

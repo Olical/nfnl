@@ -6,7 +6,7 @@ local str = autoload("nfnl.string")
 local fennel = autoload("nfnl.fennel")
 local notify = autoload("nfnl.notify")
 local config_file_name = ".nfnl"
-local default_config = {compiler_options = {}, fennel_path = str.join(";", {"./?.fnl", "./?/init.fnl", "./fnl/?.fnl", "./fnl/?/init.fnl"}), fennel_macro_path = str.join(";", {"./?.fnl", "./?/init-macros.fnl", "./?/init.fnl", "./fnl/?.fnl", "./fnl/?/init-macros.fnl", "./fnl/?/init.fnl"}), source_file_patterns = {fs["join-path"]({"fnl", "**", "*.fnl"})}}
+local default_config = {["compiler-options"] = {}, ["fennel-path"] = str.join(";", {"./?.fnl", "./?/init.fnl", "./fnl/?.fnl", "./fnl/?/init.fnl"}), ["fennel-macro-path"] = str.join(";", {"./?.fnl", "./?/init-macros.fnl", "./?/init.fnl", "./fnl/?.fnl", "./fnl/?/init-macros.fnl", "./fnl/?/init.fnl"}), ["source-file-patterns"] = {fs["join-path"]({"fnl", "**", "*.fnl"})}}
 local function cfg_fn(t)
   local function _1_(path)
     return core["get-in"](t, path, core["get-in"](default_config, path))

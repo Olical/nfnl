@@ -36,9 +36,9 @@ mod["into-file"] = function(_1_)
     local destination_path = fnl_path__3elua_path(path)
     local ok, res = nil, nil
     do
-      fennel.path = cfg({"fennel_path"})
-      fennel["macro-path"] = cfg({"fennel_macro_path"})
-      ok, res = pcall(fennel.compileString, source, core.merge({filename = path}, cfg({"compiler_options"})))
+      fennel.path = cfg({"fennel-path"})
+      fennel["macro-path"] = cfg({"fennel-macro-path"})
+      ok, res = pcall(fennel.compileString, source, core.merge({filename = path}, cfg({"compiler-options"})))
     end
     if ok then
       if safe_target_3f(destination_path) then
@@ -65,6 +65,6 @@ mod["all-files"] = function(_6_)
   local function _9_(_241)
     return fs.relglob(root_dir, _241)
   end
-  return core.map(_8_, core.map(fs["full-path"], core.mapcat(_9_, cfg({"source_file_patterns"}))))
+  return core.map(_8_, core.map(fs["full-path"], core.mapcat(_9_, cfg({"source-file-patterns"}))))
 end
 return mod

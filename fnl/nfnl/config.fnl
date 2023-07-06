@@ -10,10 +10,10 @@
 (local default-config
   {;; Passed to fennel.compileString when your code is compiled.
    ;; See https://fennel-lang.org/api for more information.
-   :compiler_options {}
+   :compiler-options {}
 
    ;; String to set the compiler's fennel.path to before compilation.
-   :fennel_path (str.join
+   :fennel-path (str.join
                   ";"
                   ["./?.fnl"
                    "./?/init.fnl"
@@ -21,7 +21,7 @@
                    "./fnl/?/init.fnl"])
 
    ;; String to set the compiler's fennel.macro-path to before compilation.
-   :fennel_macro_path (str.join
+   :fennel-macro-path (str.join
                         ";"
                         ["./?.fnl"
                          "./?/init-macros.fnl"
@@ -33,7 +33,7 @@
    ;; A list of glob patterns (autocmd pattern syntax) of files that
    ;; should be compiled. This is used as configuration for the BufWritePost
    ;; autocmd, so it'll only apply to buffers you're interested in.
-   :source_file_patterns [(fs.join-path ["fnl" "**" "*.fnl"])]})
+   :source-file-patterns [(fs.join-path ["fnl" "**" "*.fnl"])]})
 
 (fn cfg-fn [t]
   "Builds a cfg fetcher for the config table t. Returns a function that takes a
