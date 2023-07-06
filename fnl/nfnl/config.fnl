@@ -7,6 +7,7 @@
 
 (local config-file-name ".nfnl.fnl")
 
+;; Make sure you update the README whenever you change the default configuration!
 (local default-config
   {:compiler-options {}
    :fennel-path (str.join
