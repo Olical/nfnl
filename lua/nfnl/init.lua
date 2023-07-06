@@ -48,4 +48,4 @@ local function compile_all_files(dir)
     return notify.warn("No .nfnl configuration found.")
   end
 end
-return {setup = setup, compile_all_files = compile_all_files}
+return {setup = setup, ["compile-all-files"] = compile_all_files}

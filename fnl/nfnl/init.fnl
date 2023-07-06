@@ -56,7 +56,7 @@
       {:file (vim.fn.expand "%")
        :buf (vim.api.nvim_get_current_buf)})))
 
-(fn compile_all_files [dir]
+(fn compile-all-files [dir]
   (local dir (or dir (vim.fn.getcwd)))
   (let [{: config : root-dir : cfg} (config.find-and-load dir)]
     (if config
@@ -64,4 +64,4 @@
       (notify.warn "No .nfnl configuration found."))))
 
 {: setup
- : compile_all_files}
+ : compile-all-files}
