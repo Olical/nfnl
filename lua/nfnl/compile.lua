@@ -46,25 +46,31 @@ mod["into-file"] = function(_1_)
         core.spit(destination_path, (with_header(rel_file_name, res) .. "\n"))
         return {status = "ok", ["source-path"] = path, ["destination-path"] = destination_path}
       else
-        notify.warn(destination_path, " was not compiled by nfnl. Delete it manually if you wish to compile into this file.")
+        if not batch_3f then
+          notify.warn(destination_path, " was not compiled by nfnl. Delete it manually if you wish to compile into this file.")
+        else
+        end
         return {status = "destination-exists", ["source-path"] = path, ["destination-path"] = destination_path}
       end
     else
-      notify.error(res)
+      if not batch_3f then
+        notify.error(res)
+      else
+      end
       return {status = "compilation-error", error = res, ["source-path"] = path, ["destination-path"] = destination_path}
     end
   end
 end
-mod["all-files"] = function(_6_)
-  local _arg_7_ = _6_
-  local root_dir = _arg_7_["root-dir"]
-  local cfg = _arg_7_["cfg"]
-  local function _8_(path)
+mod["all-files"] = function(_8_)
+  local _arg_9_ = _8_
+  local root_dir = _arg_9_["root-dir"]
+  local cfg = _arg_9_["cfg"]
+  local function _10_(path)
     return mod["into-file"]({["root-dir"] = root_dir, path = path, cfg = cfg, source = core.slurp(path), ["batch?"] = true})
   end
-  local function _9_(_241)
+  local function _11_(_241)
     return fs.relglob(root_dir, _241)
   end
-  return core.map(_8_, core.map(fs["full-path"], core.mapcat(_9_, cfg({"source-file-patterns"}))))
+  return core.map(_10_, core.map(fs["full-path"], core.mapcat(_11_, cfg({"source-file-patterns"}))))
 end
 return mod

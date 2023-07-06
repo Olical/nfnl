@@ -61,12 +61,14 @@
                :source-path path
                : destination-path})
             (do
-              (notify.warn destination-path " was not compiled by nfnl. Delete it manually if you wish to compile into this file.")
+              (when (not batch?)
+                (notify.warn destination-path " was not compiled by nfnl. Delete it manually if you wish to compile into this file."))
               {:status :destination-exists
                :source-path path
                : destination-path}))
           (do
-            (notify.error res)
+            (when (not batch?)
+              (notify.error res))
             {:status :compilation-error
              :error res
              :source-path path
