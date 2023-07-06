@@ -1,6 +1,6 @@
 # nfnl
 
-Enhance your [Neovim][neovim] experience through [Fennel][fennel] with no
+Enhance your [Neovim][neovim] experience through [Fennel][fennel] with zero
 overhead. Write Fennel, run Lua, nfnl will not load unless you're actively
 modifying your Neovim configuration or plugin source code.
 
