@@ -1,13 +1,20 @@
 # nfnl
 
-Enhance your [Neovim][neovim] experience with [Fennel][fennel].
+Enhance your [Neovim][neovim] experience through [Fennel][fennel] with no
+overhead. Write Fennel, run Lua, nfnl will not load unless you're actively
+modifying your Neovim configuration or plugin source code.
 
-- Only loads under directories containing a `.nfnl` configuration file.
-- Automatically compiles `*.fnl` files to `*.lua` while editing.
+- Only loads when working in directories containing an `.nfnl` configuration
+  file.
+- Automatically compiles `*.fnl` files to `*.lua` when you save your changes.
 - Can be used for your Neovim configuration or plugins.
 - Includes a Clojure inspired standard library (based on [Aniseed][aniseed]).
 
 ## Usage
+
+TODO
+
+## Configuration
 
 TODO
 
