@@ -39,7 +39,7 @@
           (fs.mkdirp (fs.basename destination-path))
           (core.spit
             destination-path
-            (with-header rel-file-name res))
+            (.. (with-header rel-file-name res) "\n"))
           {:status :ok
            :source-path path
            : destination-path})

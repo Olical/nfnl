@@ -27,7 +27,7 @@ local function into_file(_1_)
   if ok then
     if safe_target_3f(destination_path) then
       fs.mkdirp(fs.basename(destination_path))
-      core.spit(destination_path, with_header(rel_file_name, res))
+      core.spit(destination_path, (with_header(rel_file_name, res) .. "\n"))
       return {status = "ok", ["source-path"] = path, ["destination-path"] = destination_path}
     else
       notify.warn(destination_path, " was not compiled by nfnl. Delete it manually if you wish to compile into this file.")
