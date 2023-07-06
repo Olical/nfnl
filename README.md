@@ -4,7 +4,7 @@ Enhance your [Neovim][neovim] experience through [Fennel][fennel] with zero
 overhead. Write Fennel, run Lua, nfnl will not load unless you're actively
 modifying your Neovim configuration or plugin source code.
 
-- Only loads when working in directories containing an `.nfnl.fnl` configuration
+- Only loads when working in directories containing a `.nfnl.fnl` configuration
   file.
 - Automatically compiles `*.fnl` files to `*.lua` when you save your changes.
 - Can be used for your Neovim configuration or plugins.
