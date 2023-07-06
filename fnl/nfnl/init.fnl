@@ -25,7 +25,7 @@
   (let [{: config : root-dir : cfg} (config.find-and-load dir)]
     (if config
       (notify.info "Compilation complete.\n" (compile.all-files {: root-dir : cfg}))
-      (notify.warn "No .nfnl configuration found."))))
+      (notify.warn "No .nfnl.fnl configuration found."))))
 
 {: setup
  : compile-all-files}

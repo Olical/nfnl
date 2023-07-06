@@ -5,7 +5,7 @@
 (local fennel (autoload :nfnl.fennel))
 (local notify (autoload :nfnl.notify))
 
-(local config-file-name ".nfnl")
+(local config-file-name ".nfnl.fnl")
 
 (local default-config
   {;; Passed to fennel.compileString when your code is compiled.
@@ -46,7 +46,7 @@
       (core.get-in default-config path))))
 
 (fn find-and-load [dir]
-  "Attempt to find and load the .nfnl config file relative to the given dir.
+  "Attempt to find and load the .nfnl.fnl config file relative to the given dir.
   Returns an empty table when there's issues or if there isn't a config file.
   If there's some valid config you'll get table containing config, cfg (fn) and
   root-dir back."

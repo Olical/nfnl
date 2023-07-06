@@ -11,8 +11,8 @@
 
   (fn [ev]
     "Called when we write a Fennel file located under a directory containing a
-    .nfnl file. It compiles the Fennel to Lua and writes it into another file
-    according to the .nfnl file configuration."
+    .nfnl.fnl file. It compiles the Fennel to Lua and writes it into another
+    file according to the .nfnl.fnl file configuration."
 
     (compile.into-file
       {: root-dir
@@ -21,12 +21,12 @@
        :source (nvim.get-buf-content-as-string (. ev :buf))})))
 
 (fn fennel-filetype-callback [ev]
-  "Called whenever we enter a Fennel file. It walks up the tree to find a .nfnl
-  (which can contain configuration). If found, we initialise the compiler
-  autocmd for the directory containing the .nfnl file.
+  "Called whenever we enter a Fennel file. It walks up the tree to find a
+  .nfnl.fnl (which can contain configuration). If found, we initialise the
+  compiler autocmd for the directory containing the .nfnl.fnl file.
 
   This allows us to edit multiple projects in different directories with
-  different .nfnl configuration, wonderful!"
+  different .nfnl.fnl configuration, wonderful!"
 
   (let [file-path (fs.full-path (. ev :file))
         file-dir (fs.basename file-path)

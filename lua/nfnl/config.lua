@@ -5,7 +5,7 @@ local fs = autoload("nfnl.fs")
 local str = autoload("nfnl.string")
 local fennel = autoload("nfnl.fennel")
 local notify = autoload("nfnl.notify")
-local config_file_name = ".nfnl"
+local config_file_name = ".nfnl.fnl"
 local default_config = {["compiler-options"] = {}, ["fennel-path"] = str.join(";", {"./?.fnl", "./?/init.fnl", "./fnl/?.fnl", "./fnl/?/init.fnl"}), ["fennel-macro-path"] = str.join(";", {"./?.fnl", "./?/init-macros.fnl", "./?/init.fnl", "./fnl/?.fnl", "./fnl/?/init-macros.fnl", "./fnl/?/init.fnl"}), ["source-file-patterns"] = {fs["join-path"]({"fnl", "**", "*.fnl"})}}
 local function cfg_fn(t)
   local function _1_(path)

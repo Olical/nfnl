@@ -21,7 +21,7 @@ local function compile_all_files(dir)
   if config0 then
     return notify.info("Compilation complete.\n", compile["all-files"]({["root-dir"] = root_dir, cfg = cfg}))
   else
-    return notify.warn("No .nfnl configuration found.")
+    return notify.warn("No .nfnl.fnl configuration found.")
   end
 end
 return {setup = setup, ["compile-all-files"] = compile_all_files}
