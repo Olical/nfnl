@@ -18,10 +18,11 @@
   (.. (file-name-root path) (.. "." ext)))
 
 (fn read-first-line [path]
-  (let [f (io.open path)
-        line (when (core.table? f) (f:read))]
-    (when (core.table? f) (f:close))
-    line))
+  (let [f (io.open path)]
+    (when (and f (not (core.string? f)))
+      (let [line (f:read)]
+        (f:close)
+        line))))
 
 (fn relglob [dir expr]
   "Glob all files under dir matching the expression and return the paths
