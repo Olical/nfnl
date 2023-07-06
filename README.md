@@ -14,17 +14,17 @@ modifying your Neovim configuration or plugin source code.
 
 ## Usage
 
-First of all you must create the configuration file at the root of your project
-or configuration, this can be blank if you wish to rely on the defaults for now.
+First, you must create the configuration file at the root of your project or
+configuration, this can be blank if you wish to rely on the defaults for now.
 
 ```bash
 echo "{}" > .nfnl.fnl
 ```
 
 The first time you open a Fennel file under this directory you'll be prompted to
-trust this file since it's Fennel code that's executed on your behalf to create
-the project configuration. You can put any Fennel code you want in this file,
-just be sure to return a table of configuration at the end.
+trust this configuration file since it's Fennel code that's executed on your
+behalf. You can put any Fennel code you want in this file, just be sure to
+return a table of configuration at the end.
 
 ```fennel
 (print "Hello, World! From my nfnl configuration!")
@@ -63,11 +63,11 @@ require('nfnl')['compile-all-files']()
 
 nfnl is configured on a per directory basis using `.nfnl.fnl` files which also
 signify that the plugin should operate on the files within this directory.
-Without the file the plugin is essentially inert meaning even if you don't lazy
-load it, you won't see any performance impact at startup time.
+Without the file the plugin is inert, meaning even if you don't lazy load it you
+won't see any performance impact at startup time.
 
 Any configuration you don't provide (an empty file or just `{}` is absolutely
-fine!) will default to some values that should work fine for most people.
+fine!) will default to these values that should work fine for most people.
 
 ```fennel
 {;; Passed to fennel.compileString when your code is compiled.
@@ -87,8 +87,8 @@ fine!) will default to some values that should work fine for most people.
  :source-file-patterns ["fnl/**/*.fnl"]}
 ```
 
-For example, if you want to compile `.fnl` files in the root directory of your
-Neovim configuration (so no `fnl` directory at all) you could use this
+As an example, if you want to compile `.fnl` files in the root directory of your
+Neovim configuration (so no `fnl` subdirectory at all) you could use this
 `.nfnl.fnl` file.
 
 ```fennel
@@ -132,7 +132,7 @@ Fennel allows you to write inline macros with the `(macro ...)` form but they're
 restricted to only being used in that one file. If you wish to have a macro
 module shared by the rest of your codebase you need to mark that file as a macro
 module by placing `;; [nfnl-macro]` somewhere within the source code. The exact
-amount of `;` and whitespace doesn't really matter, you just need a comment with
+amount of `;` and whitespace doesn't matter, you just need a comment with
 `[nfnl-macro]` inside of it.
 
 This marker does two things:
@@ -163,7 +163,7 @@ For example, here's a simplified macro file from nfnl itself at
 
 When writing to this file, no matching `.lua` will be generated _but_ all other
 source files in the project will be re-compiled against the new version of the
-macro.
+macro module.
 
 This system does not currently use static analysis to work out which files
 depend on each other, instead we opt for the safe approach of recompiling
