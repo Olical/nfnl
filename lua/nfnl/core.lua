@@ -266,10 +266,10 @@ end
 local function pr(...)
   return println(pr_str(...))
 end
-local function slurp(path, silent_3f)
+local function slurp(path)
   local _38_, _39_ = io.open(path, "r")
-  if ((_38_ == nil) and (nil ~= _39_)) then
-    local msg = _39_
+  if ((_38_ == nil) and true) then
+    local _msg = _39_
     return nil
   elseif (nil ~= _38_) then
     local f = _38_

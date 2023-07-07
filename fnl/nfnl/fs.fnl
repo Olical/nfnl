@@ -40,7 +40,7 @@
       (set newer? true)))
   newer?)
 
-(local path-sep
+(fn path-sep []
   ;; https://github.com/nvim-lua/plenary.nvim/blob/8bae2c1fadc9ed5bfcfb5ecbd0c0c4d7d40cb974/lua/plenary/path.lua#L20-L31
   (let [os (string.lower jit.os)]
     (if (or (= :linux os)
@@ -57,10 +57,10 @@
       res)))
 
 (fn split-path [path]
-  (str.split path path-sep))
+  (str.split path (path-sep)))
 
 (fn join-path [parts]
-  (str.join path-sep (core.concat parts)))
+  (str.join (path-sep) (core.concat parts)))
 
 (fn replace-dirs [path from to]
   (->> (split-path path)

@@ -233,10 +233,10 @@
 (fn pr [...]
   (println (pr-str ...)))
 
-(fn slurp [path silent?]
+(fn slurp [path]
   "Read the file into a string."
   (match (io.open path "r")
-    (nil msg) nil
+    (nil _msg) nil
     f (let [content (f:read "*all")]
         (f:close)
         content)))

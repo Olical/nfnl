@@ -44,13 +44,12 @@ local function glob_dir_newer_3f(a_dir, b_dir, expr, b_dir_path_fn)
   end
   return newer_3f
 end
-local path_sep
-do
+local function path_sep()
   local os = string.lower(jit.os)
   if (("linux" == os) or ("osx" == os) or ("bsd" == os)) then
-    path_sep = "/"
+    return "/"
   else
-    path_sep = "\\"
+    return "\\"
   end
 end
 local function findfile(name, path)
@@ -62,10 +61,10 @@ local function findfile(name, path)
   end
 end
 local function split_path(path)
-  return str.split(path, path_sep)
+  return str.split(path, path_sep())
 end
 local function join_path(parts)
-  return str.join(path_sep, core.concat(parts))
+  return str.join(path_sep(), core.concat(parts))
 end
 local function replace_dirs(path, from, to)
   local function _6_(segment)

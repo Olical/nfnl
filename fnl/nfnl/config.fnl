@@ -8,7 +8,7 @@
 (local config-file-name ".nfnl.fnl")
 
 ;; Make sure you update the README whenever you change the default configuration!
-(local default-config
+(fn default-config []
   {:compiler-options {}
    :fennel-path (str.join
                   ";"
@@ -34,7 +34,7 @@
   (fn [path]
     (core.get-in
       t path
-      (core.get-in default-config path))))
+      (core.get-in (default-config) path))))
 
 (fn find-and-load [dir]
   "Attempt to find and load the .nfnl.fnl config file relative to the given dir.

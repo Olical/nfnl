@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -xe
+
+cd fnl
+../script/fenneldoc.lua --out-dir ../api $(find nfnl -type f -name '*.fnl')
+cd -
