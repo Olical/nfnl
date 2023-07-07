@@ -45,32 +45,34 @@
   If there's some valid config you'll get table containing config, cfg (fn) and
   root-dir back."
 
-  (let [found (fs.findfile config-file-name (.. dir ";"))]
-    (when found
-      (let [config-file-path (fs.full-path found)
-            root-dir (fs.basename config-file-path)
-            config-source (vim.secure.read config-file-path)
+  (or
+    (let [found (fs.findfile config-file-name (.. dir ";"))]
+      (when found
+        (let [config-file-path (fs.full-path found)
+              root-dir (fs.basename config-file-path)
+              config-source (vim.secure.read config-file-path)
 
-            (ok config)
-            (if
-              (core.nil? config-source)
-              (values false (.. config-file-path " is not trusted, refusing to compile."))
+              (ok config)
+              (if
+                (core.nil? config-source)
+                (values false (.. config-file-path " is not trusted, refusing to compile."))
 
-              (or (str.blank? config-source)
-                  (= "{}" (str.trim config-source)))
-              (values true {})
+                (or (str.blank? config-source)
+                    (= "{}" (str.trim config-source)))
+                (values true {})
 
-              (pcall
-                fennel.eval
-                config-source
-                {:filename config-file-path}))]
-        (if ok
-          {: config
-           : root-dir
-           :cfg (cfg-fn config)}
-          (do
-            (notify.error config)
-            {}))))))
+                (pcall
+                  fennel.eval
+                  config-source
+                  {:filename config-file-path}))]
+          (if ok
+            {: config
+             : root-dir
+             :cfg (cfg-fn config)}
+            (notify.error config)))))
+
+    ;; Always default to an empty table for destructuring.
+    {}))
 
 {: find-and-load
  : config-file-path?
