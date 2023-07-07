@@ -96,6 +96,17 @@ Neovim configuration (so no `fnl` subdirectory at all) you could use this
 {:source-file-patterns ["*.fnl" "**/*.fnl"]}
 ```
 
+And since this is a Fennel file that's executed within Neovim you can actually
+load nfnl's modules to access things like the default config values.
+
+```fennel
+(local core (require :nfnl.core))
+(local config (require :nfnl.config))
+(local default (config.default))
+
+{:source-file-patterns (core.concat default.source-file-patterns ["custom-dir/*.fnl"])}
+```
+
 ## Installation
 
 - [Lazy][lazy]: `{ "Olical/nfnl", config = true, ft = "fennel" }`
