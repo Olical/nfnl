@@ -182,6 +182,8 @@ possible.
 
 ## Tips
 
+### Ignoring compiled Lua
+
 Create a `.ignore` file so your `.lua` files don't show up in
 [Telescope][telescope] when paired with [ripgrep][ripgrep] among many other
 tools that respect this file.
@@ -189,6 +191,11 @@ tools that respect this file.
 ```
 lua/**/*.lua
 ```
+
+You can also add these known directories and files to things like your
+[Neo-tree][neotree] configuration in order to completely hide them.
+
+### GitHub language statistics
 
 Create a `.gitattributes` file to teach GitHub which of your files are generated
 or vendored. This ensures your "languages" section on your repository page
@@ -199,6 +206,21 @@ lua/**/*.lua linguist-generated
 lua/nfnl/fennel.lua linguist-vendored
 script/fennel.lua linguist-vendored
 ```
+
+### LSP
+
+I highly recommend looking into getting a good LSP setup for
+`fennel-language-server`. I use [AstroNvim][astronvim] since it bundles LSP
+configurations and Mason, a way to install dependencies, in one pre-configured
+system. My configuration is
+[here in my dotfiles](https://github.com/Olical/dotfiles/blob/b72363f77586ad08ba1581c33ee476b1f02e999f/stowed/.config/nvim/lua/user/plugins/mason.fnl).
+
+With the Fennel LSP running I get a little autocompletion alongside really
+useful unused or undeclared symbol linting. It'll also pick up things like
+unbalanced parenthesis _before_ I try to compile the file.
+
+The same can be done for Lua so you can also check the linting and static
+analysis of the compiled output in order to help debug some runtime issues.
 
 ## Development
 
@@ -254,3 +276,5 @@ experience.
 [lazy]: https://github.com/folke/lazy.nvim
 [fenneldoc]: https://github.com/andreyorst/fenneldoc
 [telescope]: https://github.com/nvim-telescope/telescope.nvim
+[neotree]: https://github.com/nvim-neo-tree/neo-tree.nvim
+[astronvim]: https://astronvim.com/
