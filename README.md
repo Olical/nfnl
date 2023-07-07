@@ -247,6 +247,15 @@ development of this plugin or if something has gone catastrophically wrong and
 nfnl can no longer recompile itself. Normally having nfnl installed and editing
 the `.fnl` files should be enough.
 
+## Testing
+
+Tests are written under `fnl/spec/nfnl/**/*_spec.fnl`. They're compiled into the
+`lua/` directory by nfnl itself and executed by [Plenary][plenary], you must
+have this plugin installed in order to run the test suite.
+
+The project local `.nfnl.fnl` defines the `<localleader>pt` mapping which allows
+you to execute the test suite from within Neovim using Plenary.
+
 ## Unlicensed
 
 Find the full [Unlicense][unlicense] in the `UNLICENSE` file, but here's a
@@ -278,3 +287,4 @@ experience.
 [telescope]: https://github.com/nvim-telescope/telescope.nvim
 [neotree]: https://github.com/nvim-neo-tree/neo-tree.nvim
 [astronvim]: https://astronvim.com/
+[plenary]: https://github.com/nvim-lua/plenary.nvim
