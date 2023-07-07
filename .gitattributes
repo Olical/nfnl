@@ -1,3 +1,4 @@
 lua/**/*.lua linguist-generated
 lua/nfnl/fennel.lua linguist-vendored
 script/fennel.lua linguist-vendored
+script/fenneldoc.lua linguist-vendored
