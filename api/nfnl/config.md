@@ -2,8 +2,18 @@
 
 **Table of contents**
 
+- [`config-file-path?`](#config-file-path)
 - [`default`](#default)
 - [`find-and-load`](#find-and-load)
+
+## `config-file-path?`
+Function signature:
+
+```
+(config-file-path? path)
+```
+
+**Undocumented**
 
 ## `default`
 Function signature:

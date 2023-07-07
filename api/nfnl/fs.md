@@ -4,6 +4,7 @@
 
 - [`basename`](#basename)
 - [`file-name-root`](#file-name-root)
+- [`filename`](#filename)
 - [`findfile`](#findfile)
 - [`full-path`](#full-path)
 - [`glob-dir-newer?`](#glob-dir-newer)
@@ -33,6 +34,15 @@ Function signature:
 ```
 
 **Undocumented**
+
+## `filename`
+Function signature:
+
+```
+(filename path)
+```
+
+Just the filename / tail of a path.
 
 ## `findfile`
 Function signature:
