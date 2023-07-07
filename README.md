@@ -300,4 +300,4 @@ experience.
 [neotree]: https://github.com/nvim-neo-tree/neo-tree.nvim
 [astronvim]: https://astronvim.com/
 [plenary]: https://github.com/nvim-lua/plenary.nvim
-[apidoc]: ./tree/main/api
+[apidoc]: https://github.com/Olical/nfnl/tree/main/api/nfnl
