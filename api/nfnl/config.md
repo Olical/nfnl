@@ -2,14 +2,14 @@
 
 **Table of contents**
 
-- [`default-config`](#default-config)
+- [`default`](#default)
 - [`find-and-load`](#find-and-load)
 
-## `default-config`
+## `default`
 Function signature:
 
 ```
-(default-config)
+(default)
 ```
 
 **Undocumented**
