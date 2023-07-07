@@ -8,7 +8,8 @@ modifying your Neovim configuration or plugin source code.
   file.
 - Automatically compiles `*.fnl` files to `*.lua` when you save your changes.
 - Can be used for your Neovim configuration or plugins.
-- Includes a Clojure inspired standard library (based on [Aniseed][aniseed]).
+- Includes a Clojure inspired [standard library][apidoc] (based on
+  [Aniseed][aniseed]).
 - Compiles your Fennel code and then steps out of the way leaving you with plain
   Lua that doesn't require nfnl to load in the future.
 
