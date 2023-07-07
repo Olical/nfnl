@@ -4,6 +4,7 @@ local core = autoload("nfnl.core")
 local fs = autoload("nfnl.fs")
 local fennel = autoload("nfnl.fennel")
 local notify = autoload("nfnl.notify")
+local config = autoload("nfnl.config")
 local mod = {}
 local header_marker = "[nfnl]"
 local function with_header(file, src)
@@ -31,6 +32,8 @@ mod["into-file"] = function(_1_)
     return {status = "macros-are-not-compiled", ["source-path"] = path}
   elseif macro_3f then
     return mod["all-files"]({["root-dir"] = root_dir, cfg = cfg})
+  elseif config["config-file-path?"](path) then
+    return {status = "nfnl-config-is-not-compiled", ["source-path"] = path}
   else
     local rel_file_name = path:sub((2 + root_dir:len()))
     local destination_path = fnl_path__3elua_path(path)

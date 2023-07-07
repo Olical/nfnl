@@ -36,6 +36,9 @@
       t path
       (core.get-in (default) path))))
 
+(fn config-file-path? [path]
+  (= config-file-name (fs.filename path)))
+
 (fn find-and-load [dir]
   "Attempt to find and load the .nfnl.fnl config file relative to the given dir.
   Returns an empty table when there's issues or if there isn't a config file.
@@ -70,4 +73,5 @@
             {}))))))
 
 {: find-and-load
+ : config-file-path?
  : default}

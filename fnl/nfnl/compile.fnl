@@ -3,6 +3,7 @@
 (local fs (autoload :nfnl.fs))
 (local fennel (autoload :nfnl.fennel))
 (local notify (autoload :nfnl.notify))
+(local config (autoload :nfnl.config))
 
 (local mod {})
 
@@ -36,6 +37,10 @@
 
       macro?
       (mod.all-files {: root-dir : cfg})
+
+      (config.config-file-path? path)
+      {:status :nfnl-config-is-not-compiled
+       :source-path path}
 
       (let [rel-file-name (path:sub (+ 2 (root-dir:len)))
             destination-path (fnl-path->lua-path path)

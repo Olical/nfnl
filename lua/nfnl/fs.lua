@@ -5,6 +5,9 @@ local str = autoload("nfnl.string")
 local function basename(path)
   return vim.fn.fnamemodify(path, ":h")
 end
+local function filename(path)
+  return vim.fn.fnamemodify(path, ":t")
+end
 local function file_name_root(path)
   return vim.fn.fnamemodify(path, ":r")
 end
@@ -76,4 +79,4 @@ local function replace_dirs(path, from, to)
   end
   return join_path(core.map(_6_, split_path(path)))
 end
-return {basename = basename, ["file-name-root"] = file_name_root, ["full-path"] = full_path, mkdirp = mkdirp, ["replace-extension"] = replace_extension, relglob = relglob, ["glob-dir-newer?"] = glob_dir_newer_3f, ["path-sep"] = path_sep, findfile = findfile, ["split-path"] = split_path, ["join-path"] = join_path, ["read-first-line"] = read_first_line, ["replace-dirs"] = replace_dirs}
+return {basename = basename, filename = filename, ["file-name-root"] = file_name_root, ["full-path"] = full_path, mkdirp = mkdirp, ["replace-extension"] = replace_extension, relglob = relglob, ["glob-dir-newer?"] = glob_dir_newer_3f, ["path-sep"] = path_sep, findfile = findfile, ["split-path"] = split_path, ["join-path"] = join_path, ["read-first-line"] = read_first_line, ["replace-dirs"] = replace_dirs}

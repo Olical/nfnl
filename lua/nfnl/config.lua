@@ -15,6 +15,9 @@ local function cfg_fn(t)
   end
   return _1_
 end
+local function config_file_path_3f(path)
+  return (config_file_name == fs.filename(path))
+end
 local function find_and_load(dir)
   local found = fs.findfile(config_file_name, (dir .. ";"))
   if found then
@@ -39,4 +42,4 @@ local function find_and_load(dir)
     return nil
   end
 end
-return {["find-and-load"] = find_and_load, default = default}
+return {["find-and-load"] = find_and_load, ["config-file-path?"] = config_file_path_3f, default = default}

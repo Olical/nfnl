@@ -5,6 +5,10 @@
 (fn basename [path]
   (vim.fn.fnamemodify path ":h"))
 
+(fn filename [path]
+  "Just the filename / tail of a path."
+  (vim.fn.fnamemodify path ":t"))
+
 (fn file-name-root [path]
   (vim.fn.fnamemodify path ":r"))
 
@@ -72,6 +76,7 @@
        (join-path)))
 
 {: basename
+ : filename
  : file-name-root
  : full-path
  : mkdirp
