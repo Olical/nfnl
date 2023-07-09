@@ -3,5 +3,5 @@
 set -xe
 
 cd fnl
-../script/fenneldoc.lua --out-dir ../api $(find nfnl -type f -name '*.fnl')
+../script/fenneldoc.lua --out-dir ../docs/api $(find nfnl -type f -name '*.fnl')
 cd -
