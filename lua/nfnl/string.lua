@@ -1,33 +1,34 @@
 -- [nfnl] Compiled from fnl/nfnl/string.fnl by https://github.com/Olical/nfnl, do not edit.
-local autoload = require("nfnl.autoload")
+local _local_1_ = require("nfnl.module")
+local autoload = _local_1_["autoload"]
 local core = autoload("nfnl.core")
 local function join(...)
   local args = {...}
-  local function _2_(...)
+  local function _3_(...)
     if (2 == core.count(args)) then
       return args
     else
       return {"", core.first(args)}
     end
   end
-  local _let_1_ = _2_(...)
-  local sep = _let_1_[1]
-  local xs = _let_1_[2]
+  local _let_2_ = _3_(...)
+  local sep = _let_2_[1]
+  local xs = _let_2_[2]
   local len = core.count(xs)
   local result = {}
   if (len > 0) then
     for i = 1, len do
       local x = xs[i]
-      local _3_
+      local _4_
       if ("string" == type(x)) then
-        _3_ = x
+        _4_ = x
       elseif (nil == x) then
-        _3_ = x
+        _4_ = x
       else
-        _3_ = core["pr-str"](x)
+        _4_ = core["pr-str"](x)
       end
-      if (_3_ ~= nil) then
-        table.insert(result, _3_)
+      if (_4_ ~= nil) then
+        table.insert(result, _4_)
       else
       end
     end

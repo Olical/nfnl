@@ -1,4 +1,4 @@
-(local autoload (require :nfnl.autoload))
+(local {: autoload} (require :nfnl.module))
 (local str (autoload :nfnl.string))
 
 (fn get-buf-content-as-string [buf]

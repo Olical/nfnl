@@ -37,4 +37,4 @@
        (fn [t k v]
          (tset (ensure) k v))})))
 
-autoload
+{: autoload}

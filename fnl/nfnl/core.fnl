@@ -1,4 +1,4 @@
-(local autoload (require :nfnl.autoload))
+(local {: autoload} (require :nfnl.module))
 (local fennel (autoload :nfnl.fennel))
 
 (fn rand [n]

@@ -1,5 +1,6 @@
 -- [nfnl] Compiled from fnl/nfnl/config.fnl by https://github.com/Olical/nfnl, do not edit.
-local autoload = require("nfnl.autoload")
+local _local_1_ = require("nfnl.module")
+local autoload = _local_1_["autoload"]
 local core = autoload("nfnl.core")
 local fs = autoload("nfnl.fs")
 local str = autoload("nfnl.string")
@@ -10,16 +11,16 @@ local function default()
   return {["compiler-options"] = {}, ["fennel-path"] = str.join(";", {"./?.fnl", "./?/init.fnl", "./fnl/?.fnl", "./fnl/?/init.fnl"}), ["fennel-macro-path"] = str.join(";", {"./?.fnl", "./?/init-macros.fnl", "./?/init.fnl", "./fnl/?.fnl", "./fnl/?/init-macros.fnl", "./fnl/?/init.fnl"}), ["source-file-patterns"] = {fs["join-path"]({"fnl", "**", "*.fnl"})}}
 end
 local function cfg_fn(t)
-  local function _1_(path)
+  local function _2_(path)
     return core["get-in"](t, path, core["get-in"](default(), path))
   end
-  return _1_
+  return _2_
 end
 local function config_file_path_3f(path)
   return (config_file_name == fs.filename(path))
 end
 local function find_and_load(dir)
-  local function _2_()
+  local function _3_()
     local found = fs.findfile(config_file_name, (dir .. ";"))
     if found then
       local config_file_path = fs["full-path"](found)
@@ -42,6 +43,6 @@ local function find_and_load(dir)
       return nil
     end
   end
-  return (_2_() or {})
+  return (_3_() or {})
 end
 return {["find-and-load"] = find_and_load, ["config-file-path?"] = config_file_path_3f, default = default}

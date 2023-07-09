@@ -1,5 +1,6 @@
 -- [nfnl] Compiled from fnl/nfnl/fs.fnl by https://github.com/Olical/nfnl, do not edit.
-local autoload = require("nfnl.autoload")
+local _local_1_ = require("nfnl.module")
+local autoload = _local_1_["autoload"]
 local core = autoload("nfnl.core")
 local str = autoload("nfnl.string")
 local function basename(path)
@@ -32,10 +33,10 @@ local function read_first_line(path)
 end
 local function relglob(dir, expr)
   local dir_len = (2 + string.len(dir))
-  local function _2_(_241)
+  local function _3_(_241)
     return string.sub(_241, dir_len)
   end
-  return core.map(_2_, vim.fn.globpath(dir, expr, true, true))
+  return core.map(_3_, vim.fn.globpath(dir, expr, true, true))
 end
 local function glob_dir_newer_3f(a_dir, b_dir, expr, b_dir_path_fn)
   local newer_3f = false
@@ -70,13 +71,13 @@ local function join_path(parts)
   return str.join(path_sep(), core.concat(parts))
 end
 local function replace_dirs(path, from, to)
-  local function _6_(segment)
+  local function _7_(segment)
     if (from == segment) then
       return to
     else
       return segment
     end
   end
-  return join_path(core.map(_6_, split_path(path)))
+  return join_path(core.map(_7_, split_path(path)))
 end
 return {basename = basename, filename = filename, ["file-name-root"] = file_name_root, ["full-path"] = full_path, mkdirp = mkdirp, ["replace-extension"] = replace_extension, relglob = relglob, ["glob-dir-newer?"] = glob_dir_newer_3f, ["path-sep"] = path_sep, findfile = findfile, ["split-path"] = split_path, ["join-path"] = join_path, ["read-first-line"] = read_first_line, ["replace-dirs"] = replace_dirs}

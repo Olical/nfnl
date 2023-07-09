@@ -1,5 +1,6 @@
 -- [nfnl] Compiled from fnl/nfnl/compile.fnl by https://github.com/Olical/nfnl, do not edit.
-local autoload = require("nfnl.autoload")
+local _local_1_ = require("nfnl.module")
+local autoload = _local_1_["autoload"]
 local core = autoload("nfnl.core")
 local fs = autoload("nfnl.fs")
 local fennel = autoload("nfnl.fennel")
@@ -20,13 +21,13 @@ end
 local function macro_source_3f(source)
   return string.find(source, "%s*;+%s*%[nfnl%-macro%]")
 end
-mod["into-file"] = function(_1_)
-  local _arg_2_ = _1_
-  local root_dir = _arg_2_["root-dir"]
-  local path = _arg_2_["path"]
-  local cfg = _arg_2_["cfg"]
-  local source = _arg_2_["source"]
-  local batch_3f = _arg_2_["batch?"]
+mod["into-file"] = function(_2_)
+  local _arg_3_ = _2_
+  local root_dir = _arg_3_["root-dir"]
+  local path = _arg_3_["path"]
+  local cfg = _arg_3_["cfg"]
+  local source = _arg_3_["source"]
+  local batch_3f = _arg_3_["batch?"]
   local macro_3f = macro_source_3f(source)
   if (macro_3f and batch_3f) then
     return {status = "macros-are-not-compiled", ["source-path"] = path}
@@ -64,16 +65,16 @@ mod["into-file"] = function(_1_)
     end
   end
 end
-mod["all-files"] = function(_8_)
-  local _arg_9_ = _8_
-  local root_dir = _arg_9_["root-dir"]
-  local cfg = _arg_9_["cfg"]
-  local function _10_(path)
+mod["all-files"] = function(_9_)
+  local _arg_10_ = _9_
+  local root_dir = _arg_10_["root-dir"]
+  local cfg = _arg_10_["cfg"]
+  local function _11_(path)
     return mod["into-file"]({["root-dir"] = root_dir, path = path, cfg = cfg, source = core.slurp(path), ["batch?"] = true})
   end
-  local function _11_(_241)
+  local function _12_(_241)
     return fs.relglob(root_dir, _241)
   end
-  return core.map(_10_, core.map(fs["full-path"], core.mapcat(_11_, cfg({"source-file-patterns"}))))
+  return core.map(_11_, core.map(fs["full-path"], core.mapcat(_12_, cfg({"source-file-patterns"}))))
 end
 return mod

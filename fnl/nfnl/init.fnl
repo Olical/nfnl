@@ -1,4 +1,4 @@
-(local autoload (require :nfnl.autoload))
+(local {: autoload} (require :nfnl.module))
 (local compile (autoload :nfnl.compile))
 (local config (autoload :nfnl.config))
 (local notify (autoload :nfnl.notify))

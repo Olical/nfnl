@@ -1,4 +1,4 @@
-(local autoload (require :nfnl.autoload))
+(local {: autoload} (require :nfnl.module))
 (local core (autoload :nfnl.core))
 (local fs (autoload :nfnl.fs))
 (local str (autoload :nfnl.string))
