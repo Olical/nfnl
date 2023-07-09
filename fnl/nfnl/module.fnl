@@ -5,7 +5,7 @@
   "Like autoload from Vim Script! A replacement for require that will load the
   module when you first use it.
 
-  (local autoload (require :nfnl.autoload))
+  (local {: autoload} (require :nfnl.module))
   (local my-mod (autoload :my-mod))
   (my-mod.some-fn 10) ;; Your module is required here!
 
