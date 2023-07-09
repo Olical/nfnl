@@ -65,61 +65,110 @@
         (fn []
           (assert.are.same [2 3] (core.rest [1 2 3]))))))
 
-; (deftest second
-    ;   (t.= nil (a.second []) "nil when empty")
-    ;   (t.= nil (a.second nil) "nil when nil")
-    ;   (t.= nil (a.second [1 nil 3]) "nil when the second item is actually nil")
-    ;   (t.= 2 (a.second [1 2 3]) "two when the second item is two"))
+(describe
+  "second"
+  (fn []
+    (it "returns nil when required"
+        (fn []
+          (assert.is_nil (core.second []))
+          (assert.is_nil (core.second nil))
+          (assert.is_nil (core.second [1 nil 3]))))
 
-; (deftest string?
-    ;   (t.= true (a.string? "foo"))
-    ;   (t.= false (a.string? nil))
-    ;   (t.= false (a.string? 10)))
+    (it "returns the second item if there is one"
+        (fn []
+          (assert.equals 2 (core.second [1 2 3]))))))
 
-; (deftest nil?
-    ;   (t.= false (a.nil? "foo"))
-    ;   (t.= true (a.nil? nil))
-    ;   (t.= false (a.nil? 10)))
+(describe
+  "string?"
+  (fn []
+    (it "returns true for strings"
+        (fn []
+          (assert.is_true (core.string? "foo"))
+          (assert.is_false (core.string? nil))
+          (assert.is_false (core.string? 10))))))
 
-; (deftest some
-    ;   (t.= nil (a.some #(and (> $1 5) $1) [1 2 3]) "nil when nothing matches")
-    ;   (t.= 3 (a.some #(and (> $1 2) $1) [1 2 3]) "the value when something matches")
-    ;   (t.= 3 (a.some #(and $1 (> $1 2) $1) [nil 1 nil 2 nil 3 nil]) "handles nils"))
+(describe
+  "nil?"
+  (fn []
+    (it "returns true for strings"
+        (fn []
+          (assert.is_false (core.nil? "foo"))
+          (assert.is_true (core.nil? nil))
+          (assert.is_false (core.nil? 10))))))
 
-; (deftest inc
-    ;   (t.= 2 (a.inc 1))
-    ;   (t.= -4 (a.inc -5)))
+(describe
+  "some"
+  (fn []
+    (it "returns nil when nothing matches"
+        (fn []
+          (assert.is_nil (core.some #(and (> $1 5) $1) [1 2 3]))))
 
-; (deftest dec
-    ;   (t.= 1 (a.dec 2))
-    ;   (t.= -6 (a.dec -5)))
+    (it "returns the first match"
+        (fn []
+          (assert.equals 3 (core.some #(and (> $1 2) $1) [1 2 3]))))
 
-; (deftest even?
-    ;   (t.= true (a.even? 2))
-    ;   (t.= false (a.even? 3)))
+    (it "handles nils"
+        (fn []
+          (assert.equals 3 (core.some #(and $1 (> $1 2) $1) [nil 1 nil 2 nil 3 nil]))))))
 
-; (deftest odd?
-    ;   (t.= false (a.odd? 2))
-    ;   (t.= true (a.odd? 3)))
+(describe
+  "inc"
+  (fn []
+    (it "increments numbers"
+        (fn []
+          (assert.equals 2 (core.inc 1))
+          (assert.equals -4 (core.inc -5))))))
 
-; (defn- sort [t]
-    ;   (table.sort
-          ;     t
-          ;     (fn [x y]
-                  ;       (if (= :table (type x))
-                            ;         (< (a.first x) (a.first y))
-                            ;         (< x y))))
-    ;   t)
+(describe
+  "dec"
+  (fn []
+    (it "decrements numbers"
+        (fn []
+          (assert.equals 1 (core.dec 2))
+          (assert.equals -6 (core.dec -5))))))
 
-; (deftest keys
-    ;   (t.pr= [] (a.keys nil) "nil is empty")
-    ;   (t.pr= [] (a.keys {}) "empty is empty")
-    ;   (t.pr= [:a :b] (sort (a.keys {:a 2 :b 2})) "simple use"))
+(describe
+  "even?"
+  (fn []
+    (it "returns true for even numbers"
+        (fn []
+          (assert.is_true (core.even? 2))
+          (assert.is_false (core.even? 3))))))
 
-; (deftest vals
-    ;   (t.pr= [] (a.vals nil) "nil is empty")
-    ;   (t.pr= [] (a.vals {}) "empty is empty")
-    ;   (t.pr= [1 2] (sort (a.vals {:a 1 :b 2})) "simple use"))
+(describe
+  "odd?"
+  (fn []
+    (it "returns true for odd numbers"
+        (fn []
+          (assert.is_false (core.odd? 2))
+          (assert.is_true (core.odd? 3))))))
+
+(fn sort [t]
+  (table.sort
+    t
+    (fn [x y]
+      (if (= :table (type x))
+        (< (core.first x) (core.first y))
+        (< x y))))
+  t)
+
+(describe
+  "keys"
+  (fn []
+    (it "returns the keys of a map"
+        (fn []
+          (assert.are.same [] (core.keys nil))
+          (assert.are.same [] (core.keys {}))
+          (assert.are.same [:a :b] (sort (core.keys {:a 2 :b 3})))))))
+
+(describe
+  "vals"
+  (fn []
+    (it "returns the values of a map"
+        (fn []
+          (assert.are.same [] (core.vals nil))
+          (assert.are.same [] (core.vals {}))
+          (assert.are.same [2 3] (sort (core.vals {:a 2 :b 3})))))))
 
 ; (deftest kv-pairs
     ;   (t.pr= [] (a.kv-pairs nil) "nil is empty")
