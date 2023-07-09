@@ -1,40 +1,68 @@
-; (deftest join
-;   (t.= "foo, bar, baz" (str.join ", " ["foo" "bar" "baz"]))
-;   (t.= "foobarbaz" (str.join ["foo" "bar" "baz"]))
-;   (t.= "foobar" (str.join ["foo" nil "bar"]) "handle nils correctly"))
+(local {: describe : it} (require :plenary.busted))
+(local assert (require :luassert.assert))
+(local str (require :nfnl.string))
 
-; (deftest split
-;   (t.pr= [""] (str.split "" ","))
-;   (t.pr= ["foo"] (str.split "foo" ","))
-;   (t.pr= ["foo" "bar" "baz"] (str.split "foo,bar,baz" ","))
-;   (t.pr= ["foo" "" "bar"] (str.split "foo,,bar" ","))
-;   (t.pr= ["foo" "" "" "bar"] (str.split "foo,,,bar" ","))
-;   (t.pr= ["foo" "baz"] (str.split "foobarbaz" "bar")))
+(describe
+  "join"
+  (fn []
+    (it "joins things together"
+        (fn []
+          (assert.equals "foo, bar, baz" (str.join ", " ["foo" "bar" "baz"]))
+          (assert.equals "foobarbaz" (str.join ["foo" "bar" "baz"]))
+          (assert.equals "foobar" (str.join ["foo" nil "bar"]) "handle nils correctly")))))
 
-; (deftest blank?
-;   (t.ok? (str.blank? nil))
-;   (t.ok? (str.blank? ""))
-;   (t.ok? (str.blank? " "))
-;   (t.ok? (str.blank? "   "))
-;   (t.ok? (str.blank? "   \n \n  "))
-;   (t.ok? (not (str.blank? "   \n . \n  "))))
+(describe
+  "split"
+  (fn []
+    (it "splits strings up"
+        (fn []
+          (assert.are.same [""] (str.split "" ","))
+          (assert.are.same ["foo"] (str.split "foo" ","))
+          (assert.are.same ["foo" "bar" "baz"] (str.split "foo,bar,baz" ","))
+          (assert.are.same ["foo" "" "bar"] (str.split "foo,,bar" ","))
+          (assert.are.same ["foo" "" "" "bar"] (str.split "foo,,,bar" ","))
+          (assert.are.same ["foo" "baz"] (str.split "foobarbaz" "bar"))))))
 
-; (deftest triml
-;   (t.= "" (str.triml ""))
-;   (t.= "foo" (str.triml "foo"))
-;   (t.= "foo" (str.triml "    foo"))
-;   (t.= "foo" (str.triml "  \n  foo"))
-;   (t.= "foo  " (str.triml "  \n  foo  ")))
+(describe
+  "blank?"
+  (fn []
+    (it "true if the string is nil or just whitespace"
+        (fn []
+          (assert.is_true (str.blank? nil))
+          (assert.is_true (str.blank? ""))
+          (assert.is_true (str.blank? " "))
+          (assert.is_true (str.blank? "   "))
+          (assert.is_true (str.blank? "   \n \n  "))
+          (assert.is_true (not (str.blank? "   \n . \n  ")))))))
 
-; (deftest trimr
-;   (t.= "" (str.trimr ""))
-;   (t.= "foo" (str.trimr "foo"))
-;   (t.= "foo" (str.trimr "foo    "))
-;   (t.= "foo" (str.trimr "foo  \n  "))
-;   (t.= "  foo" (str.trimr "  foo  \n  ")))
+(describe
+  "triml"
+  (fn []
+    (it "trims all whitespace from the left of the string"
+        (fn []
+          (assert.equals "" (str.triml ""))
+          (assert.equals "foo" (str.triml "foo"))
+          (assert.equals "foo" (str.triml "    foo"))
+          (assert.equals "foo" (str.triml "  \n  foo"))
+          (assert.equals "foo  " (str.triml "  \n  foo  "))))))
 
-; (deftest trim
-;   (t.= "" (str.trim ""))
-;   (t.= "foo" (str.trim "foo"))
-;   (t.= "foo" (str.trim " \n foo \n \n    ") "basic")
-;   (t.= "" (str.trim "           ") "just whitespace"))
+(describe
+  "trimr"
+  (fn []
+    (it "trims all whitespace from the right of the string"
+        (fn []
+          (assert.equals "" (str.trimr ""))
+          (assert.equals "foo" (str.trimr "foo"))
+          (assert.equals "foo" (str.trimr "foo    "))
+          (assert.equals "foo" (str.trimr "foo  \n  "))
+          (assert.equals "  foo" (str.trimr "  foo  \n  "))))))
+
+(describe
+  "trim"
+  (fn []
+    (it "trims all whitespace from start end end of a string"
+        (fn []
+          (assert.equals "" (str.trim ""))
+          (assert.equals "foo" (str.trim "foo"))
+          (assert.equals "foo" (str.trim " \n foo \n \n    ") "basic")
+          (assert.equals "" (str.trim "           ") "just whitespace")))))

@@ -1,8 +1,16 @@
-; (deftest str
-;   (let [(success result) (compile.str "(+ 10 20)")]
-;     (t.ok? success "compilation should return true")
-;     (t.= "local _2afile_2a = nil\nreturn (10 + 20)" result "results include a return and parens"))
+(local {: describe : it} (require :plenary.busted))
+(local assert (require :luassert.assert))
+(local compile (require :nfnl.compile))
 
-;   (let [(success result) (compile.str "(+ 10 20")]
-;     (t.ok? (not success))
-;     (t.= 27 (result:find "expected closing delimiter"))))
+; (describe
+;   "rand"
+;   (fn []
+;     (math.randomseed (os.time))
+
+;     (it "returns a number"
+;         (fn []
+;           (assert.is_number (core.rand))))
+
+;     (it "is not the same when called twice"
+;         (fn []
+;           (assert.are_not.equal (core.rand) (core.rand))))))
