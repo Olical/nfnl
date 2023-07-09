@@ -170,153 +170,238 @@
           (assert.are.same [] (core.vals {}))
           (assert.are.same [2 3] (sort (core.vals {:a 2 :b 3})))))))
 
-; (deftest kv-pairs
-    ;   (t.pr= [] (a.kv-pairs nil) "nil is empty")
-    ;   (t.pr= [] (a.kv-pairs {}) "empty is empty")
-    ;   (t.pr= [[:a 1] [:b 2]] (sort (a.kv-pairs {:a 1 :b 2})) "simple table")
-    ;   (t.pr= [[1 :a] [2 :b]] (sort (a.kv-pairs [:a :b])) "sequential works but is weird"))
+(describe
+  "kv-pairs"
+  (fn []
+    (it "turns a map into key value pair tuples"
+        (fn []
+          (assert.are.same [] (core.kv-pairs nil))
+          (assert.are.same [] (core.kv-pairs {}))
+          (assert.are.same [[:a 1] [:b 2]] (sort (core.kv-pairs {:a 1 :b 2})))
+          (assert.are.same [[1 :a] [2 :b]] (sort (core.kv-pairs [:a :b])))))))
 
-; (deftest pr-str
-    ;   (t.pr= "[1 2 3]" (a.pr-str [1 2 3]))
-    ;   (t.pr= "1 2 3" (a.pr-str 1 2 3))
-    ;   (t.pr= "nil" (a.pr-str nil)))
+(describe
+  "pr-str"
+  (fn []
+    (it "prints a value into a string using Fennel's view function"
+        (fn []
+          (assert.equals "[1 2 3]" (core.pr-str [1 2 3]))
+          (assert.equals "1 2 3" (core.pr-str 1 2 3))
+          (assert.equals "nil" (core.pr-str nil))))))
 
-; (deftest str
-    ;   (t.pr= "" (a.str))
-    ;   (t.pr= "" (a.str ""))
-    ;   (t.pr= "" (a.str nil))
-    ;   (t.pr= "abc" (a.str "abc"))
-    ;   (t.pr= "abc" (a.str "a" "b" "c"))
-    ;   (t.pr= "{:a \"abc\"}" (a.str {:a :abc}))
-    ;   (t.pr= "[1 2 3]abc" (a.str [1 2 3] "a" "bc")))
+(describe
+  "str"
+  (fn []
+    (it "joins many things into one string, using pr-str on the arguments"
+        (fn []
+          (assert.equals "" (core.str))
+          (assert.equals "" (core.str ""))
+          (assert.equals "" (core.str nil))
+          (assert.equals "abc" (core.str "abc"))
+          (assert.equals "abc" (core.str "a" "b" "c"))
+          (assert.equals "{:a \"abc\"}" (core.str {:a :abc}))
+          (assert.equals "[1 2 3]abc" (core.str [1 2 3] "a" "bc"))))))
 
-; (deftest map
-    ;   (t.pr= [2 3 4] (a.map a.inc [1 2 3])))
+(describe
+  "map"
+  (fn []
+    (it "maps a list to another list"
+        (fn []
+          (assert.are.same [2 3 4] (core.map core.inc [1 2 3]))))))
 
-; (deftest map-indexed
-    ;   (t.pr= [[2 :a] [3 :b]]
-               ;          (a.map-indexed
-                            ;            (fn [[k v]]
-                                           ;              [(a.inc k) v])
-                            ;            [:a :b])
-               ;          "incrementing the index"))
+(describe
+  "map-indexed"
+  (fn []
+    (it "maps a list to another list, providing the index to the map fn"
+        (fn []
+          (assert.are.same
+            [[2 :a] [3 :b]]
+            (core.map-indexed
+              (fn [[k v]]
+                [(core.inc k) v])
+              [:a :b]))))))
 
-; (deftest complement
-    ;   (t.= true ((a.complement (fn [] false))))
-    ;   (t.= false ((a.complement (fn [] true)))))
+(describe
+  "complement"
+  (fn []
+    (it "inverts the boolean result of a function"
+        (fn []
+          (assert.is_true ((core.complement (fn [] false))))
+          (assert.is_false ((core.complement (fn [] true))))))))
 
-; (deftest filter
-    ;   (t.pr= [2 4 6] (a.filter #(= 0 (% $1 2)) [1 2 3 4 5 6]))
-    ;   (t.pr= [] (a.filter #(= 0 (% $1 2)) nil)))
+(describe
+  "filter"
+  (fn []
+    (it "filters values out of a list"
+        (fn []
+          (assert.are.same [2 4 6] (core.filter #(= 0 (% $1 2)) [1 2 3 4 5 6]))
+          (assert.are.same [] (core.filter #(= 0 (% $1 2)) nil))))))
 
-; (deftest remove
-    ;   (t.pr= [1 3 5] (a.remove #(= 0 (% $1 2)) [1 2 3 4 5 6]))
-    ;   (t.pr= [] (a.remove #(= 0 (% $1 2)) nil)))
+(describe
+  "remove"
+  (fn []
+    (it "removes matching items"
+        (fn []
+          (assert.are.same [1 3 5] (core.remove #(= 0 (% $1 2)) [1 2 3 4 5 6]))
+          (assert.are.same [] (core.remove #(= 0 (% $1 2)) nil))))))
 
-; (deftest identity
-    ;   (t.= :hello (a.identity :hello) "returns what you give it")
-    ;   (t.= nil (a.identity) "no arg returns nil"))
+(describe
+  "identity"
+  (fn []
+    (it "returns what you give it"
+        (fn []
+          (assert.equals :hello (core.identity :hello))
+          (assert.is_nil (core.identity))))))
 
-; (deftest concat
-    ;   (let [orig [1 2 3]]
-          ;     (t.pr= [1 2 3 4 5 6] (a.concat orig [4 5 6]) "table has been concatenated")
-          ;     (t.pr= [4 5 6 1 2 3] (a.concat [4 5 6] orig) "order is important")
-          ;     (t.pr= [1 2 3] orig "original hasn't been modified")))
+(describe
+  "concat"
+  (fn []
+    (it "concatenates tables together"
+        (fn []
+          (let [orig [1 2 3]]
+            (assert.are.same [1 2 3 4 5 6] (core.concat orig [4 5 6]))
+            (assert.are.same [4 5 6 1 2 3] (core.concat [4 5 6] orig))
+            (assert.are.same [1 2 3] orig))))))
 
-; (deftest mapcat
-    ;   (t.pr= [1 :x 2 :x 3 :x] (a.mapcat (fn [n] [n :x]) [1 2 3]) "simple list"))
+(describe
+  "mapcat"
+  (fn []
+    (it "maps and concats"
+        (fn []
+          (assert.are.same [1 :x 2 :x 3 :x] (core.mapcat (fn [n] [n :x]) [1 2 3]))))))
 
-; (deftest count
-    ;   (t.= 3 (a.count [1 2 3]) "three values")
-    ;   (t.= 0 (a.count []) "empty")
-    ;   (t.= 0 (a.count nil) "nil")
-    ;   (t.= 0 (a.count nil) "no arg")
-    ;   (t.= 3 (a.count [1 nil 3]) "nil gap")
-    ;   (t.= 4 (a.count [nil nil nil :a]) "mostly nils")
-    ;   (t.= 3 (a.count "foo") "strings")
-    ;   (t.= 0 (a.count "") "empty strings")
-    ;   (t.= 2 (a.count {:a 1 :b 2}) "associative also works"))
+(describe
+  "count"
+  (fn []
+    (it "counts various types"
+        (fn []
+          (assert.equals 3 (core.count [1 2 3]) "three values")
+          (assert.equals 0 (core.count []) "empty")
+          (assert.equals 0 (core.count nil) "nil")
+          (assert.equals 0 (core.count nil) "no arg")
+          (assert.equals 3 (core.count [1 nil 3]) "nil gap")
+          (assert.equals 4 (core.count [nil nil nil :a]) "mostly nils")
+          (assert.equals 3 (core.count "foo") "strings")
+          (assert.equals 0 (core.count "") "empty strings")
+          (assert.equals 2 (core.count {:a 1 :b 2}) "associative also works")))))
 
-; (deftest empty?
-    ;   (t.= true (a.empty? []) "empty table")
-    ;   (t.= false (a.empty? [1]) "full table")
-    ;   (t.= true (a.empty? "") "empty string")
-    ;   (t.= false (a.empty? "a") "full string"))
+(describe
+  "empty?"
+  (fn []
+    (it "checks if tables are empty"
+        (fn []
+          (assert.is_true (core.empty? []) "empty table")
+          (assert.is_false (core.empty? [1]) "full table")
+          (assert.is_true (core.empty? "") "empty string")
+          (assert.is_false (core.empty? "a") "full string")))))
 
-; (deftest merge
-    ;   (t.pr= {:a 1 :b 2} (a.merge {} {:a 1} {:b 2}) "simple maps")
-    ;   (t.pr= {} (a.merge) "always start with an empty table")
-    ;   (t.pr= {:a 1} (a.merge nil {:a 1}) "into nil")
-    ;   (t.pr= {:a 1 :c 3} (a.merge {:a 1} nil {:c 3}) "nil in the middle"))
+(describe
+  "merge"
+  (fn []
+    (it "merges tables together in a pure way returning a new table"
+        (fn []
+          (assert.are.same {:a 1 :b 2} (core.merge {} {:a 1} {:b 2}) "simple maps")
+          (assert.are.same {} (core.merge) "always start with an empty table")
+          (assert.are.same {:a 1} (core.merge nil {:a 1}) "into nil")
+          (assert.are.same {:a 1 :c 3} (core.merge {:a 1} nil {:c 3}) "nil in the middle")))))
 
-; (deftest merge!
-    ;   (let [result {:c 3}]
-          ;     (t.pr= {:a 1 :b 2 :c 3} (a.merge! result {:a 1} {:b 2}) "simple maps")
-          ;     (t.pr= {:a 1 :b 2 :c 3} result "the bang version side effects")))
+(describe
+  "merge!"
+  (fn []
+    (it "merges in a side effecting way into the first table"
+        (fn []
+          (let [result {:c 3}]
+            (assert.are.same {:a 1 :b 2 :c 3} (core.merge! result {:a 1} {:b 2}) "simple maps")
+            (assert.are.same {:a 1 :b 2 :c 3} result "the bang version side effects"))))))
 
-; (deftest select-keys
-    ;   (t.pr= {} (a.select-keys nil [:a :b]) "no table")
-    ;   (t.pr= {} (a.select-keys {} [:a :b]) "empty table")
-    ;   (t.pr= {} (a.select-keys {:a 1 :b 2} nil) "no keys")
-    ;   (t.pr= {} (a.select-keys nil nil) "nothing")
-    ;   (t.pr= {:a 1 :c 3} (a.select-keys {:a 1 :b 2 :c 3} [:a :c])
-               ;          "simple table and keys"))
+(describe
+  "select-keys"
+  (fn []
+    (it "pulls specific keys out of the table into a new one"
+        (fn []
+          (assert.are.same {} (core.select-keys nil [:a :b]) "no table")
+          (assert.are.same {} (core.select-keys {} [:a :b]) "empty table")
+          (assert.are.same {} (core.select-keys {:a 1 :b 2} nil) "no keys")
+          (assert.are.same {} (core.select-keys nil nil) "nothing")
+          (assert.are.same {:a 1 :c 3} (core.select-keys {:a 1 :b 2 :c 3} [:a :c]) "simple table and keys")))))
 
-; (deftest get
-    ;   (t.= nil (a.get nil :a) "from nothing is nothing")
-    ;   (t.= nil (a.get {:a 1} nil) "nothing from something is nothing")
-    ;   (t.= 10 (a.get nil nil 10) "just a default returns a default")
-    ;   (t.= nil (a.get {:a 1} :b) "a missing key is nothing")
-    ;   (t.= 2 (a.get {:a 1} :b 2) "defaults replace missing")
-    ;   (t.= 1 (a.get {:a 1} :a) "results match")
-    ;   (t.= 1 (a.get {:a 1} :a 2) "results match (even with default)")
-    ;   (t.= :b (a.get [:a :b] 2) "sequential tables work too"))
+(describe
+  "get"
+  (fn []
+    (it "pulls values out of tables"
+        (fn []
+          (assert.equals nil (core.get nil :a) "from nothing is nothing")
+          (assert.equals nil (core.get {:a 1} nil) "nothing from something is nothing")
+          (assert.equals 10 (core.get nil nil 10) "just a default returns a default")
+          (assert.equals nil (core.get {:a 1} :b) "a missing key is nothing")
+          (assert.equals 2 (core.get {:a 1} :b 2) "defaults replace missing")
+          (assert.equals 1 (core.get {:a 1} :a) "results match")
+          (assert.equals 1 (core.get {:a 1} :a 2) "results match (even with default)")
+          (assert.equals :b (core.get [:a :b] 2) "sequential tables work too")))))
 
-; (deftest get-in
-    ;   (t.= nil (a.get-in nil [:a]) "something from nil is nil")
-    ;   (t.pr= {:a 1} (a.get-in {:a 1} [])
-               ;          "empty path is idempotent")
-    ;   (t.= 10 (a.get-in {:a {:b 10 :c 20}} [:a :b]) "two levels")
-    ;   (t.= 5 (a.get-in {:a {:b 10 :c 20}} [:a :d] 5) "default"))
+(describe
+  "get-in"
+  (fn []
+    (it "works like get, but deeply using a path table"
+        (fn []
+          (assert.equals nil (core.get-in nil [:a]) "something from nil is nil")
+          (assert.are.same {:a 1} (core.get-in {:a 1} []) "empty path is idempotent")
+          (assert.equals 10 (core.get-in {:a {:b 10 :c 20}} [:a :b]) "two levels")
+          (assert.equals 5 (core.get-in {:a {:b 10 :c 20}} [:a :d] 5) "default")))))
 
-; (deftest assoc
-    ;   (t.pr= {} (a.assoc nil nil nil) "3x nil is an empty map")
-    ;   (t.pr= {} (a.assoc nil :a nil) "setting to nil is noop")
-    ;   (t.pr= {} (a.assoc nil nil :a) "nil key is noop")
-    ;   (t.pr= {:a 1} (a.assoc nil :a 1) "from nothing to one key")
-    ;   (t.pr= [:a] (a.assoc nil 1 :a) "sequential")
-    ;   (t.pr= {:a 1 :b 2} (a.assoc {:a 1} :b 2) "adding to existing")
-    ;   (t.pr= {:a 1 :b 2 :c 3} (a.assoc {:a 1} :b 2 :c 3) "multi arg")
-    ;   (t.pr= {:a 1 :b 2 :c 3 :d 4} (a.assoc {:a 1} :b 2 :c 3 :d 4) "more multi arg")
-    ;   (let [(ok? msg) (pcall #(a.assoc {:a 1} :b 2 :c))]
-          ;     (t.= false ok? "uneven args - ok?")
-          ;     (t.= "expects even number"
-                     ;          (msg:match "expects even number") "uneven args - msg")))
+(describe
+  "assoc"
+  (fn []
+    (it "puts values into tables"
+        (fn []
+          (assert.are.same {} (core.assoc nil nil nil) "3x nil is an empty map")
+          (assert.are.same {} (core.assoc nil :a nil) "setting to nil is noop")
+          (assert.are.same {} (core.assoc nil nil :a) "nil key is noop")
+          (assert.are.same {:a 1} (core.assoc nil :a 1) "from nothing to one key")
+          (assert.are.same [:a] (core.assoc nil 1 :a) "sequential")
+          (assert.are.same {:a 1 :b 2} (core.assoc {:a 1} :b 2) "adding to existing")
+          (assert.are.same {:a 1 :b 2 :c 3} (core.assoc {:a 1} :b 2 :c 3) "multi arg")
+          (assert.are.same {:a 1 :b 2 :c 3 :d 4} (core.assoc {:a 1} :b 2 :c 3 :d 4) "more multi arg")
+          (let [(ok? msg) (pcall #(core.assoc {:a 1} :b 2 :c))]
+            (assert.is_false ok? "uneven args - ok?")
+            (assert.equals "expects even number" (msg:match "expects even number") "uneven args - msg"))))))
 
-; (deftest assoc-in
-    ;   (t.pr= {} (a.assoc-in nil nil nil) "empty as possible")
-    ;   (t.pr= {} (a.assoc-in nil [] nil) "empty path, nothing else")
-    ;   (t.pr= {} (a.assoc-in nil [] 2) "empty path and a value")
-    ;   (t.pr= {:a 1} (a.assoc-in {:a 1} [] 2)
-               ;          "empty path, base table and a value")
-    ;   (t.pr= {:a 1 :b 2} (a.assoc-in {:a 1} [:b] 2)
-               ;          "simple one path segment")
-    ;   (t.pr= {:a 1 :b {:c 2}} (a.assoc-in {:a 1} [:b :c] 2)
-               ;          "two levels from base")
-    ;   (t.pr= {:b {:c 2}} (a.assoc-in nil [:b :c] 2)
-               ;          "two levels from nothing")
-    ;   (t.pr= {:a {:b [:c]}} (a.assoc-in nil [:a :b 1] :c)
-               ;          "mixing associative and sequential"))
+(describe
+  "assoc-in"
+  (fn []
+    (it "works like assoc but deeply with a path table"
+        (fn []
+          (assert.are.same {} (core.assoc-in nil nil nil) "empty as possible")
+          (assert.are.same {} (core.assoc-in nil [] nil) "empty path, nothing else")
+          (assert.are.same {} (core.assoc-in nil [] 2) "empty path and a value")
+          (assert.are.same {:a 1} (core.assoc-in {:a 1} [] 2) "empty path, base table and a value")
+          (assert.are.same {:a 1 :b 2} (core.assoc-in {:a 1} [:b] 2) "simple one path segment")
+          (assert.are.same {:a 1 :b {:c 2}} (core.assoc-in {:a 1} [:b :c] 2) "two levels from base")
+          (assert.are.same {:b {:c 2}} (core.assoc-in nil [:b :c] 2) "two levels from nothing")
+          (assert.are.same {:a {:b [:c]}} (core.assoc-in nil [:a :b 1] :c) "mixing associative and sequential")))))
 
-; (deftest update
-    ;   (t.pr= {:foo 2} (a.update {:foo 1} :foo a.inc) "increment a value"))
+(describe
+  "update"
+  (fn []
+    (it "updates a key with a function"
+        (fn []
+          (assert.are.same {:foo 2} (core.update {:foo 1} :foo core.inc) "increment a value")))))
 
-; (deftest update-in
-    ;   (t.pr= {:foo {:bar 2}}
-               ;          (a.update-in {:foo {:bar 1}} [:foo :bar] a.inc)
-               ;          "increment a value"))
+(describe
+  "update-in"
+  (fn []
+    (it "like update but nested with a path table"
+        (fn []
+          (assert.are.same
+            {:foo {:bar 2}}
+            (core.update-in {:foo {:bar 1}} [:foo :bar] core.inc)
+            "increment a value")))))
 
-; (deftest constantly
-    ;   (let [f (a.constantly :foo)]
-          ;     (t.= :foo (f))
-          ;     (t.= :foo (f :bar))))
+(describe
+  "constantly"
+  (fn []
+    (it "builds a function that always returns the same thing"
+        (fn []
+          (let [f (core.constantly :foo)]
+            (assert.equals :foo (f))
+            (assert.equals :foo (f :bar)))))))
