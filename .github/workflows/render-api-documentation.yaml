@@ -22,4 +22,4 @@ jobs:
           author_email: ${{ github.actor }}@users.noreply.github.com
           message: "Render API documentation"
           add: "."
-          branch: ${{ github.ref }}
+          ref: ${{ github.ref }}
