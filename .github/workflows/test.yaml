@@ -16,7 +16,7 @@ jobs:
           tag: ${{ matrix.neovim-version }}
       - name: Install Neovim plugins
         run: |
-          mkdir ~/.local/share/nvim/site/pack/nfnl-tests/start
+          mkdir -p ~/.local/share/nvim/site/pack/nfnl-tests/start
           git clone https://github.com/nvim-lua/plenary.nvim.git ~/.local/share/nvim/site/pack/nfnl-tests/start/plenary
           ln -s . ~/.local/share/nvim/site/pack/nfnl-tests/start/nfnl
       - name: Test with plenary / busted
