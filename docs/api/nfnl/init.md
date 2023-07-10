@@ -12,7 +12,7 @@ Function signature:
 (compile-all-files dir)
 ```
 
-**Undocumented**
+Compiles all files in the given directory, defaulting to the current working directory.
 
 ## `setup`
 Function signature:
@@ -21,9 +21,7 @@ Function signature:
 (setup)
 ```
 
-Called by the user or plugin manager at Neovim startup. Users may lazy load
-  this plugin which means the Filetype autocmd already happened, so we have to
-  check for that and manually invoke the callback for that case.
+**Undocumented**
 
 
 <!-- Generated with Fenneldoc v1.0.1

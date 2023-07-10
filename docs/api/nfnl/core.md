@@ -121,7 +121,7 @@ Function signature:
 (count xs)
 ```
 
-**Undocumented**
+Count the items / characters in the input. Can handle tables, nil, strings and anything else that works with `(length xs)`.
 
 ## `dec`
 Function signature:
@@ -139,7 +139,7 @@ Function signature:
 (empty? xs)
 ```
 
-**Undocumented**
+Returns true if the argument is empty, this includes empty strings, lists and nil.
 
 ## `even?`
 Function signature:
