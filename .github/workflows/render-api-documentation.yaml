@@ -1,0 +1,25 @@
+name: Render API documentation
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: leafo/gh-actions-lua@v10
+        with:
+          luaVersion: "luajit-2.1.0-beta3"
+      - name: Run API renderer
+        run: |
+          ./script/render-api-documentation
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v4
+        with:
+          author_name: ${{ github.actor }}
+          author_email: ${{ github.actor }}@users.noreply.github.com
+          message: "Render API documentation"
+          add: "."
+          branch: ${{ github.ref }}
