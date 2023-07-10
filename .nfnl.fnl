@@ -3,13 +3,13 @@
 (local notify (autoload :nfnl.notify))
 
 (vim.api.nvim_set_keymap
-  :n "<localleader>nt" "<Plug>PlenaryTestFile" {:desc "Run the current test file with plenary."})
+  :n "<localleader>pt" "<Plug>PlenaryTestFile" {:desc "Run the current test file with plenary."})
 
 (vim.api.nvim_set_keymap
-  :n "<localleader>nT" "<cmd>PlenaryBustedDirectory lua/spec/<cr>" {:desc "Run all tests with plenary."})
+  :n "<localleader>pT" "<cmd>PlenaryBustedDirectory lua/spec/<cr>" {:desc "Run all tests with plenary."})
 
 (vim.api.nvim_set_keymap
-  :n "<localleader>nr" ""
+  :n "<localleader>pr" ""
   {:desc "Reload the nfnl modules."
    :callback (fn []
                (notify.info "Reloading nfnl modules")
