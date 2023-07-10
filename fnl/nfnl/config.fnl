@@ -24,7 +24,7 @@
                          "./fnl/?.fnl"
                          "./fnl/?/init-macros.fnl"
                          "./fnl/?/init.fnl"])
-   :source-file-patterns [(fs.join-path ["fnl" "**" "*.fnl"])]})
+   :source-file-patterns ["*.fnl" (fs.join-path ["**" "*.fnl"])]})
 
 (fn cfg-fn [t]
   "Builds a cfg fetcher for the config table t. Returns a function that takes a

@@ -85,7 +85,8 @@ fine!) will default to these values that should work fine for most people.
  ;; should be compiled. This is used as configuration for the BufWritePost
  ;; autocmd, so it'll only apply to buffers you're interested in.
  ;; Will use backslashes on Windows.
- :source-file-patterns ["fnl/**/*.fnl"]}
+ ;; Defaults to compiling all .fnl files, you may want to limit it to your fnl/ directory.
+ :source-file-patterns ["*.fnl" "**/*.fnl"]}
 ```
 
 As an example, if you want to compile `.fnl` files in the root directory of your
