@@ -5,6 +5,10 @@ local compile = autoload("nfnl.compile")
 local config = autoload("nfnl.config")
 local notify = autoload("nfnl.notify")
 local callback = autoload("nfnl.callback")
+if (0 == vim.fn.has("nvim-0.9.0")) then
+  error("nfnl requires Neovim > v0.9.0.")
+else
+end
 vim.api.nvim_create_autocmd({"Filetype"}, {group = vim.api.nvim_create_augroup("nfnl-setup", {}), pattern = "fennel", callback = callback["fennel-filetype-callback"]})
 if ("fennel" == vim.o.filetype) then
   callback["fennel-filetype-callback"]({file = vim.fn.expand("%"), buf = vim.api.nvim_get_current_buf()})
@@ -15,10 +19,10 @@ local function setup()
 end
 local function compile_all_files(dir)
   local dir0 = (dir or vim.fn.getcwd())
-  local _let_3_ = config["find-and-load"](dir0)
-  local config0 = _let_3_["config"]
-  local root_dir = _let_3_["root-dir"]
-  local cfg = _let_3_["cfg"]
+  local _let_4_ = config["find-and-load"](dir0)
+  local config0 = _let_4_["config"]
+  local root_dir = _let_4_["root-dir"]
+  local cfg = _let_4_["cfg"]
   if config0 then
     return notify.info("Compilation complete.\n", compile["all-files"]({["root-dir"] = root_dir, cfg = cfg}))
   else

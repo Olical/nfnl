@@ -119,6 +119,7 @@ first time. There is no need to call `require("nfnl").setup()` right now, it's
 currently a noop but it may be used eventually. Some plugin managers support
 this function and will call it automatically.
 
+- Requires Neovim > v0.9.0.
 - Add the dependency to your plugin manager.
 - Add lazy loading rules on the Fennel filetype if you want.
 

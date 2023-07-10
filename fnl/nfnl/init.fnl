@@ -4,6 +4,9 @@
 (local notify (autoload :nfnl.notify))
 (local callback (autoload :nfnl.callback))
 
+(when (= 0 (vim.fn.has "nvim-0.9.0"))
+  (error "nfnl requires Neovim > v0.9.0."))
+
 (vim.api.nvim_create_autocmd
     ["Filetype"]
     {:group (vim.api.nvim_create_augroup "nfnl-setup" {})
