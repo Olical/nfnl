@@ -33,8 +33,8 @@ return a table of configuration at the end.
 {:fennel-path "..."}
 ```
 
-By default, writing to any Fennel file with Neovim under the `fnl/**/*.fnl`
-pattern will automatically compile it to Lua in `lua/**/*.lua`. If there are
+By default, writing to any Fennel file with Neovim under the directory
+containing `.nfnl.fnl` will automatically compile it to Lua. If there are
 compilations errors they'll be displayed using `vim.notify` and the Lua will not
 be updated.
 
@@ -89,12 +89,12 @@ fine!) will default to these values that should work fine for most people.
  :source-file-patterns ["*.fnl" "**/*.fnl"]}
 ```
 
-As an example, if you want to compile `.fnl` files in the root directory of your
-Neovim configuration (so no `fnl` subdirectory at all) you could use this
-`.nfnl.fnl` file.
+As an example, if you only want to compile `.fnl` files under the `fnl/`
+directory of your Neovim configuration (so nothing in the root directory) you
+could use this `.nfnl.fnl` file instead.
 
 ```fennel
-{:source-file-patterns ["*.fnl" "**/*.fnl"]}
+{:source-file-patterns ["fnl/**/*.fnl"]}
 ```
 
 And since this is a Fennel file that's executed within Neovim you can actually
