@@ -67,6 +67,7 @@
   (str.join (path-sep) (core.concat parts)))
 
 (fn replace-dirs [path from to]
+  "Replaces directories in `path` that match `from` with `to`."
   (->> (split-path path)
        (core.map
          (fn [segment]
