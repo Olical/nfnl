@@ -31,10 +31,11 @@
   path sequential table, it looks up the value from the config with core.get-in
   and falls back to a matching value in (default) if not found."
 
-  (fn [path]
-    (core.get-in
-      t path
-      (core.get-in (default) path))))
+  (let [default-cfg (default)]
+    (fn [path]
+      (core.get-in
+        t path
+        (core.get-in default-cfg path)))))
 
 (fn config-file-path? [path]
   (= config-file-name (fs.filename path)))

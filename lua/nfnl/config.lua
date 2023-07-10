@@ -11,8 +11,9 @@ local function default()
   return {["compiler-options"] = {}, ["fennel-path"] = str.join(";", {"./?.fnl", "./?/init.fnl", "./fnl/?.fnl", "./fnl/?/init.fnl"}), ["fennel-macro-path"] = str.join(";", {"./?.fnl", "./?/init-macros.fnl", "./?/init.fnl", "./fnl/?.fnl", "./fnl/?/init-macros.fnl", "./fnl/?/init.fnl"}), ["source-file-patterns"] = {fs["join-path"]({"fnl", "**", "*.fnl"})}}
 end
 local function cfg_fn(t)
+  local default_cfg = default()
   local function _2_(path)
-    return core["get-in"](t, path, core["get-in"](default(), path))
+    return core["get-in"](t, path, core["get-in"](default_cfg, path))
   end
   return _2_
 end
