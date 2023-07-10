@@ -2,9 +2,21 @@
 
 **Table of contents**
 
+- [`cfg-fn`](#cfg-fn)
 - [`config-file-path?`](#config-file-path)
 - [`default`](#default)
 - [`find-and-load`](#find-and-load)
+
+## `cfg-fn`
+Function signature:
+
+```
+(cfg-fn t)
+```
+
+Builds a cfg fetcher for the config table t. Returns a function that takes a
+  path sequential table, it looks up the value from the config with core.get-in
+  and falls back to a matching value in (default) if not found.
 
 ## `config-file-path?`
 Function signature:

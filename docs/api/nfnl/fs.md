@@ -125,7 +125,7 @@ Function signature:
 (replace-dirs path from to)
 ```
 
-**Undocumented**
+Replaces directories in `path` that match `from` with `to`.
 
 ## `replace-extension`
 Function signature:

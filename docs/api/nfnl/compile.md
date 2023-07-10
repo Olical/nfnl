@@ -4,6 +4,7 @@
 
 - [`all-files`](#all-files)
 - [`into-file`](#into-file)
+- [`into-string`](#into-string)
 
 ## `all-files`
 Function signature:
@@ -18,7 +19,16 @@ Function signature:
 Function signature:
 
 ```
-(into-file {:batch? batch? :cfg cfg :path path :root-dir root-dir :source source})
+(into-file {:_cfg _cfg :_root-dir _root-dir :_source _source :batch? batch? :path path &as opts})
+```
+
+**Undocumented**
+
+## `into-string`
+Function signature:
+
+```
+(into-string {:batch? batch? :cfg cfg :path path :root-dir root-dir :source source})
 ```
 
 **Undocumented**
