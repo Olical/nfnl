@@ -39,6 +39,7 @@
     result))
 
 (fn count [xs]
+  "Count the items / characters in the input. Can handle tables, nil, strings and anything else that works with `(length xs)`."
   (if
     (table? xs) (let [maxn (table.maxn xs)]
                   ;; We only count the keys if maxn returns 0.
@@ -49,6 +50,7 @@
     (length xs)))
 
 (fn empty? [xs]
+  "Returns true if the argument is empty, this includes empty strings, lists and nil."
   (= 0 (count xs)))
 
 (fn first [xs]
