@@ -1,4 +1,20 @@
+(local {: autoload} (require :nfnl.module))
+(local reload (autoload :plenary.reload))
+(local notify (autoload :nfnl.notify))
+
 (vim.api.nvim_set_keymap
-  :n "<localleader>pt" "<cmd>PlenaryBustedDirectory lua/spec/<cr>" {:desc "Run all tests with plenary."})
+  :n "<localleader>nt" "<Plug>PlenaryTestFile" {:desc "Run the current test file with plenary."})
+
+(vim.api.nvim_set_keymap
+  :n "<localleader>nT" "<cmd>PlenaryBustedDirectory lua/spec/<cr>" {:desc "Run all tests with plenary."})
+
+(vim.api.nvim_set_keymap
+  :n "<localleader>nr" ""
+  {:desc "Reload the nfnl modules."
+   :callback (fn []
+               (notify.info "Reloading nfnl modules")
+               (reload.reload_module "nfnl")
+               ((. (require :nfnl) :setup))
+               (notify.info "nfnl reload complete"))})
 
 {}
