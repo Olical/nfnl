@@ -110,23 +110,17 @@ load nfnl's modules to access things like the default config values.
 
 ## Installation
 
-- [Lazy][lazy]: `{ "Olical/nfnl", config = true, ft = "fennel" }`
+- [Lazy][lazy]: `{ "Olical/nfnl", ft = "fennel" }`
 - [Plug][plug]: `Plug 'Olical/nfnl'`
 - [Packer][packer]: `use "Olical/nfnl"`
 
-[Lazy][lazy] will invoke `require('nfnl').setup()` on your behalf thanks to
-`config = true` and will lazily load the plugin when you enter a Fennel file for
-the first time. Other plugin managers will require some more configuration or a
-manual call to the `.setup()` function in order to create the appropriate
-autocmds.
+[Lazy][lazy] will lazily load the plugin when you enter a Fennel file for the
+first time. There is no need to call `require("nfnl").setup()` right now, it's
+currently a noop but it may be used eventually. Some plugin managers support
+this function and will call it automatically.
 
 - Add the dependency to your plugin manager.
 - Add lazy loading rules on the Fennel filetype if you want.
-- Ensure that `require('nfnl').setup()` is called either by your plugin manager
-  or your configuration.
-
-The nfnl setup function does not currently take any configuration, it just needs
-to be invoked.
 
 ## Standard library
 

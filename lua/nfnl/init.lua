@@ -5,13 +5,13 @@ local compile = autoload("nfnl.compile")
 local config = autoload("nfnl.config")
 local notify = autoload("nfnl.notify")
 local callback = autoload("nfnl.callback")
+vim.api.nvim_create_autocmd({"Filetype"}, {group = vim.api.nvim_create_augroup("nfnl-setup", {}), pattern = "fennel", callback = callback["fennel-filetype-callback"]})
+if ("fennel" == vim.o.filetype) then
+  callback["fennel-filetype-callback"]({file = vim.fn.expand("%"), buf = vim.api.nvim_get_current_buf()})
+else
+end
 local function setup()
-  vim.api.nvim_create_autocmd({"Filetype"}, {group = vim.api.nvim_create_augroup("nfnl-setup", {}), pattern = "fennel", callback = callback["fennel-filetype-callback"]})
-  if ("fennel" == vim.o.filetype) then
-    return callback["fennel-filetype-callback"]({file = vim.fn.expand("%"), buf = vim.api.nvim_get_current_buf()})
-  else
-    return nil
-  end
+  return "A noop for now, may be used one day. You just need to load this module for the plugin to initialise for now."
 end
 local function compile_all_files(dir)
   local dir0 = (dir or vim.fn.getcwd())

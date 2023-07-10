@@ -4,12 +4,7 @@
 (local notify (autoload :nfnl.notify))
 (local callback (autoload :nfnl.callback))
 
-(fn setup []
-  "Called by the user or plugin manager at Neovim startup. Users may lazy load
-  this plugin which means the Filetype autocmd already happened, so we have to
-  check for that and manually invoke the callback for that case."
-
-  (vim.api.nvim_create_autocmd
+(vim.api.nvim_create_autocmd
     ["Filetype"]
     {:group (vim.api.nvim_create_augroup "nfnl-setup" {})
      :pattern "fennel"
@@ -18,7 +13,10 @@
   (when (= :fennel vim.o.filetype)
     (callback.fennel-filetype-callback
       {:file (vim.fn.expand "%")
-       :buf (vim.api.nvim_get_current_buf)})))
+       :buf (vim.api.nvim_get_current_buf)}))
+
+(fn setup []
+  "A noop for now, may be used one day. You just need to load this module for the plugin to initialise for now.")
 
 (fn compile-all-files [dir]
   (local dir (or dir (vim.fn.getcwd)))
