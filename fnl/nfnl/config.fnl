@@ -74,6 +74,7 @@
     ;; Always default to an empty table for destructuring.
     {}))
 
-{: find-and-load
+{: cfg-fn
+ : find-and-load
  : config-file-path?
  : default}

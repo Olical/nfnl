@@ -28,7 +28,7 @@
 (fn macro-source? [source]
   (string.find source "%s*;+%s*%[nfnl%-macro%]"))
 
-(fn mod.into-file [{: root-dir : path : cfg : source : batch?}]
+(fn mod.into-string [{: root-dir : path : cfg : source : batch?}]
   (let [macro? (macro-source? source)]
     (if
       (and macro? batch?)
@@ -43,8 +43,6 @@
        :source-path path}
 
       (let [rel-file-name (path:sub (+ 2 (root-dir:len)))
-            destination-path (fnl-path->lua-path path)
-
             (ok res)
             (do
               (set fennel.path (cfg [:fennel-path]))
@@ -56,28 +54,38 @@
                   {:filename path}
                   (cfg [:compiler-options]))))]
         (if ok
-          (if (safe-target? destination-path)
-            (do
-              (fs.mkdirp (fs.basename destination-path))
-              (core.spit
-                destination-path
-                (.. (with-header rel-file-name res) "\n"))
-              {:status :ok
-               :source-path path
-               : destination-path})
-            (do
-              (when (not batch?)
-                (notify.warn destination-path " was not compiled by nfnl. Delete it manually if you wish to compile into this file."))
-              {:status :destination-exists
-               :source-path path
-               : destination-path}))
+          {:status :ok
+           :source-path path
+           :result (.. (with-header rel-file-name res) "\n")}
           (do
             (when (not batch?)
               (notify.error res))
             {:status :compilation-error
              :error res
-             :source-path path
-             : destination-path}))))))
+             :source-path path}))))))
+
+(fn mod.into-file [{: _root-dir : _cfg : _source : path : batch? &as opts}]
+  (let [destination-path (fnl-path->lua-path path)
+        {: status : source-path : result &as res}
+        (mod.into-string opts)]
+    (if
+      (not= :ok status)
+      res
+
+      (safe-target? destination-path)
+      (do
+        (fs.mkdirp (fs.basename destination-path))
+        (core.spit destination-path result)
+        {:status :ok
+         : source-path
+         : destination-path})
+
+      (do
+        (when (not batch?)
+          (notify.warn destination-path " was not compiled by nfnl. Delete it manually if you wish to compile into this file."))
+        {:status :destination-exists
+         :source-path path
+         : destination-path}))))
 
 (fn mod.all-files [{: root-dir : cfg}]
   (->> (core.mapcat #(fs.relglob root-dir $) (cfg [:source-file-patterns]))

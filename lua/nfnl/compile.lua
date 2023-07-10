@@ -21,7 +21,7 @@ end
 local function macro_source_3f(source)
   return string.find(source, "%s*;+%s*%[nfnl%-macro%]")
 end
-mod["into-file"] = function(_2_)
+mod["into-string"] = function(_2_)
   local _arg_3_ = _2_
   local root_dir = _arg_3_["root-dir"]
   local path = _arg_3_["path"]
@@ -37,7 +37,6 @@ mod["into-file"] = function(_2_)
     return {status = "nfnl-config-is-not-compiled", ["source-path"] = path}
   else
     local rel_file_name = path:sub((2 + root_dir:len()))
-    local destination_path = fnl_path__3elua_path(path)
     local ok, res = nil, nil
     do
       fennel.path = cfg({"fennel-path"})
@@ -45,36 +44,54 @@ mod["into-file"] = function(_2_)
       ok, res = pcall(fennel.compileString, source, core.merge({filename = path}, cfg({"compiler-options"})))
     end
     if ok then
-      if safe_target_3f(destination_path) then
-        fs.mkdirp(fs.basename(destination_path))
-        core.spit(destination_path, (with_header(rel_file_name, res) .. "\n"))
-        return {status = "ok", ["source-path"] = path, ["destination-path"] = destination_path}
-      else
-        if not batch_3f then
-          notify.warn(destination_path, " was not compiled by nfnl. Delete it manually if you wish to compile into this file.")
-        else
-        end
-        return {status = "destination-exists", ["source-path"] = path, ["destination-path"] = destination_path}
-      end
+      return {status = "ok", ["source-path"] = path, result = (with_header(rel_file_name, res) .. "\n")}
     else
       if not batch_3f then
         notify.error(res)
       else
       end
-      return {status = "compilation-error", error = res, ["source-path"] = path, ["destination-path"] = destination_path}
+      return {status = "compilation-error", error = res, ["source-path"] = path}
     end
   end
 end
-mod["all-files"] = function(_9_)
-  local _arg_10_ = _9_
-  local root_dir = _arg_10_["root-dir"]
-  local cfg = _arg_10_["cfg"]
-  local function _11_(path)
+mod["into-file"] = function(_7_)
+  local _arg_8_ = _7_
+  local _root_dir = _arg_8_["_root-dir"]
+  local _cfg = _arg_8_["_cfg"]
+  local _source = _arg_8_["_source"]
+  local path = _arg_8_["path"]
+  local batch_3f = _arg_8_["batch?"]
+  local opts = _arg_8_
+  local destination_path = fnl_path__3elua_path(path)
+  local _let_9_ = mod["into-string"](opts)
+  local status = _let_9_["status"]
+  local source_path = _let_9_["source-path"]
+  local result = _let_9_["result"]
+  local res = _let_9_
+  if ("ok" ~= status) then
+    return res
+  elseif safe_target_3f(destination_path) then
+    fs.mkdirp(fs.basename(destination_path))
+    core.spit(destination_path, result)
+    return {status = "ok", ["source-path"] = source_path, ["destination-path"] = destination_path}
+  else
+    if not batch_3f then
+      notify.warn(destination_path, " was not compiled by nfnl. Delete it manually if you wish to compile into this file.")
+    else
+    end
+    return {status = "destination-exists", ["source-path"] = path, ["destination-path"] = destination_path}
+  end
+end
+mod["all-files"] = function(_12_)
+  local _arg_13_ = _12_
+  local root_dir = _arg_13_["root-dir"]
+  local cfg = _arg_13_["cfg"]
+  local function _14_(path)
     return mod["into-file"]({["root-dir"] = root_dir, path = path, cfg = cfg, source = core.slurp(path), ["batch?"] = true})
   end
-  local function _12_(_241)
+  local function _15_(_241)
     return fs.relglob(root_dir, _241)
   end
-  return core.map(_11_, core.map(fs["full-path"], core.mapcat(_12_, cfg({"source-file-patterns"}))))
+  return core.map(_14_, core.map(fs["full-path"], core.mapcat(_15_, cfg({"source-file-patterns"}))))
 end
 return mod

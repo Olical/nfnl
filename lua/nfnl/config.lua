@@ -45,4 +45,4 @@ local function find_and_load(dir)
   end
   return (_3_() or {})
 end
-return {["find-and-load"] = find_and_load, ["config-file-path?"] = config_file_path_3f, default = default}
+return {["cfg-fn"] = cfg_fn, ["find-and-load"] = find_and_load, ["config-file-path?"] = config_file_path_3f, default = default}
