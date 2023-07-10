@@ -19,6 +19,9 @@ jobs:
           mkdir -p ~/.local/share/nvim/site/pack/nfnl-tests/start
           git clone https://github.com/nvim-lua/plenary.nvim.git ~/.local/share/nvim/site/pack/nfnl-tests/start/plenary
           ln -s . ~/.local/share/nvim/site/pack/nfnl-tests/start/nfnl
+      - name: Trust the project configuration file
+        run: |
+          nvim --headless -c "trust .nfnl.fnl"
       - name: Test with plenary / busted
         run: |
           ./script/test
