@@ -21,5 +21,5 @@ jobs:
           author_name: ${{ github.actor }}
           author_email: ${{ github.actor }}@users.noreply.github.com
           message: "Render API documentation"
-          add: "."
+          add: "./docs/api"
           ref: ${{ github.ref }}
