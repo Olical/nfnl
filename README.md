@@ -240,6 +240,22 @@ unbalanced parenthesis _before_ I try to compile the file.
 The same can be done for Lua so you can also check the linting and static
 analysis of the compiled output in order to help debug some runtime issues.
 
+### Directory local Neovim configuration in Fennel
+
+I wrote [nvim-local-fennel][nvim-local-fennel] to solve this problem years ago
+but I now recommend combining nfnl with the built in `exrc` option. Simply
+`:set exrc` (see `:help exrc` for more information), create a `.nfnl.fnl` file
+and then edit `.nvim.fnl`.
+
+This will write Lua to `.nvim.lua` which will be executed whenever your Neovim
+enters this directory tree. Even if you uninstall nfnl the `.lua` file will
+continue to work. Colleagues who also use Neovim but don't have nfnl installed
+can also use the `.nvim.lua` file provided they have `exrc` enabled (even if
+they can't edit the Fennel to compile new versions of the Lua).
+
+This solution achieves the same goal as nvim-local-fennel with far less code
+_and_ built in options all Neovim users can lean on.
+
 ## Development
 
 If you have nfnl installed in Neovim you should be able to just modify Fennel
@@ -313,3 +329,4 @@ experience.
 [astronvim]: https://astronvim.com/
 [plenary]: https://github.com/nvim-lua/plenary.nvim
 [apidoc]: https://github.com/Olical/nfnl/tree/main/docs/api/nfnl
+[nvim-local-fennel]: https://github.com/Olical/nvim-local-fennel
