@@ -21,7 +21,7 @@ jobs:
           ln -s . ~/.local/share/nvim/site/pack/nfnl-tests/start/nfnl
       - name: Trust the project configuration file
         run: |
-          nvim --headless -c "trust .nfnl.fnl"
+          nvim --headless -c 'edit .nfnl.fnl' -c trust -c qa
       - name: Test with plenary / busted
         run: |
           ./script/test
