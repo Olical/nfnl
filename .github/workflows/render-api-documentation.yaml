@@ -5,7 +5,7 @@ on:
     branches: [ main ]
 
 jobs:
-  format:
+  render-api-documentation:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
