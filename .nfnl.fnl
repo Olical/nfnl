@@ -12,9 +12,9 @@
   :n "<localleader>pr" ""
   {:desc "Reload the nfnl modules."
    :callback (fn []
-               (notify.info "Reloading nfnl modules")
+               (notify.info "Reloading...")
                (reload.reload_module "nfnl")
-               ((. (require :nfnl) :setup))
-               (notify.info "nfnl reload complete"))})
+               (require :nfnl)
+               (notify.info "Done!"))})
 
 {}
