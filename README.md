@@ -61,6 +61,15 @@ then you may do so by invoking the `compile-all-files` function like so.
 require('nfnl')['compile-all-files']()
 ```
 
+In the case where you're absolutely adamant that you need to `.gitignore` your
+compiled Lua output, this can be used after you `git pull` to ensure everything
+is compiled. I strongly advise committing your Lua for performance _and_
+stability reasons however.
+
+This project was designed around the principal of compiling early and then never
+needing to compile again unless you make changes. I thought long and hard about
+the tradeoffs so you don't have to.
+
 ## Configuration
 
 nfnl is configured on a per directory basis using `.nfnl.fnl` files which also
