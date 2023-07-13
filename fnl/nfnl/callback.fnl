@@ -28,15 +28,16 @@
   This allows us to edit multiple projects in different directories with
   different .nfnl.fnl configuration, wonderful!"
 
-  (let [file-path (fs.full-path (. ev :file))
-        file-dir (fs.basename file-path)
-        {: config : root-dir : cfg} (config.find-and-load file-dir)]
+  (let [file-path (fs.full-path (. ev :file))]
+    (when (not (file-path:find "^%w+://"))
+      (let [file-dir (fs.basename file-path)
+            {: config : root-dir : cfg} (config.find-and-load file-dir)]
 
-    (when config
-      (vim.api.nvim_create_autocmd
-        ["BufWritePost"]
-        {:group (vim.api.nvim_create_augroup (.. "nfnl-dir-" root-dir) {})
-         :pattern (core.map #(fs.join-path [root-dir $]) (cfg [:source-file-patterns]))
-         :callback (fennel-buf-write-post-callback-fn root-dir cfg)}))))
+        (when config
+          (vim.api.nvim_create_autocmd
+            ["BufWritePost"]
+            {:group (vim.api.nvim_create_augroup (.. "nfnl-dir-" root-dir) {})
+             :pattern (core.map #(fs.join-path [root-dir $]) (cfg [:source-file-patterns]))
+             :callback (fennel-buf-write-post-callback-fn root-dir cfg)}))))))
 
 {: fennel-filetype-callback}
