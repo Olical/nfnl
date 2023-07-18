@@ -195,7 +195,7 @@ horrible subtle bugs that would come with trying to be clever with it.
 
 ## OS support
 
-Currently only developed for and tested on Arch Linux, but this should work find
+Currently only developed for and tested on Arch Linux, but this should work fine
 on OSX and I tried my best to support Windows without actually testing it. So
 I've ensured it uses the right path separators in all the places I can find.
 
