@@ -281,10 +281,9 @@ global module namespace, so collisions are quite easy to accidentally cause. You
 may use my embedding script (or your own) to avoid this though:
 
 ```bash
-SRC_DIR=nfnl/lua/nfnl \
-DEST_DIR=my-plugin/lua/my-plugin/nfnl \
-PROJECT=my-plugin \
-  ./nfnl/script/embed-library
+# There are more paths and options available, see the script source for more information.
+# This will write to $PROJECT/lua/$PROJECT/nfnl.
+SRC_DIR=nfnl/lua/nfnl PROJECT=my-plugin ./nfnl/script/embed-library
 ```
 
 This will copy nfnl's Lua code into your project's directory under a namespaced
