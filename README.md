@@ -261,6 +261,41 @@ they can't edit the Fennel to compile new versions of the Lua).
 This solution achieves the same goal as nvim-local-fennel with far less code
 _and_ built in options all Neovim users can lean on.
 
+### Embedding nfnl inside your plugin
+
+If you want to ship a plugin that depends on nfnl modules you'll need to embed
+it inside your project. You can either `cp -r lua/nfnl` into
+`your-project/lua/nfnl` if you don't mind your plugin's copy of nfnl colliding
+with other plugins or you can use `script/embed-library` to copy the files into
+a lower level directory and modify them to isolate them for your plugin
+specifically.
+
+```bash
+cp -r nfnl/lua/nfnl my-plugin/lua/nfnl
+```
+
+Now your plugin can always use `(require :nfnl.core)` and know it'll be around,
+but you might run into issues where another plugin author has done the same and
+is using an older version of nfnl that lacks some feature you require. Lua has a
+global module namespace, so collisions are quite easy to accidentally cause. You
+may use my embedding script (or your own) to avoid this though:
+
+```bash
+SRC_DIR=nfnl/lua/nfnl \
+DEST_DIR=my-plugin/lua/my-plugin/nfnl \
+PROJECT=my-plugin \
+  ./nfnl/script/embed-library
+```
+
+This will copy nfnl's Lua code into your project's directory under a namespaced
+directory unique to your project. It will then perform a find and replace on the
+Lua code to scope the nfnl source to your plugin, avoiding conflicts with any
+other copy of nfnl.
+
+This script depends upon [fd][fd] and [sd][sd], so make sure you install those
+first! Alternatively you could modify or write your own script that works for
+your OS with your available tools.
+
 ## Development
 
 If you have nfnl installed in Neovim you should be able to just modify Fennel
@@ -335,3 +370,5 @@ experience.
 [plenary]: https://github.com/nvim-lua/plenary.nvim
 [apidoc]: https://github.com/Olical/nfnl/tree/main/docs/api/nfnl
 [nvim-local-fennel]: https://github.com/Olical/nvim-local-fennel
+[sd]: https://github.com/chmln/sd
+[fd]: https://github.com/sharkdp/fd
