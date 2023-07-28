@@ -2,7 +2,8 @@
 
 Enhance your [Neovim][neovim] experience through [Fennel][fennel] with zero
 overhead. Write Fennel, run Lua, nfnl will not load unless you're actively
-modifying your Neovim configuration or plugin source code.
+modifying your Neovim configuration or plugin source code
+([nfnl-plugin-example][nfnl-plugin-example]).
 
 - Only loads when working in directories containing a `.nfnl.fnl` configuration
   file.
@@ -263,12 +264,12 @@ _and_ built in options all Neovim users can lean on.
 
 ### Embedding nfnl inside your plugin
 
-If you want to ship a plugin that depends on nfnl modules you'll need to embed
-it inside your project. You can either `cp -r lua/nfnl` into
-`your-project/lua/nfnl` if you don't mind your plugin's copy of nfnl colliding
-with other plugins or you can use `script/embed-library` to copy the files into
-a lower level directory and modify them to isolate them for your plugin
-specifically.
+If you want to ship a plugin ([nfnl-plugin-example][nfnl-plugin-example]) that
+depends on nfnl modules you'll need to embed it inside your project. You can
+either `cp -r lua/nfnl` into `your-project/lua/nfnl` if you don't mind your
+plugin's copy of nfnl colliding with other plugins or you can use
+`script/embed-library` to copy the files into a lower level directory and modify
+them to isolate them for your plugin specifically.
 
 ```bash
 cp -r nfnl/lua/nfnl my-plugin/lua/nfnl
@@ -371,3 +372,4 @@ experience.
 [nvim-local-fennel]: https://github.com/Olical/nvim-local-fennel
 [sd]: https://github.com/chmln/sd
 [fd]: https://github.com/sharkdp/fd
+[nfnl-plugin-example]: https://github.com/Olical/nfnl-plugin-example
