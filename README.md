@@ -8,12 +8,14 @@ modifying your Neovim configuration or plugin source code
 - Only loads when working in directories containing a `.nfnl.fnl` configuration
   file.
 - Automatically compiles `*.fnl` files to `*.lua` when you save your changes.
-- Can be used for your Neovim configuration or plugins with no special
-  configuration, it just works for both.
+- Can be used for your Neovim configuration or [plugins][nfnl-plugin-example]
+  with no special configuration, it just works for both.
 - Includes a Clojure inspired [standard library][apidoc] (based on
   [Aniseed][aniseed]).
 - Compiles your Fennel code and then steps out of the way leaving you with plain
   Lua that doesn't require nfnl to load in the future.
+- Displays compilation errors as you save your Fennel code to keep the feedback
+  loop as tight as possible.
 
 ## Usage
 
