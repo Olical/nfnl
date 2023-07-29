@@ -20,11 +20,6 @@
     (or (core.nil? header)
         (not (core.nil? (header:find header-marker 1 true))))))
 
-(fn fnl-path->lua-path [fnl-path]
-  (-> fnl-path
-      (fs.replace-extension "lua")
-      (fs.replace-dirs "fnl" "lua")))
-
 (fn macro-source? [source]
   (string.find source "%s*;+%s*%[nfnl%-macro%]"))
 
@@ -64,8 +59,9 @@
              :error res
              :source-path path}))))))
 
-(fn mod.into-file [{: _root-dir : _cfg : _source : path : batch? &as opts}]
-  (let [destination-path (fnl-path->lua-path path)
+(fn mod.into-file [{: _root-dir : cfg : _source : path : batch? &as opts}]
+  (let [fnl-path->lua-path (cfg [:fnl-path->lua-path])
+        destination-path (fnl-path->lua-path path)
         {: status : source-path : result &as res}
         (mod.into-string opts)]
     (if

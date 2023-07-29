@@ -15,9 +15,6 @@ local function safe_target_3f(path)
   local header = fs["read-first-line"](path)
   return (core["nil?"](header) or not core["nil?"](header:find(header_marker, 1, true)))
 end
-local function fnl_path__3elua_path(fnl_path)
-  return fs["replace-dirs"](fs["replace-extension"](fnl_path, "lua"), "fnl", "lua")
-end
 local function macro_source_3f(source)
   return string.find(source, "%s*;+%s*%[nfnl%-macro%]")
 end
@@ -57,11 +54,12 @@ end
 mod["into-file"] = function(_7_)
   local _arg_8_ = _7_
   local _root_dir = _arg_8_["_root-dir"]
-  local _cfg = _arg_8_["_cfg"]
+  local cfg = _arg_8_["cfg"]
   local _source = _arg_8_["_source"]
   local path = _arg_8_["path"]
   local batch_3f = _arg_8_["batch?"]
   local opts = _arg_8_
+  local fnl_path__3elua_path = cfg({"fnl-path->lua-path"})
   local destination_path = fnl_path__3elua_path(path)
   local _let_9_ = mod["into-string"](opts)
   local status = _let_9_["status"]

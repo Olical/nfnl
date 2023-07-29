@@ -76,6 +76,11 @@
              segment)))
        (join-path)))
 
+(fn fnl-path->lua-path [fnl-path]
+  (-> fnl-path
+      (replace-extension "lua")
+      (replace-dirs "fnl" "lua")))
+
 {: basename
  : filename
  : file-name-root
@@ -89,4 +94,5 @@
  : split-path
  : join-path
  : read-first-line
- : replace-dirs}
+ : replace-dirs
+ : fnl-path->lua-path}

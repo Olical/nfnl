@@ -99,7 +99,12 @@ fine!) will default to these values that should work fine for most people.
  ;; autocmd, so it'll only apply to buffers you're interested in.
  ;; Will use backslashes on Windows.
  ;; Defaults to compiling all .fnl files, you may want to limit it to your fnl/ directory.
- :source-file-patterns ["*.fnl" "**/*.fnl"]}
+ :source-file-patterns ["*.fnl" "**/*.fnl"]
+
+ ;; A function that is given the absolute path of a Fennel file and should return
+ ;; the equivalent Lua path, by default this will translate `fnl/foo/bar.fnl` to `lua/foo/bar.lua`.
+ ;; See the "Writing Lua elsewhere" tip below for an example function that writes to a sub directory.
+ :fnl-path->lua-path (fn [fnl-path] ...)}
 ```
 
 As an example, if you only want to compile `.fnl` files under the `fnl/`
@@ -298,6 +303,24 @@ This script depends upon [fd][fd] and [sd][sd], so make sure you install those
 first! Alternatively you could modify or write your own script that works for
 your OS with your available tools.
 
+### Writing Lua elsewhere
+
+If you're not happy with the defaults of Lua being written beside your Fennel
+and still disagree with [my justifications for it][lua-in-git-justifications]
+then you may want to override the `:fnl-path->lua-path` function to perform in a
+way you like. Since you get to define a function, how this behaves is entirely
+up to you. Here's how you could write to a sub-directory rather than just `lua`,
+just include this in your `.nfnl.fnl` configuration file for your project.
+
+```fennel
+(local config (require :nfnl.config))
+(local default (config.default))
+
+{:fnl-path->lua-path (fn [fnl-path]
+                       (let [rel-fnl-path (vim.fn.fnamemodify fnl-path ":.")]
+                         (default.fnl-path->lua-path (.. "some-other-dir/" rel-fnl-path))))}
+```
+
 ## Development
 
 If you have nfnl installed in Neovim you should be able to just modify Fennel
@@ -375,3 +398,4 @@ experience.
 [sd]: https://github.com/chmln/sd
 [fd]: https://github.com/sharkdp/fd
 [nfnl-plugin-example]: https://github.com/Olical/nfnl-plugin-example
+[lua-in-git-justifications]: https://github.com/Olical/nfnl/issues/5#issuecomment-1655447175
