@@ -203,13 +203,16 @@ horrible subtle bugs that would come with trying to be clever with it.
 
 ## OS support
 
-Currently only developed for and tested on Arch Linux, but this should work fine
-on OSX and I tried my best to support Windows without actually testing it. So
+Currently only developed for and tested on Arch Linux, but this works fine
+on MacOS. You can see another example of creating a plugin and done on MacOS at
+[this blog post](https://russtoku.github.io/posts/nfnl-experience.html).
+I tried my best to support Windows without actually testing it. So
 I've ensured it uses the right path separators in all the places I can find.
 
-If you try this out and it works on OSX or Windows, please let me know so I can
+If you try this out and it works on MacOS or Windows, please let me know so I can
 add it here. If you run into issues, please report them with as much detail as
 possible.
+
 
 ## Tips
 
