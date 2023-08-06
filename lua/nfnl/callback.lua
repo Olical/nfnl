@@ -22,7 +22,7 @@ local function fennel_filetype_callback(ev)
     local cfg = _let_3_["cfg"]
     if config0 then
       local function _4_(_241)
-        return fs["join-path"]({root_dir, _241})
+        return vim.fs.normalize(fs["join-path"]({root_dir, _241}))
       end
       return vim.api.nvim_create_autocmd({"BufWritePost"}, {group = vim.api.nvim_create_augroup(("nfnl-dir-" .. root_dir), {}), pattern = core.map(_4_, cfg({"source-file-patterns"})), callback = fennel_buf_write_post_callback_fn(root_dir, cfg)})
     else
