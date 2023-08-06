@@ -7,11 +7,9 @@ local notify = autoload("nfnl.notify")
 local callback = autoload("nfnl.callback")
 if vim then
   if (0 == _G.vim.fn.has("nvim-0.9.0")) then
-        print('DBG: nfnl requires Neovim > v0.9.0.')
     error("nfnl requires Neovim > v0.9.0.")
   else
   end
-    print('DBG: creating setup autocmd')
   vim.api.nvim_create_autocmd({"Filetype"}, {group = vim.api.nvim_create_augroup("nfnl-setup", {}), pattern = "fennel", callback = callback["fennel-filetype-callback"]})
 else
 end
