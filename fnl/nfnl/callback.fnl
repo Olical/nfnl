@@ -37,7 +37,7 @@
           (vim.api.nvim_create_autocmd
             ["BufWritePost"]
             {:group (vim.api.nvim_create_augroup (.. "nfnl-dir-" root-dir) {})
-             :pattern (core.map #(fs.join-path [root-dir $]) (cfg [:source-file-patterns]))
+             :pattern (core.map #(vim.fs.normalize (fs.join-path [root-dir $])) (cfg [:source-file-patterns]))
              :callback (fennel-buf-write-post-callback-fn root-dir cfg)}))))))
 
 {: fennel-filetype-callback}
