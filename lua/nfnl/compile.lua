@@ -66,13 +66,34 @@ mod["into-file"] = function(_7_)
   local source_path = _let_9_["source-path"]
   local result = _let_9_["result"]
   local res = _let_9_
+
+
+  print('DBG: compile.lua, _arg_8_ = ' .. vim.inspect(_arg_8_ ))
+  print('DBG: compile.lua, _root_dir = ' .. vim.inspect(_root_dir ))
+  print('DBG: compile.lua, cfg = ' .. vim.inspect(cfg ))
+  print('DBG: compile.lua, _source = ' .. vim.inspect(_source ))
+  print('DBG: compile.lua, path = ' .. vim.inspect(path ))
+  print('DBG: compile.lua, batch_3f = ' .. vim.inspect(batch_3f ))
+  print('DBG: compile.lua, opts = ' .. vim.inspect(opts ))
+  print('DBG: compile.lua, fnl_path__3elua_path = ' .. vim.inspect(fnl_path__3elua_path ))
+  print('DBG: compile.lua, destination_path = ' .. vim.inspect(destination_path ))
+  print('DBG: compile.lua, _let_9_ = ' .. vim.inspect(_let_9_ ))
+  print('DBG: compile.lua, status = ' .. vim.inspect(status ))
+  print('DBG: compile.lua, source_path = ' .. vim.inspect(source_path ))
+  print('DBG: compile.lua, result = ' .. vim.inspect(result ))
+  print('DBG: compile.lua, res = ' .. vim.inspect(res ))
+
+
   if ("ok" ~= status) then
+    print('DBG: compile, ok')
     return res
   elseif safe_target_3f(destination_path) then
+    print('DBG: compile, elseif')
     fs.mkdirp(fs.basename(destination_path))
     core.spit(destination_path, result)
     return {status = "ok", ["source-path"] = source_path, ["destination-path"] = destination_path}
   else
+    print('DBG: compile, else')
     if not batch_3f then
       notify.warn(destination_path, " was not compiled by nfnl. Delete it manually if you wish to compile into this file.")
     else
