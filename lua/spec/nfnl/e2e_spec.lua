@@ -16,8 +16,9 @@ local config_path = fs["join-path"]({temp_dir, ".nfnl.fnl"})
 local fnl_path = fs["join-path"]({fnl_dir, "foo.fnl"})
 local lua_path = fs["join-path"]({lua_dir, "foo.lua"})
 local function _2_()
-  local initial_cwd = vim.fn.getcwd()
+  local initial_cwd = nil
   local function _3_()
+    initial_cwd = vim.fn.getcwd()
     fs.mkdirp(fnl_dir)
     return vim.cmd(("cd " .. temp_dir))
   end
@@ -43,9 +44,10 @@ local function _2_()
     vim.o.filetype = "fennel"
     vim.api.nvim_buf_set_lines(0, 0, -1, false, {"(print \"Hello, World!\")"})
     vim.cmd("write")
-    print("===", core.slurp(lua_path))
     assert.are.equal(1, vim.fn.isdirectory(lua_dir))
-    return assert.are.equal("-- [nfnl] Compiled from fnl/foo.fnl by https://github.com/Olical/nfnl, do not edit.\nreturn print(\"Hello, World!\")\n", core.slurp(lua_path))
+    local lua_result = core.slurp(lua_path)
+    print("Lua result: ", lua_result)
+    return assert.are.equal("-- [nfnl] Compiled from fnl/foo.fnl by https://github.com/Olical/nfnl, do not edit.\nreturn print(\"Hello, World!\")\n", lua_result)
   end
   return it("compiles when there's a trusted .nfnl.fnl configuration file", _6_)
 end

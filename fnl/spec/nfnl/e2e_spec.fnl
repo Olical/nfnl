@@ -18,10 +18,11 @@
 (describe
   "e2e file compiling from a project dir"
   (fn []
-    (var initial-cwd (vim.fn.getcwd))
+    (var initial-cwd nil)
 
     (before_each
       (fn []
+        (set initial-cwd (vim.fn.getcwd))
         (fs.mkdirp fnl-dir)
         (vim.cmd (.. "cd " temp-dir))))
 
@@ -47,10 +48,13 @@
           (set vim.o.filetype "fennel")
           (vim.api.nvim_buf_set_lines 0 0 -1 false ["(print \"Hello, World!\")"])
           (vim.cmd "write")
-          (print "===" (core.slurp lua-path))
           (assert.are.equal 1 (vim.fn.isdirectory lua-dir))
+
+          (local lua-result (core.slurp lua-path))
+          (print "Lua result: " lua-result)
+
           (assert.are.equal
             "-- [nfnl] Compiled from fnl/foo.fnl by https://github.com/Olical/nfnl, do not edit.\nreturn print(\"Hello, World!\")\n"
-            (core.slurp lua-path))))))
+            lua-result)))))
 
 ; (describe "e2e file compiling from outside project dir")
