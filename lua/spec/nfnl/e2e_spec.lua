@@ -5,11 +5,10 @@ local it = _local_1_["it"]
 local before_each = _local_1_["before_each"]
 local after_each = _local_1_["after_each"]
 local assert = require("luassert.assert")
-require("nfnl.config")
-local core = require("nfnl.core")
-local fs = require("nfnl.fs")
 local nfnl = require("nfnl")
 nfnl.setup({})
+local core = require("nfnl.core")
+local fs = require("nfnl.fs")
 local temp_dir = vim.fn.tempname()
 local fnl_dir = fs["join-path"]({temp_dir, "fnl"})
 local lua_dir = fs["join-path"]({temp_dir, "lua"})
