@@ -17,7 +17,7 @@
     (compile.into-file
       {: root-dir
        : cfg
-       :path (. ev :file)
+       :path (fs.full-path (. ev :file))
        :source (nvim.get-buf-content-as-string (. ev :buf))})))
 
 (fn fennel-filetype-callback [ev]
