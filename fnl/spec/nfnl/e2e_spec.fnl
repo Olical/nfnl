@@ -15,6 +15,8 @@
 (local fnl-path (fs.join-path [fnl-dir "foo.fnl"]))
 (local lua-path (fs.join-path [lua-dir "foo.lua"]))
 
+(fs.mkdirp fnl-dir)
+
 (describe
   "e2e file compiling from a project dir"
   (fn []
@@ -23,7 +25,6 @@
     (before_each
       (fn []
         (set initial-cwd (vim.fn.getcwd))
-        (fs.mkdirp fnl-dir)
         (vim.cmd (.. "cd " temp-dir))))
 
     (after_each
@@ -51,7 +52,7 @@
           (assert.are.equal 1 (vim.fn.isdirectory lua-dir))
 
           (local lua-result (core.slurp lua-path))
-          (print "Lua result: " lua-result)
+          (print "Lua result:" lua-result)
 
           (assert.are.equal
             "-- [nfnl] Compiled from fnl/foo.fnl by https://github.com/Olical/nfnl, do not edit.\nreturn print(\"Hello, World!\")\n"
