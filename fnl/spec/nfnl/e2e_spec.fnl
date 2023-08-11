@@ -47,6 +47,7 @@
           (set vim.o.filetype "fennel")
           (vim.api.nvim_buf_set_lines 0 0 -1 false ["(print \"Hello, World!\")"])
           (vim.cmd "write")
+          (print "===" (core.slurp lua-path))
           (assert.are.equal 1 (vim.fn.isdirectory lua-dir))
           (assert.are.equal
             "-- [nfnl] Compiled from fnl/foo.fnl by https://github.com/Olical/nfnl, do not edit.\nreturn print(\"Hello, World!\")\n"

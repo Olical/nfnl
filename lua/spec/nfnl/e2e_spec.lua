@@ -43,6 +43,7 @@ local function _2_()
     vim.o.filetype = "fennel"
     vim.api.nvim_buf_set_lines(0, 0, -1, false, {"(print \"Hello, World!\")"})
     vim.cmd("write")
+    print("===", core.slurp(lua_path))
     assert.are.equal(1, vim.fn.isdirectory(lua_dir))
     return assert.are.equal("-- [nfnl] Compiled from fnl/foo.fnl by https://github.com/Olical/nfnl, do not edit.\nreturn print(\"Hello, World!\")\n", core.slurp(lua_path))
   end
