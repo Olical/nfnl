@@ -1,5 +1,9 @@
 (local {: describe : it : before_each : after_each} (require :plenary.busted))
 (local assert (require :luassert.assert))
+
+;; Prevent some sort of loading error in GitHub actions.
+(require :nfnl.config)
+
 (local core (require :nfnl.core))
 (local fs (require :nfnl.fs))
 (local nfnl (require :nfnl))
