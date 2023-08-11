@@ -35,8 +35,9 @@ local function _2_()
   end
   it("does nothing when there's no .nfnl.fnl configuration", _5_)
   local function _6_()
-    core.spit(config_path, "{}")
     vim.cmd(("edit " .. config_path))
+    vim.api.nvim_buf_set_lines(0, 0, -1, false, {"{}"})
+    vim.cmd("write")
     vim.cmd("trust")
     vim.cmd(("edit " .. fnl_path))
     vim.o.filetype = "fennel"

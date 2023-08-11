@@ -39,8 +39,9 @@
 
     (it "compiles when there's a trusted .nfnl.fnl configuration file"
         (fn []
-          (core.spit config-path "{}")
           (vim.cmd (.. "edit " config-path))
+          (vim.api.nvim_buf_set_lines 0 0 -1 false ["{}"])
+          (vim.cmd "write")
           (vim.cmd "trust")
           (vim.cmd (.. "edit " fnl-path))
           (set vim.o.filetype "fennel")
