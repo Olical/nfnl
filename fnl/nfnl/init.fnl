@@ -12,7 +12,12 @@
     ["Filetype"]
     {:group (vim.api.nvim_create_augroup "nfnl-setup" {})
      :pattern "fennel"
-     :callback callback.fennel-filetype-callback}))
+     :callback callback.fennel-filetype-callback})
+
+  (when (= :fennel vim.o.filetype)
+    (callback.fennel-filetype-callback
+      {:file (vim.fn.expand "%")
+       :buf (vim.api.nvim_get_current_buf)})))
 
 (fn setup []
   "A noop for now, may be used one day. You just need to load this module for the plugin to initialise for now.")

@@ -11,6 +11,10 @@ if vim then
   else
   end
   vim.api.nvim_create_autocmd({"Filetype"}, {group = vim.api.nvim_create_augroup("nfnl-setup", {}), pattern = "fennel", callback = callback["fennel-filetype-callback"]})
+  if ("fennel" == vim.o.filetype) then
+    callback["fennel-filetype-callback"]({file = vim.fn.expand("%"), buf = vim.api.nvim_get_current_buf()})
+  else
+  end
 else
 end
 local function setup()
@@ -18,10 +22,10 @@ local function setup()
 end
 local function compile_all_files(dir)
   local dir0 = (dir or vim.fn.getcwd())
-  local _let_4_ = config["find-and-load"](dir0)
-  local config0 = _let_4_["config"]
-  local root_dir = _let_4_["root-dir"]
-  local cfg = _let_4_["cfg"]
+  local _let_5_ = config["find-and-load"](dir0)
+  local config0 = _let_5_["config"]
+  local root_dir = _let_5_["root-dir"]
+  local cfg = _let_5_["cfg"]
   if config0 then
     return notify.info("Compilation complete.\n", compile["all-files"]({["root-dir"] = root_dir, cfg = cfg}))
   else
