@@ -2,6 +2,9 @@
 (local assert (require :luassert.assert))
 (local core (require :nfnl.core))
 (local fs (require :nfnl.fs))
+(local nfnl (require :nfnl))
+
+(nfnl.setup {})
 
 ;; These temp directories are auto deleted on Neovim exit.
 (local temp-dir (vim.fn.tempname))

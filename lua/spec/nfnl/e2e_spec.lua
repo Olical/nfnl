@@ -7,6 +7,8 @@ local after_each = _local_1_["after_each"]
 local assert = require("luassert.assert")
 local core = require("nfnl.core")
 local fs = require("nfnl.fs")
+local nfnl = require("nfnl")
+nfnl.setup({})
 local temp_dir = vim.fn.tempname()
 local fnl_dir = fs["join-path"]({temp_dir, "fnl"})
 local lua_dir = fs["join-path"]({temp_dir, "lua"})
