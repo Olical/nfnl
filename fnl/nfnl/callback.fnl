@@ -14,7 +14,6 @@
     .nfnl.fnl file. It compiles the Fennel to Lua and writes it into another
     file according to the .nfnl.fnl file configuration."
 
-    (print "===" (. ev :file))
     (compile.into-file
       {: root-dir
        : cfg
