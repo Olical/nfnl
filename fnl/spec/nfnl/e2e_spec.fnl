@@ -1,9 +1,5 @@
 (local {: describe : it : before_each : after_each} (require :plenary.busted))
 (local assert (require :luassert.assert))
-
-(local nfnl (require :nfnl))
-(nfnl.setup {})
-
 (local core (require :nfnl.core))
 (local fs (require :nfnl.fs))
 

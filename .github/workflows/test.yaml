@@ -19,7 +19,7 @@ jobs:
           mkdir -p ~/.local/share/nvim/site/pack/nfnl-tests/start
           git clone https://github.com/nvim-lua/plenary.nvim.git ~/.local/share/nvim/site/pack/nfnl-tests/start/plenary
           git clone https://github.com/bakpakin/fennel.vim.git ~/.local/share/nvim/site/pack/nfnl-tests/start/fennel.vim
-          ln -s . ~/.local/share/nvim/site/pack/nfnl-tests/start/nfnl
+          ln -s ${GITHUB_WORKSPACE} ~/.local/share/nvim/site/pack/nfnl-tests/start/nfnl
       - name: Trust the project configuration file
         run: |
           nvim --headless -c 'edit .nfnl.fnl' -c trust -c qa
