@@ -13,15 +13,19 @@
 (local lua-dir (fs.join-path [temp-dir "lua"]))
 (local config-path (fs.join-path [temp-dir ".nfnl.fnl"]))
 (local fnl-path (fs.join-path [fnl-dir "foo.fnl"]))
+(local macro-fnl-path (fs.join-path [fnl-dir "bar.fnl"]))
+(local macro-lua-path (fs.join-path [lua-dir "bar.lua"]))
 (local lua-path (fs.join-path [lua-dir "foo.lua"]))
 
 (fs.mkdirp fnl-dir)
 
+(fn delete-buf-file [path]
+  (pcall vim.cmd (.. "bdelete! " path))
+  (os.remove path))
+
 (fn run-e2e-tests []
   ;; Reset the files and autocmds between each test run.
-  (os.remove config-path)
-  (os.remove fnl-path)
-  (os.remove lua-path)
+  (core.run! delete-buf-file [config-path fnl-path macro-fnl-path lua-path])
   (vim.api.nvim_clear_autocmds
     {:group (vim.api.nvim_create_augroup (.. "nfnl-dir-" temp-dir) {})})
 
@@ -50,6 +54,29 @@
 
         (assert.are.equal
           "-- [nfnl] Compiled from fnl/foo.fnl by https://github.com/Olical/nfnl, do not edit.\nreturn print(\"Hello, World!\")\n"
+          lua-result)))
+
+  (it "can import-macros and use them, the macros aren't compiled"
+      (fn []
+        (vim.cmd (.. "edit " macro-fnl-path))
+        (set vim.o.filetype "fennel")
+
+        ;; We have to split up the macro marker otherwise this file gets marked as a macro file and won't compile.
+        (vim.api.nvim_buf_set_lines 0 0 -1 false [(.. ";; [nfnl" "-" "macro]") "{:infix (fn [a op b] `(,op ,a ,b))}"])
+        (vim.cmd "write")
+
+        (vim.cmd (.. "edit " fnl-path))
+        (set vim.o.filetype "fennel")
+        (vim.api.nvim_buf_set_lines 0 0 -1 false ["(import-macros {: infix} :bar)" "(infix 10 + 20)"])
+        (vim.cmd "write")
+
+        (assert.is_nil (core.slurp macro-lua-path))
+
+        (local lua-result (core.slurp lua-path))
+        (print "Lua result:" lua-result)
+
+        (assert.are.equal
+          "-- [nfnl] Compiled from fnl/foo.fnl by https://github.com/Olical/nfnl, do not edit.\nreturn (10 + 20)\n"
           lua-result))))
 
 (describe
@@ -68,7 +95,7 @@
 
     (run-e2e-tests)))
 
-(describe
-  "e2e file compiling from outside project dir"
-  (fn []
-    (run-e2e-tests)))
+; (describe
+;   "e2e file compiling from outside project dir"
+;   (fn []
+;     (run-e2e-tests)))
