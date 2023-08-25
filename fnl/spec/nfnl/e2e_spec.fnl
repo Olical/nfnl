@@ -95,7 +95,7 @@
 
     (run-e2e-tests)))
 
-; (describe
-;   "e2e file compiling from outside project dir"
-;   (fn []
-;     (run-e2e-tests)))
+(describe
+  "e2e file compiling from outside project dir"
+  (fn []
+    (run-e2e-tests)))

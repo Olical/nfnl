@@ -88,8 +88,11 @@ mod["all-files"] = function(_12_)
     return mod["into-file"]({["root-dir"] = root_dir, path = path, cfg = cfg, source = core.slurp(path), ["batch?"] = true})
   end
   local function _15_(_241)
+    return fs["join-path"]({root_dir, _241})
+  end
+  local function _16_(_241)
     return fs.relglob(root_dir, _241)
   end
-  return core.map(_14_, core.map(fs["full-path"], core.mapcat(_15_, cfg({"source-file-patterns"}))))
+  return core.map(_14_, core.map(_15_, core.mapcat(_16_, cfg({"source-file-patterns"}))))
 end
 return mod

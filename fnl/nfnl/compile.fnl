@@ -85,7 +85,7 @@
 
 (fn mod.all-files [{: root-dir : cfg}]
   (->> (core.mapcat #(fs.relglob root-dir $) (cfg [:source-file-patterns]))
-       (core.map fs.full-path)
+       (core.map #(fs.join-path [root-dir $]))
        (core.map
          (fn [path]
            (mod.into-file

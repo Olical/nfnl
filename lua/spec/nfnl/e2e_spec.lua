@@ -77,4 +77,8 @@ local function _5_()
   after_each(_7_)
   return run_e2e_tests()
 end
-return describe("e2e file compiling from a project dir", _5_)
+describe("e2e file compiling from a project dir", _5_)
+local function _8_()
+  return run_e2e_tests()
+end
+return describe("e2e file compiling from outside project dir", _8_)
