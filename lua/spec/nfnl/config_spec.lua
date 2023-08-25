@@ -7,17 +7,18 @@ local config = require("nfnl.config")
 local function _2_()
   local function _3_()
     assert.equals("function", type(config.default))
-    return assert.equals("table", type(config.default()))
+    return assert.equals("table", type(config.default({["root-dir"] = "/tmp/foo"})))
   end
   return it("is a function that returns a table", _3_)
 end
 describe("default", _2_)
 local function _4_()
   local function _5_()
-    assert.is_string(config["cfg-fn"]({})({"fennel-macro-path"}))
-    assert.is_nil(config["cfg-fn"]({})({"nope"}))
-    assert.equals("yep", config["cfg-fn"]({nope = "yep"})({"nope"}))
-    return assert.equals("yep", config["cfg-fn"]({["fennel-macro-path"] = "yep"})({"fennel-macro-path"}))
+    local opts = {["root-dir"] = "/tmp/foo"}
+    assert.is_string(config["cfg-fn"]({}, opts)({"fennel-macro-path"}))
+    assert.is_nil(config["cfg-fn"]({}, opts)({"nope"}))
+    assert.equals("yep", config["cfg-fn"]({nope = "yep"}, opts)({"nope"}))
+    return assert.equals("yep", config["cfg-fn"]({["fennel-macro-path"] = "yep"}, opts)({"fennel-macro-path"}))
   end
   return it("builds a function that looks up values in a table falling back to defaults", _5_)
 end

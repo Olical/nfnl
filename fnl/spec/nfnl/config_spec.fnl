@@ -8,17 +8,18 @@
     (it "is a function that returns a table"
         (fn []
           (assert.equals :function (type config.default))
-          (assert.equals :table (type (config.default)))))))
+          (assert.equals :table (type (config.default {:root-dir "/tmp/foo"})))))))
 
 (describe
   "cfg-fn"
   (fn []
     (it "builds a function that looks up values in a table falling back to defaults"
         (fn []
-          (assert.is_string ((config.cfg-fn {}) [:fennel-macro-path]))
-          (assert.is_nil ((config.cfg-fn {}) [:nope]))
-          (assert.equals :yep ((config.cfg-fn {:nope :yep}) [:nope]))
-          (assert.equals :yep ((config.cfg-fn {:fennel-macro-path :yep}) [:fennel-macro-path]))))))
+          (local opts {:root-dir "/tmp/foo"})
+          (assert.is_string ((config.cfg-fn {} opts) [:fennel-macro-path]))
+          (assert.is_nil ((config.cfg-fn {} opts) [:nope]))
+          (assert.equals :yep ((config.cfg-fn {:nope :yep} opts) [:nope]))
+          (assert.equals :yep ((config.cfg-fn {:fennel-macro-path :yep} opts) [:fennel-macro-path]))))))
 
 (describe
   "config-file-path?"

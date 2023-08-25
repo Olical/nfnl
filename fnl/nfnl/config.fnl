@@ -8,31 +8,35 @@
 (local config-file-name ".nfnl.fnl")
 
 ;; Make sure you update the README whenever you change the default configuration!
-(fn default []
+(fn default [{: root-dir}]
   {:compiler-options {}
    :fennel-path (str.join
                   ";"
-                  ["./?.fnl"
-                   "./?/init.fnl"
-                   "./fnl/?.fnl"
-                   "./fnl/?/init.fnl"])
+                  (core.map
+                    fs.join-path
+                    [[root-dir "?.fnl"]
+                     [root-dir "?" "init.fnl"]
+                     [root-dir "fnl" "?.fnl"]
+                     [root-dir "fnl" "?" "init.fnl"]]))
    :fennel-macro-path (str.join
                         ";"
-                        ["./?.fnl"
-                         "./?/init-macros.fnl"
-                         "./?/init.fnl"
-                         "./fnl/?.fnl"
-                         "./fnl/?/init-macros.fnl"
-                         "./fnl/?/init.fnl"])
+                        (core.map
+                          fs.join-path
+                          [[root-dir "?.fnl"]
+                           [root-dir "?" "init-macros.fnl"]
+                           [root-dir "?" "init.fnl"]
+                           [root-dir "fnl" "?.fnl"]
+                           [root-dir "fnl" "?" "init-macros.fnl"]
+                           [root-dir "fnl" "?" "init.fnl"]]))
    :source-file-patterns ["*.fnl" (fs.join-path ["**" "*.fnl"])]
    :fnl-path->lua-path fs.fnl-path->lua-path})
 
-(fn cfg-fn [t]
+(fn cfg-fn [t opts]
   "Builds a cfg fetcher for the config table t. Returns a function that takes a
   path sequential table, it looks up the value from the config with core.get-in
   and falls back to a matching value in (default) if not found."
 
-  (let [default-cfg (default)]
+  (let [default-cfg (default opts)]
     (fn [path]
       (core.get-in
         t path
@@ -70,7 +74,7 @@
           (if ok
             {: config
              : root-dir
-             :cfg (cfg-fn config)}
+             :cfg (cfg-fn config {: root-dir})}
             (notify.error config)))))
 
     ;; Always default to an empty table for destructuring.

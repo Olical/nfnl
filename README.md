@@ -88,6 +88,14 @@ fine!) will default to these values that should work fine for most people.
  ;; See https://fennel-lang.org/api for more information.
  :compiler-options {}
 
+ ;; Warning! In reality these paths are absolute and set to the root directory
+ ;; of your project (where your .nfnl.fnl file is). This means even if you
+ ;; open a .fnl file from outside your project's cwd the compiler will still
+ ;; find your macro files. If you use relative paths like I'm demonstrating here
+ ;; then macros will only work if your cwd is in the project you're working on.
+
+ ;; They also use OS specific path separators, what you see below is just an example really.
+
  ;; String to set the compiler's fennel.path to before compilation.
  :fennel-path "./?.fnl;./?/init.fnl;./fnl/?.fnl;./fnl/?/init.fnl"
 
@@ -203,16 +211,15 @@ horrible subtle bugs that would come with trying to be clever with it.
 
 ## OS support
 
-Currently only developed for and tested on Arch Linux, but this works fine
-on MacOS. You can see another example of creating a plugin and done on MacOS at
-[this blog post](https://russtoku.github.io/posts/nfnl-experience.html).
-I tried my best to support Windows without actually testing it. So
-I've ensured it uses the right path separators in all the places I can find.
+Currently only developed for and tested on Arch Linux, but this works fine on
+MacOS. You can see another example of creating a plugin and done on MacOS at
+[this blog post](https://russtoku.github.io/posts/nfnl-experience.html). I tried
+my best to support Windows without actually testing it. So I've ensured it uses
+the right path separators in all the places I can find.
 
-If you try this out and it works on MacOS or Windows, please let me know so I can
-add it here. If you run into issues, please report them with as much detail as
-possible.
-
+If you try this out and it works on MacOS or Windows, please let me know so I
+can add it here. If you run into issues, please report them with as much detail
+as possible.
 
 ## Tips
 

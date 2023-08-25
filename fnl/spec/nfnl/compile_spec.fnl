@@ -15,7 +15,7 @@
             (compile.into-string
               {:root-dir "/my/dir"
                :path "/my/dir/foo.fnl"
-               :cfg (config.cfg-fn {})
+               :cfg (config.cfg-fn {} {:root-dir "/tmp/foo"})
                :batch? true
                :source "(+ 10 20)"}))))
 
@@ -27,9 +27,9 @@
             (compile.into-string
               {:root-dir "/my/dir"
                :path "/my/dir/foo.fnl"
-               :cfg (config.cfg-fn {})
+               :cfg (config.cfg-fn {} {:root-dir "/tmp/foo"})
                :batch? true
-               :source "; [nfnl-macro]\n(+ 10 20)"}))))
+               :source (.. "; [nfnl" "-" "macro]\n(+ 10 20)")}))))
 
     (it "won't compile the .nfnl.fnl config file"
         (fn []
@@ -39,7 +39,7 @@
             (compile.into-string
               {:root-dir "/my/dir"
                :path "/my/dir/.nfnl.fnl"
-               :cfg (config.cfg-fn {})
+               :cfg (config.cfg-fn {} {:root-dir "/tmp/foo"})
                :batch? true
                :source "(+ 10 20)"}))))
 
@@ -52,6 +52,6 @@
             (compile.into-string
               {:root-dir "/my/dir"
                :path "/my/dir/foo.fnl"
-               :cfg (config.cfg-fn {})
+               :cfg (config.cfg-fn {} {:root-dir "/tmp/foo"})
                :batch? true
                :source "10 / 20"}))))))
