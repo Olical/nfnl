@@ -281,13 +281,18 @@ local function slurp(path)
     return nil
   end
 end
-local function spit(path, content)
-  local _42_, _43_ = io.open(path, "w")
-  if ((_42_ == nil) and (nil ~= _43_)) then
-    local msg = _43_
+local function spit(path, content, opts)
+  local mode = "w"
+  if (opts and opts.append) then
+    mode = "a"
+  else
+  end
+  local _43_, _44_ = io.open(path, mode)
+  if ((_43_ == nil) and (nil ~= _44_)) then
+    local msg = _44_
     return error(("Could not open file: " .. msg))
-  elseif (nil ~= _42_) then
-    local f = _42_
+  elseif (nil ~= _43_) then
+    local f = _43_
     f:write(content)
     f:close()
     return nil
@@ -296,7 +301,7 @@ local function spit(path, content)
   end
 end
 local function merge_21(base, ...)
-  local function _45_(acc, m)
+  local function _46_(acc, m)
     if m then
       for k, v in pairs(m) do
         acc[k] = v
@@ -305,21 +310,21 @@ local function merge_21(base, ...)
     end
     return acc
   end
-  return reduce(_45_, (base or {}), {...})
+  return reduce(_46_, (base or {}), {...})
 end
 local function merge(...)
   return merge_21({}, ...)
 end
 local function select_keys(t, ks)
   if (t and ks) then
-    local function _47_(acc, k)
+    local function _48_(acc, k)
       if k then
         acc[k] = t[k]
       else
       end
       return acc
     end
-    return reduce(_47_, {}, ks)
+    return reduce(_48_, {}, ks)
   else
     return {}
   end
@@ -344,14 +349,14 @@ local function get(t, k, d)
 end
 local function get_in(t, ks, d)
   local res
-  local function _53_(acc, k)
+  local function _54_(acc, k)
     if table_3f(acc) then
       return get(acc, k)
     else
       return nil
     end
   end
-  res = reduce(_53_, t, ks)
+  res = reduce(_54_, t, ks)
   if nil_3f(res) then
     return d
   else
@@ -359,10 +364,10 @@ local function get_in(t, ks, d)
   end
 end
 local function assoc(t, ...)
-  local _let_56_ = {...}
-  local k = _let_56_[1]
-  local v = _let_56_[2]
-  local xs = (function (t, k, e) local mt = getmetatable(t) if 'table' == type(mt) and mt.__fennelrest then return mt.__fennelrest(t, k) elseif e then local rest = {} for k, v in pairs(t) do if not e[k] then rest[k] = v end end return rest else return {(table.unpack or unpack)(t, k)} end end)(_let_56_, 3)
+  local _let_57_ = {...}
+  local k = _let_57_[1]
+  local v = _let_57_[2]
+  local xs = (function (t, k, e) local mt = getmetatable(t) if 'table' == type(mt) and mt.__fennelrest then return mt.__fennelrest(t, k) elseif e then local rest = {} for k, v in pairs(t) do if not e[k] then rest[k] = v end end return rest else return {(table.unpack or unpack)(t, k)} end end)(_let_57_, 3)
   local rem = count(xs)
   local t0 = (t or {})
   if odd_3f(rem) then
@@ -383,7 +388,7 @@ local function assoc_in(t, ks, v)
   local path = butlast(ks)
   local final = last(ks)
   local t0 = (t or {})
-  local function _60_(acc, k)
+  local function _61_(acc, k)
     local step = get(acc, k)
     if nil_3f(step) then
       return get(assoc(acc, k, {}), k)
@@ -391,7 +396,7 @@ local function assoc_in(t, ks, v)
       return step
     end
   end
-  assoc(reduce(_60_, t0, path), final, v)
+  assoc(reduce(_61_, t0, path), final, v)
   return t0
 end
 local function update(t, k, f)
@@ -401,9 +406,9 @@ local function update_in(t, ks, f)
   return assoc_in(t, ks, f(get_in(t, ks)))
 end
 local function constantly(v)
-  local function _62_()
+  local function _63_()
     return v
   end
-  return _62_
+  return _63_
 end
 return {rand = rand, ["nil?"] = nil_3f, ["number?"] = number_3f, ["boolean?"] = boolean_3f, ["string?"] = string_3f, ["table?"] = table_3f, ["function?"] = function_3f, keys = keys, count = count, ["empty?"] = empty_3f, first = first, second = second, last = last, inc = inc, dec = dec, ["even?"] = even_3f, ["odd?"] = odd_3f, vals = vals, ["kv-pairs"] = kv_pairs, ["run!"] = run_21, complement = complement, filter = filter, remove = remove, map = map, ["map-indexed"] = map_indexed, identity = identity, reduce = reduce, some = some, butlast = butlast, rest = rest, concat = concat, mapcat = mapcat, ["pr-str"] = pr_str, str = str, println = println, pr = pr, slurp = slurp, spit = spit, ["merge!"] = merge_21, merge = merge, ["select-keys"] = select_keys, get = get, ["get-in"] = get_in, assoc = assoc, ["assoc-in"] = assoc_in, update = update, ["update-in"] = update_in, constantly = constantly}
