@@ -129,7 +129,7 @@ load nfnl's modules to access things like the default config values.
 ```fennel
 (local core (require :nfnl.core))
 (local config (require :nfnl.config))
-(local default (config.default))
+(local default (config.default {}))
 
 {:source-file-patterns (core.concat default.source-file-patterns ["custom-dir/*.fnl"])}
 ```
