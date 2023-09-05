@@ -4,6 +4,7 @@ local describe = _local_1_["describe"]
 local it = _local_1_["it"]
 local assert = require("luassert.assert")
 local core = require("nfnl.core")
+local fs = require("nfnl.fs")
 local function _2_()
   math.randomseed(os.time())
   local function _3_()
@@ -440,4 +441,26 @@ local function _100_()
   end
   return it("builds a function that always returns the same thing", _101_)
 end
-return describe("constantly", _100_)
+describe("constantly", _100_)
+local function _102_()
+  local tmp_dir = vim.fn.tempname()
+  local tmp_path = fs["join-path"]({tmp_dir, "foo.txt"})
+  local expected_body = "Hello, World!"
+  fs.mkdirp(tmp_dir)
+  local function _103_()
+    core.spit(tmp_path, expected_body)
+    return assert.equals(expected_body, core.slurp(tmp_path))
+  end
+  it("spits the contents into a file and can be read back with slurp", _103_)
+  local function _104_()
+    assert.is_nil(core.slurp("nope does not exist"))
+    return assert.is_nil(core.slurp(nil))
+  end
+  it("returns nil if you slurp a nil or bad path", _104_)
+  local function _105_()
+    core.spit(tmp_path, "\nxyz", {append = true})
+    return assert.equals((expected_body .. "\nxyz"), core.slurp(tmp_path))
+  end
+  return it("appends to a file if the :append option is set", _105_)
+end
+return describe("spit / slurp", _102_)

@@ -1,6 +1,7 @@
 (local {: describe : it} (require :plenary.busted))
 (local assert (require :luassert.assert))
 (local core (require :nfnl.core))
+(local fs (require :nfnl.fs))
 
 (describe
   "rand"
@@ -405,3 +406,26 @@
           (let [f (core.constantly :foo)]
             (assert.equals :foo (f))
             (assert.equals :foo (f :bar)))))))
+
+(describe
+  "spit / slurp"
+  (fn []
+    (local tmp-dir (vim.fn.tempname))
+    (local tmp-path (fs.join-path [tmp-dir "foo.txt"]))
+    (local expected-body "Hello, World!")
+    (fs.mkdirp tmp-dir)
+
+    (it "spits the contents into a file and can be read back with slurp"
+        (fn []
+          (core.spit tmp-path expected-body)
+          (assert.equals expected-body (core.slurp tmp-path))))
+
+    (it "returns nil if you slurp a nil or bad path"
+        (fn []
+          (assert.is_nil (core.slurp "nope does not exist"))
+          (assert.is_nil (core.slurp nil))))
+
+    (it "appends to a file if the :append option is set"
+        (fn []
+          (core.spit tmp-path "\nxyz" {:append true})
+          (assert.equals (.. expected-body "\nxyz") (core.slurp tmp-path))))))

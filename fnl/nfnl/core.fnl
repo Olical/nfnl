@@ -237,11 +237,12 @@
 
 (fn slurp [path]
   "Read the file into a string."
-  (match (io.open path "r")
-    (nil _msg) nil
-    f (let [content (f:read "*all")]
-        (f:close)
-        content)))
+  (when path
+    (match (io.open path "r")
+      (nil _msg) nil
+      f (let [content (f:read "*all")]
+          (f:close)
+          content))))
 
 (fn get [t k d]
   (let [res (when (table? t)
@@ -254,15 +255,17 @@
 
 (fn spit [path content opts]
   "Spit the string into the file. When opts.append is true, add to the file."
-  (match (io.open path
-           (if (get opts :append)
-             "a"
-             "w"))
-    (nil msg) (error (.. "Could not open file: " msg))
-    f (do
-        (f:write content)
-        (f:close)
-        nil)))
+  (when path
+    (match (io.open
+             path
+             (if (get opts :append)
+               "a"
+               "w"))
+      (nil msg) (error (.. "Could not open file: " msg))
+      f (do
+          (f:write content)
+          (f:close)
+          nil))))
 
 (fn merge! [base ...]
   (reduce
