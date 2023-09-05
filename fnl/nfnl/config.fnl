@@ -8,28 +8,29 @@
 (local config-file-name ".nfnl.fnl")
 
 ;; Make sure you update the README whenever you change the default configuration!
-(fn default [{: root-dir}]
-  {:compiler-options {}
-   :fennel-path (str.join
-                  ";"
-                  (core.map
-                    fs.join-path
-                    [[root-dir "?.fnl"]
-                     [root-dir "?" "init.fnl"]
-                     [root-dir "fnl" "?.fnl"]
-                     [root-dir "fnl" "?" "init.fnl"]]))
-   :fennel-macro-path (str.join
-                        ";"
-                        (core.map
-                          fs.join-path
-                          [[root-dir "?.fnl"]
-                           [root-dir "?" "init-macros.fnl"]
-                           [root-dir "?" "init.fnl"]
-                           [root-dir "fnl" "?.fnl"]
-                           [root-dir "fnl" "?" "init-macros.fnl"]
-                           [root-dir "fnl" "?" "init.fnl"]]))
-   :source-file-patterns ["*.fnl" (fs.join-path ["**" "*.fnl"])]
-   :fnl-path->lua-path fs.fnl-path->lua-path})
+(fn default [opts]
+  (let [root-dir (core.get opts :root-dir (vim.fn.getcwd))]
+    {:compiler-options {}
+     :fennel-path (str.join
+                    ";"
+                    (core.map
+                      fs.join-path
+                      [[root-dir "?.fnl"]
+                       [root-dir "?" "init.fnl"]
+                       [root-dir "fnl" "?.fnl"]
+                       [root-dir "fnl" "?" "init.fnl"]]))
+     :fennel-macro-path (str.join
+                          ";"
+                          (core.map
+                            fs.join-path
+                            [[root-dir "?.fnl"]
+                             [root-dir "?" "init-macros.fnl"]
+                             [root-dir "?" "init.fnl"]
+                             [root-dir "fnl" "?.fnl"]
+                             [root-dir "fnl" "?" "init-macros.fnl"]
+                             [root-dir "fnl" "?" "init.fnl"]]))
+     :source-file-patterns ["*.fnl" (fs.join-path ["**" "*.fnl"])]
+     :fnl-path->lua-path fs.fnl-path->lua-path}))
 
 (fn cfg-fn [t opts]
   "Builds a cfg fetcher for the config table t. Returns a function that takes a
