@@ -19,7 +19,7 @@ Function signature:
 Function signature:
 
 ```
-(into-file {:_cfg _cfg :_root-dir _root-dir :_source _source :batch? batch? :path path &as opts})
+(into-file {:_root-dir _root-dir :_source _source :batch? batch? :cfg cfg :path path &as opts})
 ```
 
 **Undocumented**

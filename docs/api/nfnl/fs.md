@@ -6,6 +6,7 @@
 - [`file-name-root`](#file-name-root)
 - [`filename`](#filename)
 - [`findfile`](#findfile)
+- [`fnl-path->lua-path`](#fnl-path-lua-path)
 - [`full-path`](#full-path)
 - [`glob-dir-newer?`](#glob-dir-newer)
 - [`join-path`](#join-path)
@@ -53,6 +54,15 @@ Function signature:
 
 Wrapper around Neovim's findfile() that returns nil
   instead of an empty string.
+
+## `fnl-path->lua-path`
+Function signature:
+
+```
+(fnl-path->lua-path fnl-path)
+```
+
+**Undocumented**
 
 ## `full-path`
 Function signature:

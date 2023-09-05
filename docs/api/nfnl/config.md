@@ -11,7 +11,7 @@
 Function signature:
 
 ```
-(cfg-fn t)
+(cfg-fn t opts)
 ```
 
 Builds a cfg fetcher for the config table t. Returns a function that takes a
@@ -31,7 +31,7 @@ Function signature:
 Function signature:
 
 ```
-(default)
+(default opts)
 ```
 
 **Undocumented**
