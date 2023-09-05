@@ -281,57 +281,6 @@ local function slurp(path)
     return nil
   end
 end
-local function spit(path, content, opts)
-  local _42_, _43_ = nil, nil
-  local function _44_()
-    if get(opts, "append") then
-      return "a"
-    else
-      return "w"
-    end
-  end
-  _42_, _43_ = io.open(path, _44_())
-  if ((_42_ == nil) and (nil ~= _43_)) then
-    local msg = _43_
-    return error(("Could not open file: " .. msg))
-  elseif (nil ~= _42_) then
-    local f = _42_
-    f:write(content)
-    f:close()
-    return nil
-  else
-    return nil
-  end
-end
-local function merge_21(base, ...)
-  local function _46_(acc, m)
-    if m then
-      for k, v in pairs(m) do
-        acc[k] = v
-      end
-    else
-    end
-    return acc
-  end
-  return reduce(_46_, (base or {}), {...})
-end
-local function merge(...)
-  return merge_21({}, ...)
-end
-local function select_keys(t, ks)
-  if (t and ks) then
-    local function _48_(acc, k)
-      if k then
-        acc[k] = t[k]
-      else
-      end
-      return acc
-    end
-    return reduce(_48_, {}, ks)
-  else
-    return {}
-  end
-end
 local function get(t, k, d)
   local res
   if table_3f(t) then
@@ -348,6 +297,57 @@ local function get(t, k, d)
     return d
   else
     return res
+  end
+end
+local function spit(path, content, opts)
+  local _45_, _46_ = nil, nil
+  local function _47_()
+    if get(opts, "append") then
+      return "a"
+    else
+      return "w"
+    end
+  end
+  _45_, _46_ = io.open(path, _47_())
+  if ((_45_ == nil) and (nil ~= _46_)) then
+    local msg = _46_
+    return error(("Could not open file: " .. msg))
+  elseif (nil ~= _45_) then
+    local f = _45_
+    f:write(content)
+    f:close()
+    return nil
+  else
+    return nil
+  end
+end
+local function merge_21(base, ...)
+  local function _49_(acc, m)
+    if m then
+      for k, v in pairs(m) do
+        acc[k] = v
+      end
+    else
+    end
+    return acc
+  end
+  return reduce(_49_, (base or {}), {...})
+end
+local function merge(...)
+  return merge_21({}, ...)
+end
+local function select_keys(t, ks)
+  if (t and ks) then
+    local function _51_(acc, k)
+      if k then
+        acc[k] = t[k]
+      else
+      end
+      return acc
+    end
+    return reduce(_51_, {}, ks)
+  else
+    return {}
   end
 end
 local function get_in(t, ks, d)

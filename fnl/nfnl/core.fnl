@@ -243,6 +243,15 @@
         (f:close)
         content)))
 
+(fn get [t k d]
+  (let [res (when (table? t)
+              (let [val (. t k)]
+                (when (not (nil? val))
+                  val)))]
+    (if (nil? res)
+      d
+      res)))
+
 (fn spit [path content opts]
   "Spit the string into the file. When opts.append is true, add to the file."
   (match (io.open path
@@ -278,15 +287,6 @@
       {}
       ks)
     {}))
-
-(fn get [t k d]
-  (let [res (when (table? t)
-              (let [val (. t k)]
-                (when (not (nil? val))
-                  val)))]
-    (if (nil? res)
-      d
-      res)))
 
 (fn get-in [t ks d]
   (let [res (reduce
