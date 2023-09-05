@@ -245,10 +245,10 @@
 
 (fn spit [path content opts]
   "Spit the string into the file. When opts.append is true, add to the file."
-  (var mode "w")
-  (when (and opts opts.append)
-    (set mode "a"))
-  (match (io.open path mode)
+  (match (io.open path
+           (if (get opts :append)
+             "a"
+             "w"))
     (nil msg) (error (.. "Could not open file: " msg))
     f (do
         (f:write content)

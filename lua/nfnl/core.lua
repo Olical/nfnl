@@ -282,17 +282,20 @@ local function slurp(path)
   end
 end
 local function spit(path, content, opts)
-  local mode = "w"
-  if (opts and opts.append) then
-    mode = "a"
-  else
+  local _42_, _43_ = nil, nil
+  local function _44_()
+    if get(opts, "append") then
+      return "a"
+    else
+      return "w"
+    end
   end
-  local _43_, _44_ = io.open(path, mode)
-  if ((_43_ == nil) and (nil ~= _44_)) then
-    local msg = _44_
+  _42_, _43_ = io.open(path, _44_())
+  if ((_42_ == nil) and (nil ~= _43_)) then
+    local msg = _43_
     return error(("Could not open file: " .. msg))
-  elseif (nil ~= _43_) then
-    local f = _43_
+  elseif (nil ~= _42_) then
+    local f = _42_
     f:write(content)
     f:close()
     return nil
