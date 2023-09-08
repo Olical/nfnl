@@ -15,7 +15,14 @@
         (fs.full-path found))))
 
 (fn default [opts]
-  "Make sure you update the README whenever you change the default
+  "Returns the default configuration that you should base your custom
+  configuration on top of. Feel free to call this with no arguments and merge
+  your changes on top. If you wish, you can override opts.root-dir (which
+  defaults to the dir of your .nfnl.fnl project root and the CWD as a backup)
+  to whatever you need. The defaults with no arguments should be exactly what
+  you need in most cases though.
+
+  Make sure you update the README whenever you change the default
   configuration!"
 
   (let [;; Base this config's paths on...
