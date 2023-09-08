@@ -426,10 +426,10 @@ Return the first truthy result from (f x) or nil.
 Function signature:
 
 ```
-(spit path content)
+(spit path content opts)
 ```
 
-Spit the string into the file.
+Spit the string into the file. When opts.append is true, add to the file.
 
 ## `str`
 Function signature:
