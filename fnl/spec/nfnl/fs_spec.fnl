@@ -9,7 +9,11 @@
         (fn []
           (assert.equals "foo" (fs.basename "foo/bar.fnl"))
           (assert.equals "foo/bar" (fs.basename "foo/bar/baz.fnl"))
-          (assert.equals "." (fs.basename "baz.fnl"))))))
+          (assert.equals "." (fs.basename "baz.fnl"))))
+
+    (it "happily lets nils flow back out"
+        (fn []
+          (assert.is_nil (fs.basename nil))))))
 
 (describe
   "path-sep"
