@@ -7,9 +7,28 @@
 
 (local config-file-name ".nfnl.fnl")
 
-;; Make sure you update the README whenever you change the default configuration!
+(fn find [dir]
+  "Find the nearest .nfnl.fnl file to the given directory. Returns the absolute
+  path to the found file or nil."
+  (let [found (fs.findfile config-file-name (.. dir ";"))]
+      (when found
+        (fs.full-path found))))
+
 (fn default [opts]
-  (let [root-dir (core.get opts :root-dir (vim.fn.getcwd))]
+  "Make sure you update the README whenever you change the default
+  configuration!"
+
+  (let [;; Base this config's paths on...
+        root-dir (or
+                   ;; The given root-dir option.
+                   (core.get opts :root-dir)
+
+                   ;; The closest .nfnl.fnl file parent directory to the cwd.
+                   (fs.basename (find (vim.fn.getcwd)))
+
+                   ;; The cwd, just in case nothing else works.
+                   (vim.fn.getcwd))]
+
     {:compiler-options {}
      :fennel-path (str.join
                     ";"
@@ -53,10 +72,9 @@
   root-dir back."
 
   (or
-    (let [found (fs.findfile config-file-name (.. dir ";"))]
-      (when found
-        (let [config-file-path (fs.full-path found)
-              root-dir (fs.basename config-file-path)
+    (let [config-file-path (find dir)]
+      (when config-file-path
+        (let [root-dir (fs.basename config-file-path)
               config-source (vim.secure.read config-file-path)
 
               (ok config)
@@ -82,6 +100,7 @@
     {}))
 
 {: cfg-fn
+ : find
  : find-and-load
  : config-file-path?
  : default}
