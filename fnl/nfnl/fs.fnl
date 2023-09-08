@@ -3,23 +3,29 @@
 (local str (autoload :nfnl.string))
 
 (fn basename [path]
-  (vim.fn.fnamemodify path ":h"))
+  (when path
+    (vim.fn.fnamemodify path ":h")))
 
 (fn filename [path]
   "Just the filename / tail of a path."
-  (vim.fn.fnamemodify path ":t"))
+  (when path
+    (vim.fn.fnamemodify path ":t")))
 
 (fn file-name-root [path]
-  (vim.fn.fnamemodify path ":r"))
+  (when path
+    (vim.fn.fnamemodify path ":r")))
 
 (fn full-path [path]
-  (vim.fn.fnamemodify path ":p"))
+  (when path
+    (vim.fn.fnamemodify path ":p")))
 
 (fn mkdirp [dir]
-  (vim.fn.mkdir dir "p"))
+  (when dir
+    (vim.fn.mkdir dir "p")))
 
 (fn replace-extension [path ext]
-  (.. (file-name-root path) (.. "." ext)))
+  (when path
+    (.. (file-name-root path) (.. "." ext))))
 
 (fn read-first-line [path]
   (let [f (io.open path)]

@@ -4,22 +4,46 @@ local autoload = _local_1_["autoload"]
 local core = autoload("nfnl.core")
 local str = autoload("nfnl.string")
 local function basename(path)
-  return vim.fn.fnamemodify(path, ":h")
+  if path then
+    return vim.fn.fnamemodify(path, ":h")
+  else
+    return nil
+  end
 end
 local function filename(path)
-  return vim.fn.fnamemodify(path, ":t")
+  if path then
+    return vim.fn.fnamemodify(path, ":t")
+  else
+    return nil
+  end
 end
 local function file_name_root(path)
-  return vim.fn.fnamemodify(path, ":r")
+  if path then
+    return vim.fn.fnamemodify(path, ":r")
+  else
+    return nil
+  end
 end
 local function full_path(path)
-  return vim.fn.fnamemodify(path, ":p")
+  if path then
+    return vim.fn.fnamemodify(path, ":p")
+  else
+    return nil
+  end
 end
 local function mkdirp(dir)
-  return vim.fn.mkdir(dir, "p")
+  if dir then
+    return vim.fn.mkdir(dir, "p")
+  else
+    return nil
+  end
 end
 local function replace_extension(path, ext)
-  return (file_name_root(path) .. ("." .. ext))
+  if path then
+    return (file_name_root(path) .. ("." .. ext))
+  else
+    return nil
+  end
 end
 local function read_first_line(path)
   local f = io.open(path)
@@ -33,10 +57,10 @@ local function read_first_line(path)
 end
 local function relglob(dir, expr)
   local dir_len = (2 + string.len(dir))
-  local function _3_(_241)
+  local function _9_(_241)
     return string.sub(_241, dir_len)
   end
-  return core.map(_3_, vim.fn.globpath(dir, expr, true, true))
+  return core.map(_9_, vim.fn.globpath(dir, expr, true, true))
 end
 local function glob_dir_newer_3f(a_dir, b_dir, expr, b_dir_path_fn)
   local newer_3f = false
@@ -71,14 +95,14 @@ local function join_path(parts)
   return str.join(path_sep(), core.concat(parts))
 end
 local function replace_dirs(path, from, to)
-  local function _7_(segment)
+  local function _13_(segment)
     if (from == segment) then
       return to
     else
       return segment
     end
   end
-  return join_path(core.map(_7_, split_path(path)))
+  return join_path(core.map(_13_, split_path(path)))
 end
 local function fnl_path__3elua_path(fnl_path)
   return replace_dirs(replace_extension(fnl_path, "lua"), "fnl", "lua")
