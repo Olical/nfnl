@@ -3,7 +3,9 @@ local _local_1_ = require("nfnl.module")
 local autoload = _local_1_["autoload"]
 local compile = autoload("nfnl.compile")
 local config = autoload("nfnl.config")
-local function compile_all_files(dir)
+local fs = autoload("nfnl.fs")
+local mod = {}
+mod["compile-all-files"] = function(dir)
   local dir0 = (dir or vim.fn.getcwd())
   local _let_2_ = config["find-and-load"](dir0)
   local config0 = _let_2_["config"]
@@ -15,4 +17,7 @@ local function compile_all_files(dir)
     return nil
   end
 end
-return {["compile-all-files"] = compile_all_files}
+mod.dofile = function(file)
+  return dofile(fs["fnl-path->lua-path"](vim.fn.expand((file or "%"))))
+end
+return mod
