@@ -55,24 +55,6 @@ You must commit the Lua into your configuration or plugin so that it can be
 loaded by native Neovim Lua systems, with absolutely no knowledge of the Fennel
 it originated from.
 
-### Compiling all files
-
-If you for whatever reason need to compile _all_ of your files to Lua at once
-then you may do so by invoking the `compile-all-files` function like so.
-
-```lua
-require('nfnl')['compile-all-files']()
-```
-
-In the case where you're absolutely adamant that you need to `.gitignore` your
-compiled Lua output, this can be used after you `git pull` to ensure everything
-is compiled. I strongly advise committing your Lua for performance _and_
-stability reasons however.
-
-This project was designed around the principal of compiling early and then never
-needing to compile again unless you make changes. I thought long and hard about
-the tradeoffs so you don't have to.
-
 ## Configuration
 
 nfnl is configured on a per directory basis using `.nfnl.fnl` files which also
@@ -331,6 +313,36 @@ just include this in your `.nfnl.fnl` configuration file for your project.
                          (default.fnl-path->lua-path (.. "some-other-dir/" rel-fnl-path))))}
 ```
 
+### API
+
+Although you can require any internal nfnl Lua module and call it's functions
+([full index of internal modules and functions][apidoc]) there is a specific
+module, `nfnl.api` ([documentation][api-module-doc]), that is designed to be
+hooked up to your own functions, mappings and autocmds.
+
+The functions within are designed to "do the right thing" with little to no
+configuration. You shouldn't need them in normal use, but they may come in
+useful when you need to fit nfnl into an interesting workflow or system.
+
+As an example, here's how and why you'd use the `compile-all-files` function
+from another Fennel file to, you guessed it, compile all of your files.
+
+```fennel
+(local nfnl (require :nfnl.api))
+
+;; Takes an optional directory as an argument, defaults to (vim.fn.getcwd).
+(nfnl.compile-all-files)
+```
+
+In the case where you're absolutely adamant that you need to `.gitignore` your
+compiled Lua output, this can be used after you `git pull` to ensure everything
+is compiled. However, I strongly advise committing your Lua for performance
+_and_ stability.
+
+This project was designed around the principal of compiling early and then never
+needing to compile again unless you make changes. I thought long and hard about
+the tradeoffs so you don't have to. These tools are here for when I'm wrong.
+
 ## Development
 
 If you have nfnl installed in Neovim you should be able to just modify Fennel
@@ -409,3 +421,4 @@ experience.
 [fd]: https://github.com/sharkdp/fd
 [nfnl-plugin-example]: https://github.com/Olical/nfnl-plugin-example
 [lua-in-git-justifications]: https://github.com/Olical/nfnl/issues/5#issuecomment-1655447175
+[api-module-doc]: https://github.com/Olical/nfnl/blob/main/docs/api/nfnl/api.md
