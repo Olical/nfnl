@@ -313,6 +313,19 @@ just include this in your `.nfnl.fnl` configuration file for your project.
                          (default.fnl-path->lua-path (.. "some-other-dir/" rel-fnl-path))))}
 ```
 
+### Commands
+
+User commands are defined inside your Fennel buffers when nfnl configuration is
+detected, they are just thin wrappers around the function found in `nfnl.api`
+which you can read about under the next header.
+
+- `:NfnlFile [path]`
+  - `path` defaults to `%`
+
+  Run the matching Lua file for this Fennel file from disk. Does not recompile
+  the Lua, you must use nfnl to compile your Fennel to Lua first. Calls
+  nfnl.api/dofile under the hood.
+
 ### API
 
 Although you can require any internal nfnl Lua module and call it's functions
