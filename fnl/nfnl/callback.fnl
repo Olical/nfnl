@@ -38,11 +38,11 @@
           (vim.api.nvim_create_autocmd
             ["BufWritePost"]
             {:group (vim.api.nvim_create_augroup (.. "nfnl-dir-" root-dir) {})
-             :pattern (core.map #(vim.fs.normalize (fs.join-path [root-dir $])) (cfg [:source-file-patterns]))
+             :buffer ev.buf
              :callback (fennel-buf-write-post-callback-fn root-dir cfg)})
 
           (vim.api.nvim_buf_create_user_command
-            0 :NfnlFile
+            ev.buf :NfnlFile
             #(api.dofile (core.first (core.get $ :fargs)))
             {:desc "Run the matching Lua file for this Fennel file from disk. Does not recompile the Lua, you must use nfnl to compile your Fennel to Lua first. Calls nfnl.api/dofile under the hood."
              :force true
