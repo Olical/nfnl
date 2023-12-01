@@ -16,6 +16,8 @@ Compiles all files in the given dir (optional), defaulting to the current workin
 
   Will do nothing if you execute it on a directory that doesn't contain an nfnl configuration file.
 
+  Also displays all results via the notify system.
+
 ## `dofile`
 Function signature:
 

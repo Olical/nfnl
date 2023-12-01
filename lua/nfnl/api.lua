@@ -3,6 +3,7 @@ local _local_1_ = require("nfnl.module")
 local autoload = _local_1_["autoload"]
 local compile = autoload("nfnl.compile")
 local config = autoload("nfnl.config")
+local notify = autoload("nfnl.notify")
 local fs = autoload("nfnl.fs")
 local mod = {}
 mod["compile-all-files"] = function(dir)
@@ -12,9 +13,12 @@ mod["compile-all-files"] = function(dir)
   local root_dir = _let_2_["root-dir"]
   local cfg = _let_2_["cfg"]
   if config0 then
-    return compile["all-files"]({["root-dir"] = root_dir, cfg = cfg})
+    local results = compile["all-files"]({["root-dir"] = root_dir, cfg = cfg})
+    notify.info("Compilation complete.\n", results)
+    return results
   else
-    return nil
+    notify.warn("No .nfnl.fnl configuration found.")
+    return {}
   end
 end
 mod.dofile = function(file)
