@@ -42,6 +42,13 @@ Returns the default configuration that you should base your custom
   to whatever you need. The defaults with no arguments should be exactly what
   you need in most cases though.
 
+  opts.rtp-patterns is a sequential table of Lua patterns that match
+  runtimepath directories you wish to include in your fennel-path and
+  fennel-macro-path. It defaults to just ["/nfnl$"] which matches any
+  runtimepath directory ending in /nfnl. Add any Neovim plugins you wish to use
+  at compile or runtime here. You can also just replace it with a catch all
+  pattern to include all directories.
+
   Make sure you update the README whenever you change the default
   configuration!
 

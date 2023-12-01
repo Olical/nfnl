@@ -17,20 +17,39 @@ local function find(dir)
 end
 local function default(opts)
   local root_dir = (core.get(opts, "root-dir") or fs.basename(find(vim.fn.getcwd())) or vim.fn.getcwd())
-  return {["compiler-options"] = {}, ["fennel-path"] = str.join(";", core.map(fs["join-path"], {{root_dir, "?.fnl"}, {root_dir, "?", "init.fnl"}, {root_dir, "fnl", "?.fnl"}, {root_dir, "fnl", "?", "init.fnl"}})), ["fennel-macro-path"] = str.join(";", core.map(fs["join-path"], {{root_dir, "?.fnl"}, {root_dir, "?", "init-macros.fnl"}, {root_dir, "?", "init.fnl"}, {root_dir, "fnl", "?.fnl"}, {root_dir, "fnl", "?", "init-macros.fnl"}, {root_dir, "fnl", "?", "init.fnl"}})), ["source-file-patterns"] = {"*.fnl", fs["join-path"]({"**", "*.fnl"})}, ["fnl-path->lua-path"] = fs["fnl-path->lua-path"]}
+  local rtp_patterns = core.get(opts, "rtp-patterns", {(fs["path-sep"]() .. "nfnl$")})
+  local dirs
+  local function _3_(path)
+    if (path ~= root_dir) then
+      local function _4_(_241)
+        return string.find(path, _241)
+      end
+      return core.some(_4_, rtp_patterns)
+    else
+      return nil
+    end
+  end
+  dirs = core.concat({root_dir}, core.filter(_3_, str.split(vim.o.runtimepath, ",")))
+  local function _6_(root_dir0)
+    return core.map(fs["join-path"], {{root_dir0, "?.fnl"}, {root_dir0, "?", "init.fnl"}, {root_dir0, "fnl", "?.fnl"}, {root_dir0, "fnl", "?", "init.fnl"}})
+  end
+  local function _7_(root_dir0)
+    return core.map(fs["join-path"], {{root_dir0, "?.fnl"}, {root_dir0, "?", "init-macros.fnl"}, {root_dir0, "?", "init.fnl"}, {root_dir0, "fnl", "?.fnl"}, {root_dir0, "fnl", "?", "init-macros.fnl"}, {root_dir0, "fnl", "?", "init.fnl"}})
+  end
+  return {["compiler-options"] = {["error-pinpoint"] = false}, ["fennel-path"] = str.join(";", core.mapcat(_6_, dirs)), ["fennel-macro-path"] = str.join(";", core.mapcat(_7_, dirs)), ["source-file-patterns"] = {"*.fnl", fs["join-path"]({"**", "*.fnl"})}, ["fnl-path->lua-path"] = fs["fnl-path->lua-path"]}
 end
 local function cfg_fn(t, opts)
   local default_cfg = default(opts)
-  local function _3_(path)
+  local function _8_(path)
     return core["get-in"](t, path, core["get-in"](default_cfg, path))
   end
-  return _3_
+  return _8_
 end
 local function config_file_path_3f(path)
   return (config_file_name == fs.filename(path))
 end
 local function find_and_load(dir)
-  local function _4_()
+  local function _9_()
     local config_file_path = find(dir)
     if config_file_path then
       local root_dir = fs.basename(config_file_path)
@@ -52,6 +71,6 @@ local function find_and_load(dir)
       return nil
     end
   end
-  return (_4_() or {})
+  return (_9_() or {})
 end
 return {["cfg-fn"] = cfg_fn, find = find, ["find-and-load"] = find_and_load, ["config-file-path?"] = config_file_path_3f, default = default}

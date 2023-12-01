@@ -22,6 +22,13 @@
   to whatever you need. The defaults with no arguments should be exactly what
   you need in most cases though.
 
+  opts.rtp-patterns is a sequential table of Lua patterns that match
+  runtimepath directories you wish to include in your fennel-path and
+  fennel-macro-path. It defaults to just [\"/nfnl$\"] which matches any
+  runtimepath directory ending in /nfnl. Add any Neovim plugins you wish to use
+  at compile or runtime here. You can also just replace it with a catch all
+  pattern to include all directories.
+
   Make sure you update the README whenever you change the default
   configuration!"
 
@@ -34,27 +41,46 @@
                    (fs.basename (find (vim.fn.getcwd)))
 
                    ;; The cwd, just in case nothing else works.
-                   (vim.fn.getcwd))]
+                   (vim.fn.getcwd))
 
-    {:compiler-options {}
-     :fennel-path (str.join
-                    ";"
-                    (core.map
-                      fs.join-path
-                      [[root-dir "?.fnl"]
-                       [root-dir "?" "init.fnl"]
-                       [root-dir "fnl" "?.fnl"]
-                       [root-dir "fnl" "?" "init.fnl"]]))
-     :fennel-macro-path (str.join
-                          ";"
-                          (core.map
-                            fs.join-path
-                            [[root-dir "?.fnl"]
-                             [root-dir "?" "init-macros.fnl"]
-                             [root-dir "?" "init.fnl"]
-                             [root-dir "fnl" "?.fnl"]
-                             [root-dir "fnl" "?" "init-macros.fnl"]
-                             [root-dir "fnl" "?" "init.fnl"]]))
+        rtp-patterns (core.get opts :rtp-patterns [(.. (fs.path-sep) "nfnl$")])
+        dirs (->> (core.filter
+                    (fn [path]
+                      (when (not= path root-dir)
+                        (core.some #(string.find path $) rtp-patterns)))
+                    (str.split vim.o.runtimepath ","))
+                  (core.concat [root-dir]))]
+
+    {:compiler-options {:error-pinpoint false}
+
+     :fennel-path
+     (str.join
+       ";"
+       (core.mapcat
+         (fn [root-dir]
+           (core.map
+             fs.join-path
+             [[root-dir "?.fnl"]
+              [root-dir "?" "init.fnl"]
+              [root-dir "fnl" "?.fnl"]
+              [root-dir "fnl" "?" "init.fnl"]]))
+         dirs))
+
+     :fennel-macro-path
+     (str.join
+       ";"
+       (core.mapcat
+         (fn [root-dir]
+           (core.map
+             fs.join-path
+             [[root-dir "?.fnl"]
+              [root-dir "?" "init-macros.fnl"]
+              [root-dir "?" "init.fnl"]
+              [root-dir "fnl" "?.fnl"]
+              [root-dir "fnl" "?" "init-macros.fnl"]
+              [root-dir "fnl" "?" "init.fnl"]]))
+         dirs))
+
      :source-file-patterns ["*.fnl" (fs.join-path ["**" "*.fnl"])]
      :fnl-path->lua-path fs.fnl-path->lua-path}))
 

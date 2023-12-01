@@ -68,7 +68,8 @@ fine!) will default to these values that should work fine for most people.
 ```fennel
 {;; Passed to fennel.compileString when your code is compiled.
  ;; See https://fennel-lang.org/api for more information.
- :compiler-options {}
+ :compiler-options {;; Disables ansi escape sequences in compiler output.
+                    :error-pinpoint false}
 
  ;; Warning! In reality these paths are absolute and set to the root directory
  ;; of your project (where your .nfnl.fnl file is). This means even if you
@@ -77,12 +78,20 @@ fine!) will default to these values that should work fine for most people.
  ;; then macros will only work if your cwd is in the project you're working on.
 
  ;; They also use OS specific path separators, what you see below is just an example really.
+ ;; I'm not including nfnl's directory from your runtimepath, but it would be there by default.
+ ;; See :rtp-patterns below for more information on including other plugins in your path.
 
  ;; String to set the compiler's fennel.path to before compilation.
  :fennel-path "./?.fnl;./?/init.fnl;./fnl/?.fnl;./fnl/?/init.fnl"
 
  ;; String to set the compiler's fennel.macro-path to before compilation.
  :fennel-macro-path "./?.fnl;./?/init-macros.fnl;./?/init.fnl;./fnl/?.fnl;./fnl/?/init-macros.fnl;./fnl/?/init.fnl"
+
+ ;; A list of patterns to match against your Neovim runtimepath.
+ ;; Directories that match a pattern here are included in your fennel-path and fennel-macro-path.
+ ;; This list defaults to just nfnl, meaning from within your dotfiles or your plugin code you can access nfnl modules and macros.
+ ;; You can extend this to include more plugins you wish to depend on.
+ :rtp-patterns ["/nfnl$"]
 
  ;; A list of glob patterns (autocmd pattern syntax) of files that
  ;; should be compiled. This is used as configuration for the BufWritePost
