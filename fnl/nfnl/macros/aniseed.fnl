@@ -74,7 +74,7 @@
 (fn module [mod-name mod-fns mod-base]
   (let [;; So we can check for existing values and know if we're in an interactive eval.
         ;; If the module doesn't exist we're compiling and can skip interactive tooling.
-        existing-mod (. package.loaded (tostring mod-name))
+        existing-mod (. _G.package.loaded (tostring mod-name))
 
         ;; Determine if we're in an interactive eval or not.
 
@@ -97,10 +97,10 @@
 
                  ;; Only expose the module table if it doesn't exist yet.
                  (local ,mod-sym ,(if interactive?
-                                    `(. package.loaded ,mod-name-sym)
+                                    `(. _G.package.loaded ,mod-name-sym)
                                     `(do
-                                       (tset package.loaded ,mod-name-sym ,(or mod-base {}))
-                                       (. package.loaded ,mod-name-sym))))
+                                       (tset _G.package.loaded ,mod-name-sym ,(or mod-base {}))
+                                       (. _G.package.loaded ,mod-name-sym))))
 
                  ;; As we def values we insert them into locals.
                  ;; This table is then expanded in subsequent interactive evals.
