@@ -397,10 +397,15 @@ This workflow will be automated and streamlined eventually.
 
 Tests are written under `fnl/spec/nfnl/**/*_spec.fnl`. They're compiled into the
 `lua/` directory by nfnl itself and executed by [Plenary][plenary], you must
-have this plugin installed in order to run the test suite.
+have this plugin installed in order to run the test suite within Neovim.
 
 The project local `.nfnl.fnl` defines the `<localleader>pt` mapping which allows
 you to execute the test suite from within Neovim using Plenary.
+
+To run the tests outside of your configuration you can run
+`./script/setup-test-deps` (installs dependencies into this local directory) and
+then `./script/test` to execute the tests in a headless local Neovim
+configuration.
 
 ## Unlicensed
 

@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
 
-nvim --headless -c "PlenaryBustedDirectory lua/spec"
+export XDG_CONFIG_HOME=test-config
+nvim --headless -c 'edit .nfnl.fnl' -c trust -c qa
+nvim --headless -c 'PlenaryBustedDirectory lua/spec'
