@@ -181,6 +181,9 @@ For example, here's a simplified macro file from nfnl itself at
 ```fennel
 ;; [nfnl-macro]
 
+;; .nfnl.fnl config so you don't need to prefix globals like _G.vim.*
+;; {:compiler-options {:compilerEnv _G}}
+
 (fn time [...]
   `(let [start# (vim.loop.hrtime)
          result# (do ,...)
@@ -199,6 +202,22 @@ This system does not currently use static analysis to work out which files
 depend on each other, instead we opt for the safe approach of recompiling
 everything. This should still be fast enough for everyone's needs and avoids the
 horrible subtle bugs that would come with trying to be clever with it.
+
+## Why can't I refer to the vim global in my macros?
+
+By default, the Fennel compiler employs a compiler sandbox in your macro
+modules. This means you can't refer to any free global variables such a `vim`.
+You have to configure the [Fennel compiler API][api-module-doc] with the
+`{:compiler-options {...}}` section of your `.nfnl.fnl` file.
+
+You can either prefix each of these globals with `_G` like `_G.vim.g.some_var`
+or you can turn off the relevant sandboxing rules. One approach is to set the
+compiler environment to `_G` instead of Fennel's sanitised environment. You can
+do that with the following `.nfnl.fnl` file.
+
+```fennel
+{:compiler-options {:compilerEnv _G}}
+```
 
 ## OS support
 
