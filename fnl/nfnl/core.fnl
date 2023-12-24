@@ -342,6 +342,16 @@
 (fn constantly [v]
   (fn [] v))
 
+(fn distinct [xs]
+  "Takes a sequential table of values (xs) and returns a distinct sequential table with all duplicates removed."
+  (->> xs
+       (reduce
+         (fn [acc x]
+           (tset acc x true)
+           acc)
+         {})
+       (keys)))
+
 {: rand
  : nil?
  : number?
@@ -389,4 +399,5 @@
  : assoc-in
  : update
  : update-in
- : constantly}
+ : constantly
+ : distinct}

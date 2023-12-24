@@ -429,3 +429,23 @@
         (fn []
           (core.spit tmp-path "\nxyz" {:append true})
           (assert.equals (.. expected-body "\nxyz") (core.slurp tmp-path))))))
+
+(describe
+  "distinct"
+  (fn []
+    (it "does nothing to empty tables"
+        (fn []
+          (assert.are.same [] (core.distinct nil))
+          (assert.are.same [] (core.distinct []))))
+
+    (it "does nothing to already distinct lists"
+        (assert.are.same [1 2 3] (core.distinct [1 2 3])))
+
+    (it "removes duplicates of any type"
+        (assert.are.same [1 2 3] (core.distinct [1 2 2 3])))
+
+    (it "removes duplicates of any type"
+        (assert.are.same [:a :b :c] (core.distinct [:a :b :c :c]))
+
+        (let [t [1 2]]
+          (assert.are.same [:a t :c] (core.distinct [:a t :c t :c]))))))

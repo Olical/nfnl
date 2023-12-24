@@ -463,4 +463,12 @@ local function _102_()
   end
   return it("appends to a file if the :append option is set", _105_)
 end
-return describe("spit / slurp", _102_)
+describe("spit / slurp", _102_)
+local function _106_()
+  local function _107_()
+    assert.are.same({}, core.distinct(nil))
+    return assert.are.same({}, core.distinct({}))
+  end
+  return it("does nothing to empty tables", _107_)
+end
+return describe("distinct", _106_)

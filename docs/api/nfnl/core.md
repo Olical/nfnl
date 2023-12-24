@@ -11,6 +11,7 @@
 - [`constantly`](#constantly)
 - [`count`](#count)
 - [`dec`](#dec)
+- [`distinct`](#distinct)
 - [`empty?`](#empty)
 - [`even?`](#even)
 - [`filter`](#filter)
@@ -131,6 +132,15 @@ Function signature:
 ```
 
 Decrement n by 1.
+
+## `distinct`
+Function signature:
+
+```
+(distinct xs)
+```
+
+Takes a sequential table of values (xs) and returns a distinct sequential table with all duplicates removed.
 
 ## `empty?`
 Function signature:
