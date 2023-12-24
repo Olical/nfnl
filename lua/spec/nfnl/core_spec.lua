@@ -154,10 +154,12 @@ local function _37_()
   return it("returns true for odd numbers", _38_)
 end
 describe("odd?", _37_)
-local function sort(t)
+local function sort_tables(t)
   local function _39_(x, y)
-    if ("table" == type(x)) then
+    if (("table" == type(x)) and ("table" == type(y))) then
       return (core.first(x) < core.first(y))
+    elseif (type(x) ~= type(y)) then
+      return (tostring(x) < tostring(y))
     else
       return (x < y)
     end
@@ -169,7 +171,7 @@ local function _41_()
   local function _42_()
     assert.are.same({}, core.keys(nil))
     assert.are.same({}, core.keys({}))
-    return assert.are.same({"a", "b"}, sort(core.keys({a = 2, b = 3})))
+    return assert.are.same({"a", "b"}, sort_tables(core.keys({a = 2, b = 3})))
   end
   return it("returns the keys of a map", _42_)
 end
@@ -178,7 +180,7 @@ local function _43_()
   local function _44_()
     assert.are.same({}, core.vals(nil))
     assert.are.same({}, core.vals({}))
-    return assert.are.same({2, 3}, sort(core.vals({a = 2, b = 3})))
+    return assert.are.same({2, 3}, sort_tables(core.vals({a = 2, b = 3})))
   end
   return it("returns the values of a map", _44_)
 end
@@ -187,8 +189,8 @@ local function _45_()
   local function _46_()
     assert.are.same({}, core["kv-pairs"](nil))
     assert.are.same({}, core["kv-pairs"]({}))
-    assert.are.same({{"a", 1}, {"b", 2}}, sort(core["kv-pairs"]({a = 1, b = 2})))
-    return assert.are.same({{1, "a"}, {2, "b"}}, sort(core["kv-pairs"]({"a", "b"})))
+    assert.are.same({{"a", 1}, {"b", 2}}, sort_tables(core["kv-pairs"]({a = 1, b = 2})))
+    return assert.are.same({{1, "a"}, {2, "b"}}, sort_tables(core["kv-pairs"]({"a", "b"})))
   end
   return it("turns a map into key value pair tuples", _46_)
 end
@@ -466,9 +468,30 @@ end
 describe("spit / slurp", _102_)
 local function _106_()
   local function _107_()
+    return assert.are.same({1, 2, 3}, core.sort({3, 1, 2}))
+  end
+  return it("sorts tables without modifying the original", _107_)
+end
+describe("sort", _106_)
+local function _108_()
+  local function _109_()
     assert.are.same({}, core.distinct(nil))
     return assert.are.same({}, core.distinct({}))
   end
-  return it("does nothing to empty tables", _107_)
+  it("does nothing to empty tables", _109_)
+  local function _110_()
+    return assert.are.same({1, 2, 3}, sort_tables(core.distinct({1, 2, 3})))
+  end
+  it("does nothing to already distinct lists", _110_)
+  local function _111_()
+    return assert.are.same({1, 2, 3}, sort_tables(core.distinct({1, 2, 2, 3})))
+  end
+  it("removes duplicates of any type", _111_)
+  local function _112_()
+    assert.are.same({"a", "b", "c"}, sort_tables(core.distinct({"a", "b", "c", "c"})))
+    local t = {1, 2}
+    return assert.are.same({"a", "c", t}, sort_tables(core.distinct({"a", t, "c", t, "c"})))
+  end
+  return it("removes duplicates of any type", _112_)
 end
-return describe("distinct", _106_)
+return describe("distinct", _108_)

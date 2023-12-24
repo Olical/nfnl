@@ -44,6 +44,7 @@
 - [`select-keys`](#select-keys)
 - [`slurp`](#slurp)
 - [`some`](#some)
+- [`sort`](#sort)
 - [`spit`](#spit)
 - [`str`](#str)
 - [`string?`](#string)
@@ -431,6 +432,15 @@ Function signature:
 ```
 
 Return the first truthy result from (f x) or nil.
+
+## `sort`
+Function signature:
+
+```
+(sort xs)
+```
+
+Copies the sequential table xs, sorts it and returns it.
 
 ## `spit`
 Function signature:

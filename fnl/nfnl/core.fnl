@@ -352,6 +352,12 @@
          {})
        (keys)))
 
+(fn sort [xs]
+  "Copies the sequential table xs, sorts it and returns it."
+  (let [copy (map identity xs)]
+    (table.sort copy)
+    copy))
+
 {: rand
  : nil?
  : number?
@@ -400,4 +406,5 @@
  : update
  : update-in
  : constantly
- : distinct}
+ : distinct
+ : sort}

@@ -144,12 +144,17 @@
           (assert.is_false (core.odd? 2))
           (assert.is_true (core.odd? 3))))))
 
-(fn sort [t]
+(fn sort-tables [t]
   (table.sort
     t
     (fn [x y]
-      (if (= :table (type x))
+      (if
+        (and (= :table (type x)) (= :table (type y)))
         (< (core.first x) (core.first y))
+
+        (not= (type x) (type y))
+        (< (tostring x) (tostring y))
+
         (< x y))))
   t)
 
@@ -160,7 +165,7 @@
         (fn []
           (assert.are.same [] (core.keys nil))
           (assert.are.same [] (core.keys {}))
-          (assert.are.same [:a :b] (sort (core.keys {:a 2 :b 3})))))))
+          (assert.are.same [:a :b] (sort-tables (core.keys {:a 2 :b 3})))))))
 
 (describe
   "vals"
@@ -169,7 +174,7 @@
         (fn []
           (assert.are.same [] (core.vals nil))
           (assert.are.same [] (core.vals {}))
-          (assert.are.same [2 3] (sort (core.vals {:a 2 :b 3})))))))
+          (assert.are.same [2 3] (sort-tables (core.vals {:a 2 :b 3})))))))
 
 (describe
   "kv-pairs"
@@ -178,8 +183,8 @@
         (fn []
           (assert.are.same [] (core.kv-pairs nil))
           (assert.are.same [] (core.kv-pairs {}))
-          (assert.are.same [[:a 1] [:b 2]] (sort (core.kv-pairs {:a 1 :b 2})))
-          (assert.are.same [[1 :a] [2 :b]] (sort (core.kv-pairs [:a :b])))))))
+          (assert.are.same [[:a 1] [:b 2]] (sort-tables (core.kv-pairs {:a 1 :b 2})))
+          (assert.are.same [[1 :a] [2 :b]] (sort-tables (core.kv-pairs [:a :b])))))))
 
 (describe
   "pr-str"
@@ -431,6 +436,13 @@
           (assert.equals (.. expected-body "\nxyz") (core.slurp tmp-path))))))
 
 (describe
+  "sort"
+  (fn []
+    (it "sorts tables without modifying the original"
+        (fn []
+          (assert.are.same [1 2 3] (core.sort [3 1 2]))))))
+
+(describe
   "distinct"
   (fn []
     (it "does nothing to empty tables"
@@ -439,13 +451,16 @@
           (assert.are.same [] (core.distinct []))))
 
     (it "does nothing to already distinct lists"
-        (assert.are.same [1 2 3] (core.distinct [1 2 3])))
+        (fn []
+          (assert.are.same [1 2 3] (sort-tables (core.distinct [1 2 3])))))
 
     (it "removes duplicates of any type"
-        (assert.are.same [1 2 3] (core.distinct [1 2 2 3])))
+        (fn []
+          (assert.are.same [1 2 3] (sort-tables (core.distinct [1 2 2 3])))))
 
     (it "removes duplicates of any type"
-        (assert.are.same [:a :b :c] (core.distinct [:a :b :c :c]))
+        (fn []
+          (assert.are.same [:a :b :c] (sort-tables (core.distinct [:a :b :c :c])))
 
-        (let [t [1 2]]
-          (assert.are.same [:a t :c] (core.distinct [:a t :c t :c]))))))
+          (let [t [1 2]]
+            (assert.are.same [:a :c t] (sort-tables (core.distinct [:a t :c t :c]))))))))
