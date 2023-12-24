@@ -15,41 +15,42 @@ local function find(dir)
     return nil
   end
 end
+local function path_dirs(_3_)
+  local _arg_4_ = _3_
+  local rtp_patterns = _arg_4_["rtp-patterns"]
+  local runtimepath = _arg_4_["runtimepath"]
+  local base_dirs = _arg_4_["base-dirs"]
+  local function _5_(path)
+    local function _6_(_241)
+      return string.find(path, _241)
+    end
+    return core.some(_6_, rtp_patterns)
+  end
+  return core.distinct(core.concat(base_dirs, core.filter(_5_, str.split(runtimepath, ","))))
+end
 local function default(opts)
   local root_dir = (core.get(opts, "root-dir") or fs.basename(find(vim.fn.getcwd())) or vim.fn.getcwd())
-  local rtp_patterns = core.get(opts, "rtp-patterns", {(fs["path-sep"]() .. "nfnl$")})
-  local dirs
-  local function _3_(path)
-    if (path ~= root_dir) then
-      local function _4_(_241)
-        return string.find(path, _241)
-      end
-      return core.some(_4_, rtp_patterns)
-    else
-      return nil
-    end
-  end
-  dirs = core.concat({root_dir}, core.filter(_3_, str.split(vim.o.runtimepath, ",")))
-  local function _6_(root_dir0)
+  local dirs = path_dirs({runtimepath = vim.o.runtimepath, ["rtp-patterns"] = core.get(opts, "rtp-patterns", {(fs["path-sep"]() .. "nfnl$")}), ["base-dirs"] = {root_dir}})
+  local function _7_(root_dir0)
     return core.map(fs["join-path"], {{root_dir0, "?.fnl"}, {root_dir0, "?", "init.fnl"}, {root_dir0, "fnl", "?.fnl"}, {root_dir0, "fnl", "?", "init.fnl"}})
   end
-  local function _7_(root_dir0)
+  local function _8_(root_dir0)
     return core.map(fs["join-path"], {{root_dir0, "?.fnl"}, {root_dir0, "?", "init-macros.fnl"}, {root_dir0, "?", "init.fnl"}, {root_dir0, "fnl", "?.fnl"}, {root_dir0, "fnl", "?", "init-macros.fnl"}, {root_dir0, "fnl", "?", "init.fnl"}})
   end
-  return {["compiler-options"] = {["error-pinpoint"] = false}, ["fennel-path"] = str.join(";", core.mapcat(_6_, dirs)), ["fennel-macro-path"] = str.join(";", core.mapcat(_7_, dirs)), ["source-file-patterns"] = {"*.fnl", fs["join-path"]({"**", "*.fnl"})}, ["fnl-path->lua-path"] = fs["fnl-path->lua-path"]}
+  return {["compiler-options"] = {["error-pinpoint"] = false}, ["fennel-path"] = str.join(";", core.mapcat(_7_, dirs)), ["fennel-macro-path"] = str.join(";", core.mapcat(_8_, dirs)), ["source-file-patterns"] = {"*.fnl", fs["join-path"]({"**", "*.fnl"})}, ["fnl-path->lua-path"] = fs["fnl-path->lua-path"]}
 end
 local function cfg_fn(t, opts)
   local default_cfg = default(opts)
-  local function _8_(path)
+  local function _9_(path)
     return core["get-in"](t, path, core["get-in"](default_cfg, path))
   end
-  return _8_
+  return _9_
 end
 local function config_file_path_3f(path)
   return (config_file_name == fs.filename(path))
 end
 local function find_and_load(dir)
-  local function _9_()
+  local function _10_()
     local config_file_path = find(dir)
     if config_file_path then
       local root_dir = fs.basename(config_file_path)
@@ -71,6 +72,6 @@ local function find_and_load(dir)
       return nil
     end
   end
-  return (_9_() or {})
+  return (_10_() or {})
 end
-return {["cfg-fn"] = cfg_fn, find = find, ["find-and-load"] = find_and_load, ["config-file-path?"] = config_file_path_3f, default = default}
+return {["cfg-fn"] = cfg_fn, find = find, ["find-and-load"] = find_and_load, ["config-file-path?"] = config_file_path_3f, default = default, ["path-dirs"] = path_dirs}

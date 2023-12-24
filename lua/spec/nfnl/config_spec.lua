@@ -4,6 +4,7 @@ local describe = _local_1_["describe"]
 local it = _local_1_["it"]
 local assert = require("luassert.assert")
 local config = require("nfnl.config")
+local fs = require("nfnl.fs")
 local function _2_()
   local function _3_()
     assert.equals("function", type(config.default))
@@ -48,4 +49,16 @@ local function _8_()
   end
   return it("returns an empty table if a config file isn't found", _11_)
 end
-return describe("find-and-load", _8_)
+describe("find-and-load", _8_)
+local function sorted(xs)
+  table.sort(xs)
+  return xs
+end
+local function _12_()
+  local function _13_()
+    assert.are.same({"/foo/bar/nfnl", "/foo/baz/my-proj"}, sorted(config["path-dirs"]({runtimepath = "/foo/bar/nfnl,/foo/bar/other-thing", ["rtp-patterns"] = {(fs["path-sep"]() .. "nfnl$")}, ["base-dirs"] = {"/foo/baz/my-proj"}})))
+    return assert.are.same({"/foo/bar/nfnl", "/foo/baz/my-proj"}, sorted(config["path-dirs"]({runtimepath = "/foo/bar/nfnl,/foo/bar/other-thing", ["rtp-patterns"] = {(fs["path-sep"]() .. "nfnl$")}, ["base-dirs"] = {"/foo/baz/my-proj", "/foo/bar/nfnl"}})))
+  end
+  return it("builds path dirs from runtimepath, deduplicates the base-dirs", _13_)
+end
+return describe("path-dirs", _12_)

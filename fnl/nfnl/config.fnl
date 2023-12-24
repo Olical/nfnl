@@ -14,11 +14,25 @@
       (when found
         (fs.full-path found))))
 
+(fn path-dirs [{: rtp-patterns : runtimepath : base-dirs}]
+  "Takes the current runtimepath and a sequential table of rtp-patterns. Those
+  patterns are used to filter down all of the runtimepath directories. Returns
+  the runtime path items that match at least one of the rtp-patterns.
+
+  Also accepts a base-dirs table that it'll concatenate onto the end of then
+  run through core.distinct to de-duplicate."
+  (->> (str.split runtimepath ",")
+       (core.filter
+         (fn [path]
+           (core.some #(string.find path $) rtp-patterns)))
+       (core.concat base-dirs)
+       (core.distinct)))
+
 (fn default [opts]
   "Returns the default configuration that you should base your custom
   configuration on top of. Feel free to call this with no arguments and merge
   your changes on top. If you wish, you can override opts.root-dir (which
-  defaults to the dir of your .nfnl.fnl project root and the CWD as a backup)
+                                                                     defaults to the dir of your .nfnl.fnl project root and the CWD as a backup)
   to whatever you need. The defaults with no arguments should be exactly what
   you need in most cases though.
 
@@ -43,13 +57,10 @@
                    ;; The cwd, just in case nothing else works.
                    (vim.fn.getcwd))
 
-        rtp-patterns (core.get opts :rtp-patterns [(.. (fs.path-sep) "nfnl$")])
-        dirs (->> (core.filter
-                    (fn [path]
-                      (when (not= path root-dir)
-                        (core.some #(string.find path $) rtp-patterns)))
-                    (str.split vim.o.runtimepath ","))
-                  (core.concat [root-dir]))]
+        dirs (path-dirs
+               {:runtimepath vim.o.runtimepath
+                :rtp-patterns (core.get opts :rtp-patterns [(.. (fs.path-sep) "nfnl$")])
+                :base-dirs [root-dir]})]
 
     {:compiler-options {:error-pinpoint false}
 
@@ -136,4 +147,5 @@
  : find
  : find-and-load
  : config-file-path?
- : default}
+ : default
+ : path-dirs}

@@ -1,6 +1,7 @@
 (local {: describe : it} (require :plenary.busted))
 (local assert (require :luassert.assert))
 (local config (require :nfnl.config))
+(local fs (require :nfnl.fs))
 
 (describe
   "default"
@@ -44,3 +45,28 @@
     (it "returns an empty table if a config file isn't found"
         (fn []
           (assert.are.same {} (config.find-and-load "/some/made/up/dir"))))))
+
+(fn sorted [xs]
+  (table.sort xs)
+  xs)
+
+(describe
+  "path-dirs"
+  (fn []
+    (it "builds path dirs from runtimepath, deduplicates the base-dirs"
+        (fn []
+          (assert.are.same
+            ["/foo/bar/nfnl" "/foo/baz/my-proj"]
+            (sorted
+              (config.path-dirs
+                {:runtimepath "/foo/bar/nfnl,/foo/bar/other-thing"
+                 :rtp-patterns [(.. (fs.path-sep) "nfnl$")]
+                 :base-dirs ["/foo/baz/my-proj"]})))
+
+          (assert.are.same
+            ["/foo/bar/nfnl" "/foo/baz/my-proj"]
+            (sorted
+              (config.path-dirs
+                {:runtimepath "/foo/bar/nfnl,/foo/bar/other-thing"
+                 :rtp-patterns [(.. (fs.path-sep) "nfnl$")]
+                 :base-dirs ["/foo/baz/my-proj" "/foo/bar/nfnl"]})))))))
