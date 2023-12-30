@@ -7,6 +7,7 @@ local nvim = autoload("nfnl.nvim")
 local compile = autoload("nfnl.compile")
 local config = autoload("nfnl.config")
 local api = autoload("nfnl.api")
+local notify = autoload("nfnl.notify")
 local function fennel_buf_write_post_callback_fn(root_dir, cfg)
   local function _2_(ev)
     return compile["into-file"]({["root-dir"] = root_dir, cfg = cfg, path = fs["full-path"](ev.file), source = nvim["get-buf-content-as-string"](ev.buf)})
@@ -22,13 +23,21 @@ local function fennel_filetype_callback(ev)
     local root_dir = _let_3_["root-dir"]
     local cfg = _let_3_["cfg"]
     if config0 then
+      if cfg({"verbose"}) then
+        notify.info("Found nfnl config, setting up autocmds: ", root_dir)
+      else
+      end
       vim.api.nvim_create_autocmd({"BufWritePost"}, {group = vim.api.nvim_create_augroup(("nfnl-dir-" .. root_dir), {}), buffer = ev.buf, callback = fennel_buf_write_post_callback_fn(root_dir, cfg)})
-      local function _4_(_241)
+      local function _5_(_241)
         return api.dofile(core.first(core.get(_241, "fargs")))
       end
-      return vim.api.nvim_buf_create_user_command(ev.buf, "NfnlFile", _4_, {desc = "Run the matching Lua file for this Fennel file from disk. Does not recompile the Lua, you must use nfnl to compile your Fennel to Lua first. Calls nfnl.api/dofile under the hood.", force = true, complete = "file", nargs = "?"})
+      return vim.api.nvim_buf_create_user_command(ev.buf, "NfnlFile", _5_, {desc = "Run the matching Lua file for this Fennel file from disk. Does not recompile the Lua, you must use nfnl to compile your Fennel to Lua first. Calls nfnl.api/dofile under the hood.", force = true, complete = "file", nargs = "?"})
     else
-      return nil
+      if cfg({"verbose"}) then
+        return notify.info("No nfnl config found: ", file_dir)
+      else
+        return nil
+      end
     end
   else
     return nil

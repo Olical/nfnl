@@ -49,9 +49,12 @@
                   {:filename path}
                   (cfg [:compiler-options]))))]
         (if ok
-          {:status :ok
-           :source-path path
-           :result (.. (with-header rel-file-name res) "\n")}
+          (do
+            (when (cfg [:verbose])
+              (notify.info "Successfully compiled: " path))
+            {:status :ok
+             :source-path path
+             :result (.. (with-header rel-file-name res) "\n")})
           (do
             (when (not batch?)
               (notify.error res))

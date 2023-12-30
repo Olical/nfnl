@@ -66,7 +66,12 @@ Any configuration you don't provide (an empty file or just `{}` is absolutely
 fine!) will default to these values that should work fine for most people.
 
 ```fennel
-{;; Passed to fennel.compileString when your code is compiled.
+{;; Enables verbose notifications from nfnl, including notifications about
+ ;; when it starts up and when it compiles successfully. Useful for debugging 
+ ;; the plugin itself and checking that it's running when you expect it to.
+ :verbose false
+
+ ;; Passed to fennel.compileString when your code is compiled.
  ;; See https://fennel-lang.org/api for more information.
  :compiler-options {;; Disables ansi escape sequences in compiler output.
                     :error-pinpoint false}

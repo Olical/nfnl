@@ -41,6 +41,10 @@ mod["into-string"] = function(_2_)
       ok, res = pcall(fennel.compileString, source, core.merge({filename = path}, cfg({"compiler-options"})))
     end
     if ok then
+      if cfg({"verbose"}) then
+        notify.info("Successfully compiled ", path)
+      else
+      end
       return {status = "ok", ["source-path"] = path, result = (with_header(rel_file_name, res) .. "\n")}
     else
       if not batch_3f then
@@ -51,21 +55,21 @@ mod["into-string"] = function(_2_)
     end
   end
 end
-mod["into-file"] = function(_7_)
-  local _arg_8_ = _7_
-  local _root_dir = _arg_8_["_root-dir"]
-  local cfg = _arg_8_["cfg"]
-  local _source = _arg_8_["_source"]
-  local path = _arg_8_["path"]
-  local batch_3f = _arg_8_["batch?"]
-  local opts = _arg_8_
+mod["into-file"] = function(_8_)
+  local _arg_9_ = _8_
+  local _root_dir = _arg_9_["_root-dir"]
+  local cfg = _arg_9_["cfg"]
+  local _source = _arg_9_["_source"]
+  local path = _arg_9_["path"]
+  local batch_3f = _arg_9_["batch?"]
+  local opts = _arg_9_
   local fnl_path__3elua_path = cfg({"fnl-path->lua-path"})
   local destination_path = fnl_path__3elua_path(path)
-  local _let_9_ = mod["into-string"](opts)
-  local status = _let_9_["status"]
-  local source_path = _let_9_["source-path"]
-  local result = _let_9_["result"]
-  local res = _let_9_
+  local _let_10_ = mod["into-string"](opts)
+  local status = _let_10_["status"]
+  local source_path = _let_10_["source-path"]
+  local result = _let_10_["result"]
+  local res = _let_10_
   if ("ok" ~= status) then
     return res
   elseif safe_target_3f(destination_path) then
@@ -80,19 +84,19 @@ mod["into-file"] = function(_7_)
     return {status = "destination-exists", ["source-path"] = path, ["destination-path"] = destination_path}
   end
 end
-mod["all-files"] = function(_12_)
-  local _arg_13_ = _12_
-  local root_dir = _arg_13_["root-dir"]
-  local cfg = _arg_13_["cfg"]
-  local function _14_(path)
+mod["all-files"] = function(_13_)
+  local _arg_14_ = _13_
+  local root_dir = _arg_14_["root-dir"]
+  local cfg = _arg_14_["cfg"]
+  local function _15_(path)
     return mod["into-file"]({["root-dir"] = root_dir, path = path, cfg = cfg, source = core.slurp(path), ["batch?"] = true})
   end
-  local function _15_(_241)
+  local function _16_(_241)
     return fs["join-path"]({root_dir, _241})
   end
-  local function _16_(_241)
+  local function _17_(_241)
     return fs.relglob(root_dir, _241)
   end
-  return core.map(_14_, core.map(_15_, core.mapcat(_16_, cfg({"source-file-patterns"}))))
+  return core.map(_15_, core.map(_16_, core.mapcat(_17_, cfg({"source-file-patterns"}))))
 end
 return mod

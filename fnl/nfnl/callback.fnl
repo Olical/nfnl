@@ -5,6 +5,7 @@
 (local compile (autoload :nfnl.compile))
 (local config (autoload :nfnl.config))
 (local api (autoload :nfnl.api))
+(local notify (autoload :nfnl.notify))
 
 (fn fennel-buf-write-post-callback-fn [root-dir cfg]
   "Builds a function to be called on buf write. Adheres to the config passed
@@ -34,19 +35,25 @@
       (let [file-dir (fs.basename file-path)
             {: config : root-dir : cfg} (config.find-and-load file-dir)]
 
-        (when config
-          (vim.api.nvim_create_autocmd
-            ["BufWritePost"]
-            {:group (vim.api.nvim_create_augroup (.. "nfnl-dir-" root-dir) {})
-             :buffer ev.buf
-             :callback (fennel-buf-write-post-callback-fn root-dir cfg)})
+        (if config
+          (do
+            (when (cfg [:verbose])
+              (notify.info "Found nfnl config, setting up autocmds: " root-dir))
 
-          (vim.api.nvim_buf_create_user_command
-            ev.buf :NfnlFile
-            #(api.dofile (core.first (core.get $ :fargs)))
-            {:desc "Run the matching Lua file for this Fennel file from disk. Does not recompile the Lua, you must use nfnl to compile your Fennel to Lua first. Calls nfnl.api/dofile under the hood."
-             :force true
-             :complete "file"
-             :nargs "?"}))))))
+            (vim.api.nvim_create_autocmd
+              ["BufWritePost"]
+              {:group (vim.api.nvim_create_augroup (.. "nfnl-dir-" root-dir) {})
+               :buffer ev.buf
+               :callback (fennel-buf-write-post-callback-fn root-dir cfg)})
+
+            (vim.api.nvim_buf_create_user_command
+              ev.buf :NfnlFile
+              #(api.dofile (core.first (core.get $ :fargs)))
+              {:desc "Run the matching Lua file for this Fennel file from disk. Does not recompile the Lua, you must use nfnl to compile your Fennel to Lua first. Calls nfnl.api/dofile under the hood."
+               :force true
+               :complete "file"
+               :nargs "?"}))
+          (when (cfg [:verbose])
+              (notify.info "No nfnl config found: " file-dir)))))))
 
 {: fennel-filetype-callback}

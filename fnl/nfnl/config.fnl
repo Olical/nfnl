@@ -62,7 +62,8 @@
                 :rtp-patterns (core.get opts :rtp-patterns [(.. (fs.path-sep) "nfnl$")])
                 :base-dirs [root-dir]})]
 
-    {:compiler-options {:error-pinpoint false}
+    {:verbose false
+     :compiler-options {:error-pinpoint false}
 
      :fennel-path
      (str.join

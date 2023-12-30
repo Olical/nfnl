@@ -1,1 +1,1 @@
-{}
+{:verbose true}

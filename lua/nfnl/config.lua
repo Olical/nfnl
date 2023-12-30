@@ -37,7 +37,7 @@ local function default(opts)
   local function _8_(root_dir0)
     return core.map(fs["join-path"], {{root_dir0, "?.fnl"}, {root_dir0, "?", "init-macros.fnl"}, {root_dir0, "?", "init.fnl"}, {root_dir0, "fnl", "?.fnl"}, {root_dir0, "fnl", "?", "init-macros.fnl"}, {root_dir0, "fnl", "?", "init.fnl"}})
   end
-  return {["compiler-options"] = {["error-pinpoint"] = false}, ["fennel-path"] = str.join(";", core.mapcat(_7_, dirs)), ["fennel-macro-path"] = str.join(";", core.mapcat(_8_, dirs)), ["source-file-patterns"] = {"*.fnl", fs["join-path"]({"**", "*.fnl"})}, ["fnl-path->lua-path"] = fs["fnl-path->lua-path"]}
+  return {["compiler-options"] = {["error-pinpoint"] = false}, ["fennel-path"] = str.join(";", core.mapcat(_7_, dirs)), ["fennel-macro-path"] = str.join(";", core.mapcat(_8_, dirs)), ["source-file-patterns"] = {"*.fnl", fs["join-path"]({"**", "*.fnl"})}, ["fnl-path->lua-path"] = fs["fnl-path->lua-path"], verbose = false}
 end
 local function cfg_fn(t, opts)
   local default_cfg = default(opts)
