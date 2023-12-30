@@ -1,9 +1,11 @@
 (local {: autoload} (require :nfnl.module))
 (local callback (autoload :nfnl.callback))
 
+(local minimum-neovim-version "0.9.0")
+
 (when vim
-  (when (= 0 (_G.vim.fn.has "nvim-0.9.0"))
-    (error "nfnl requires Neovim > v0.9.0."))
+  (when (= 0 (_G.vim.fn.has (.. "nvim-" minimum-neovim-version)))
+    (error (.. "nfnl requires Neovim > v" minimum-neovim-version)))
 
   (vim.api.nvim_create_autocmd
     ["Filetype"]
