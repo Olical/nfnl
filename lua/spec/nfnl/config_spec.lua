@@ -39,7 +39,7 @@ local function _8_()
     local cfg = _let_10_["cfg"]
     local root_dir = _let_10_["root-dir"]
     local config0 = _let_10_["config"]
-    assert.are.same({}, config0)
+    assert.are.same({verbose = true}, config0)
     assert.equals(vim.fn.getcwd(), root_dir)
     return assert.equals("function", type(cfg))
   end

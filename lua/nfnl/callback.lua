@@ -33,11 +33,7 @@ local function fennel_filetype_callback(ev)
       end
       return vim.api.nvim_buf_create_user_command(ev.buf, "NfnlFile", _5_, {desc = "Run the matching Lua file for this Fennel file from disk. Does not recompile the Lua, you must use nfnl to compile your Fennel to Lua first. Calls nfnl.api/dofile under the hood.", force = true, complete = "file", nargs = "?"})
     else
-      if cfg({"verbose"}) then
-        return notify.info("No nfnl config found: ", file_dir)
-      else
-        return nil
-      end
+      return nil
     end
   else
     return nil

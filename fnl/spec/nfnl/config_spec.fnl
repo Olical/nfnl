@@ -38,7 +38,7 @@
         (fn []
           (let [{: cfg : root-dir : config}
                 (config.find-and-load ".")]
-            (assert.are.same {} config)
+            (assert.are.same {:verbose true} config)
             (assert.equals (vim.fn.getcwd) root-dir)
             (assert.equals :function (type cfg)))))
 
