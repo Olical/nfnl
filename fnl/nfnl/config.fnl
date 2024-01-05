@@ -31,10 +31,7 @@
 (fn default [opts]
   "Returns the default configuration that you should base your custom
   configuration on top of. Feel free to call this with no arguments and merge
-  your changes on top. If you wish, you can override opts.root-dir (which
-                                                                     defaults to the dir of your .nfnl.fnl project root and the CWD as a backup)
-  to whatever you need. The defaults with no arguments should be exactly what
-  you need in most cases though.
+  your changes on top. You can override opts.root-dir (which defaults to the dir of your .nfnl.fnl project root and the CWD as a backup) to whatever you need. The defaults with no arguments should be correct for most situations though.
 
   opts.rtp-patterns is a sequential table of Lua patterns that match
   runtimepath directories you wish to include in your fennel-path and
@@ -42,6 +39,9 @@
   runtimepath directory ending in /nfnl. Add any Neovim plugins you wish to use
   at compile or runtime here. You can also just replace it with a catch all
   pattern to include all directories.
+
+   - All plugins: [\".*\"]
+   - nfnl + my-cool-plugin: [\"/nfnl$\" \"/my-cool-plugin$\"]
 
   Make sure you update the README whenever you change the default
   configuration!"

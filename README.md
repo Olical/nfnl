@@ -92,12 +92,6 @@ fine!) will default to these values that should work fine for most people.
  ;; String to set the compiler's fennel.macro-path to before compilation.
  :fennel-macro-path "./?.fnl;./?/init-macros.fnl;./?/init.fnl;./fnl/?.fnl;./fnl/?/init-macros.fnl;./fnl/?/init.fnl"
 
- ;; A list of patterns to match against your Neovim runtimepath.
- ;; Directories that match a pattern here are included in your fennel-path and fennel-macro-path.
- ;; This list defaults to just nfnl, meaning from within your dotfiles or your plugin code you can access nfnl modules and macros.
- ;; You can extend this to include more plugins you wish to depend on.
- :rtp-patterns ["/nfnl$"]
-
  ;; A list of glob patterns (autocmd pattern syntax) of files that
  ;; should be compiled. This is used as configuration for the BufWritePost
  ;; autocmd, so it'll only apply to buffers you're interested in.
@@ -128,6 +122,34 @@ load nfnl's modules to access things like the default config values.
 (local default (config.default))
 
 {:source-file-patterns (core.concat default.source-file-patterns ["custom-dir/*.fnl"])}
+```
+
+`config.default` accepts a table of arguments ([docs][config-default-doc]) to
+change how it builds the default configuration. You can call
+`(config.default {...})` on the last line of your `.nfnl.fnl` file in order to
+return a modified default configuration table. You also then have the option to
+call `config.default`, modify that table with extra values and then return that.
+
+By providing a different `rtp-patterns` value (defaults to `["/nfnl$"]`) we can
+include other plugins you have installed in your search paths when requiring Lua
+modules or macros.
+
+```fennel
+;; Configuration that includes nfnl _and_ your-cool-plugin in the search paths.
+(local config (require :nfnl.config))
+(config.default {:rtp-patterns ["/nfnl$" "/your-cool-plugin$"]})
+
+;; Configuration that includes ALL of your installed plugins in your search paths.
+;; This might slow down compilation on some machines, so it's not the default.
+(local config (require :nfnl.config))
+(config.default {:rtp-patterns [".*"]})
+
+;; Searching all of your plugins _and_ merging in some other custom configuration.
+(local core (require :nfnl.core))
+(local config (require :nfnl.config))
+(core.merge
+  (config.default {:rtp-patterns [".*"]})
+  {:source-file-patterns ["fnl/**/*.fnl"]})
 ```
 
 ## Installation
@@ -473,3 +495,4 @@ experience.
 [nfnl-plugin-example]: https://github.com/Olical/nfnl-plugin-example
 [lua-in-git-justifications]: https://github.com/Olical/nfnl/issues/5#issuecomment-1655447175
 [api-module-doc]: https://github.com/Olical/nfnl/blob/main/docs/api/nfnl/api.md
+[config-default-doc]: https://github.com/Olical/nfnl/blob/main/docs/api/nfnl/config.md#default
