@@ -60,8 +60,7 @@ Function signature:
 (find dir)
 ```
 
-Find the nearest .nfnl.fnl file to the given directory. Returns the absolute
-  path to the found file or nil.
+Find the nearest .nfnl.fnl file to the given directory.
 
 ## `find-and-load`
 Function signature:
