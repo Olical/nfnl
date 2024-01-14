@@ -380,6 +380,11 @@ which you can read about under the next header.
   Run the matching Lua file for this Fennel file from disk. Does not recompile
   the Lua, you must use nfnl to compile your Fennel to Lua first. Calls
   nfnl.api/dofile under the hood.
+- `:NfnlCompileAllFiles [path]`
+  - `path` defaults to `.`
+
+  Executes (nfnl.api/compile-all-files) which will, you guessed it, compile all
+  of your files.
 
 ### API
 
