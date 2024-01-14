@@ -31,7 +31,11 @@ local function fennel_filetype_callback(ev)
       local function _5_(_241)
         return api.dofile(core.first(core.get(_241, "fargs")))
       end
-      return vim.api.nvim_buf_create_user_command(ev.buf, "NfnlFile", _5_, {desc = "Run the matching Lua file for this Fennel file from disk. Does not recompile the Lua, you must use nfnl to compile your Fennel to Lua first. Calls nfnl.api/dofile under the hood.", force = true, complete = "file", nargs = "?"})
+      vim.api.nvim_buf_create_user_command(ev.buf, "NfnlFile", _5_, {desc = "Run the matching Lua file for this Fennel file from disk. Does not recompile the Lua, you must use nfnl to compile your Fennel to Lua first. Calls nfnl.api/dofile under the hood.", force = true, complete = "file", nargs = "?"})
+      local function _6_(_241)
+        return api["compile-all-files"](core.first(core.get(_241, "fargs")))
+      end
+      return vim.api.nvim_buf_create_user_command(ev.buf, "NfnlCompileAllFiles", _6_, {desc = "Executes (nfnl.api/compile-all-files) which will, you guessed it, compile all of your files.", force = true, complete = "file", nargs = "?"})
     else
       return nil
     end

@@ -51,6 +51,14 @@
             {:desc "Run the matching Lua file for this Fennel file from disk. Does not recompile the Lua, you must use nfnl to compile your Fennel to Lua first. Calls nfnl.api/dofile under the hood."
              :force true
              :complete "file"
+             :nargs "?"})
+
+          (vim.api.nvim_buf_create_user_command
+            ev.buf :NfnlCompileAllFiles
+            #(api.compile-all-files (core.first (core.get $ :fargs)))
+            {:desc "Executes (nfnl.api/compile-all-files) which will, you guessed it, compile all of your files."
+             :force true
+             :complete "file"
              :nargs "?"}))))))
 
 {: fennel-filetype-callback}
