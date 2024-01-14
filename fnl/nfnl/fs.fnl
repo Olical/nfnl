@@ -64,7 +64,7 @@
   instead of an empty string."
   (let [res (vim.fn.findfile name path)]
     (when (not (core.empty? res))
-      res)))
+      (full-path res))))
 
 (fn split-path [path]
   (str.split path (path-sep)))
