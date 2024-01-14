@@ -37,6 +37,10 @@
       {:status :nfnl-config-is-not-compiled
        :source-path path}
 
+      (not (core.some #(string.find path $) (cfg [:source-file-patterns])))
+      {:status :path-is-not-in-source-file-patterns
+       :source-path path}
+
       (let [rel-file-name (path:sub (+ 2 (root-dir:len)))
             (ok res)
             (do

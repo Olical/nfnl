@@ -33,43 +33,50 @@ mod["into-string"] = function(_2_)
   elseif config["config-file-path?"](path) then
     return {status = "nfnl-config-is-not-compiled", ["source-path"] = path}
   else
-    local rel_file_name = path:sub((2 + root_dir:len()))
-    local ok, res = nil, nil
-    do
-      fennel.path = cfg({"fennel-path"})
-      fennel["macro-path"] = cfg({"fennel-macro-path"})
-      ok, res = pcall(fennel.compileString, source, core.merge({filename = path}, cfg({"compiler-options"})))
+    local function _4_(_241)
+      return string.find(path, _241)
     end
-    if ok then
-      if cfg({"verbose"}) then
-        notify.info("Successfully compiled ", path)
-      else
-      end
-      return {status = "ok", ["source-path"] = path, result = (with_header(rel_file_name, res) .. "\n")}
+    if not core.some(_4_, cfg({"source-file-patterns"})) then
+      return {status = "path-is-not-in-source-file-patterns", ["source-path"] = path}
     else
-      if not batch_3f then
-        notify.error(res)
-      else
+      local rel_file_name = path:sub((2 + root_dir:len()))
+      local ok, res = nil, nil
+      do
+        fennel.path = cfg({"fennel-path"})
+        fennel["macro-path"] = cfg({"fennel-macro-path"})
+        ok, res = pcall(fennel.compileString, source, core.merge({filename = path}, cfg({"compiler-options"})))
       end
-      return {status = "compilation-error", error = res, ["source-path"] = path}
+      if ok then
+        if cfg({"verbose"}) then
+          notify.info("Successfully compiled: ", path)
+        else
+        end
+        return {status = "ok", ["source-path"] = path, result = (with_header(rel_file_name, res) .. "\n")}
+      else
+        if not batch_3f then
+          notify.error(res)
+        else
+        end
+        return {status = "compilation-error", error = res, ["source-path"] = path}
+      end
     end
   end
 end
-mod["into-file"] = function(_8_)
-  local _arg_9_ = _8_
-  local _root_dir = _arg_9_["_root-dir"]
-  local cfg = _arg_9_["cfg"]
-  local _source = _arg_9_["_source"]
-  local path = _arg_9_["path"]
-  local batch_3f = _arg_9_["batch?"]
-  local opts = _arg_9_
+mod["into-file"] = function(_9_)
+  local _arg_10_ = _9_
+  local _root_dir = _arg_10_["_root-dir"]
+  local cfg = _arg_10_["cfg"]
+  local _source = _arg_10_["_source"]
+  local path = _arg_10_["path"]
+  local batch_3f = _arg_10_["batch?"]
+  local opts = _arg_10_
   local fnl_path__3elua_path = cfg({"fnl-path->lua-path"})
   local destination_path = fnl_path__3elua_path(path)
-  local _let_10_ = mod["into-string"](opts)
-  local status = _let_10_["status"]
-  local source_path = _let_10_["source-path"]
-  local result = _let_10_["result"]
-  local res = _let_10_
+  local _let_11_ = mod["into-string"](opts)
+  local status = _let_11_["status"]
+  local source_path = _let_11_["source-path"]
+  local result = _let_11_["result"]
+  local res = _let_11_
   if ("ok" ~= status) then
     return res
   elseif safe_target_3f(destination_path) then
@@ -84,19 +91,19 @@ mod["into-file"] = function(_8_)
     return {status = "destination-exists", ["source-path"] = path, ["destination-path"] = destination_path}
   end
 end
-mod["all-files"] = function(_13_)
-  local _arg_14_ = _13_
-  local root_dir = _arg_14_["root-dir"]
-  local cfg = _arg_14_["cfg"]
-  local function _15_(path)
+mod["all-files"] = function(_14_)
+  local _arg_15_ = _14_
+  local root_dir = _arg_15_["root-dir"]
+  local cfg = _arg_15_["cfg"]
+  local function _16_(path)
     return mod["into-file"]({["root-dir"] = root_dir, path = path, cfg = cfg, source = core.slurp(path), ["batch?"] = true})
   end
-  local function _16_(_241)
+  local function _17_(_241)
     return fs["join-path"]({root_dir, _241})
   end
-  local function _17_(_241)
+  local function _18_(_241)
     return fs.relglob(root_dir, _241)
   end
-  return core.map(_15_, core.map(_16_, core.mapcat(_17_, cfg({"source-file-patterns"}))))
+  return core.map(_16_, core.map(_17_, core.mapcat(_18_, cfg({"source-file-patterns"}))))
 end
 return mod
