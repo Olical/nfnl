@@ -8,11 +8,8 @@
 (local config-file-name ".nfnl.fnl")
 
 (fn find [dir]
-  "Find the nearest .nfnl.fnl file to the given directory. Returns the absolute
-  path to the found file or nil."
-  (let [found (fs.findfile config-file-name (.. dir ";"))]
-    (when found
-      (fs.full-path found))))
+  "Find the nearest .nfnl.fnl file to the given directory."
+  (fs.findfile config-file-name (.. dir ";")))
 
 (fn path-dirs [{: rtp-patterns : runtimepath : base-dirs}]
   "Takes the current runtimepath and a sequential table of rtp-patterns. Those
@@ -52,7 +49,9 @@
                    (core.get opts :root-dir)
 
                    ;; The closest .nfnl.fnl file parent directory to the cwd.
-                   (fs.basename (find (vim.fn.getcwd)))
+                   (string.sub
+                     (fs.full-path (fs.basename (find (vim.fn.getcwd))))
+                     1 -2)
 
                    ;; The cwd, just in case nothing else works.
                    (vim.fn.getcwd))
