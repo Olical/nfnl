@@ -11,8 +11,8 @@
   "Find the nearest .nfnl.fnl file to the given directory. Returns the absolute
   path to the found file or nil."
   (let [found (fs.findfile config-file-name (.. dir ";"))]
-      (when found
-        (fs.full-path found))))
+    (when found
+      (fs.full-path found))))
 
 (fn path-dirs [{: rtp-patterns : runtimepath : base-dirs}]
   "Takes the current runtimepath and a sequential table of rtp-patterns. Those
