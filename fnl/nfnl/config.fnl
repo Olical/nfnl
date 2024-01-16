@@ -49,9 +49,10 @@
                    (core.get opts :root-dir)
 
                    ;; The closest .nfnl.fnl file parent directory to the cwd.
-                   (string.sub
-                     (fs.full-path (fs.basename (find (vim.fn.getcwd))))
-                     1 -2)
+                   (-?> (vim.fn.getcwd)
+                        (find) ; returns nil if .nfnl.fnl is not found
+                        (fs.full-path)
+                        (string.sub 1 -2))
 
                    ;; The cwd, just in case nothing else works.
                    (vim.fn.getcwd))
