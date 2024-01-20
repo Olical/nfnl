@@ -23,7 +23,13 @@
 (fn macro-source? [source]
   (string.find source "%s*;+%s*%[nfnl%-macro%]"))
 
-(fn mod.into-string [{: root-dir : path : cfg : source : batch?}]
+(fn valid-source-files [{: root-dir : cfg}]
+  "Return a list of all files we're allowed to compile. These are found by
+  performing fs.relglob calls against each :source-file-patterns value from the
+  configuration."
+  (core.mapcat #(fs.relglob root-dir $) (cfg [:source-file-patterns])))
+
+(fn mod.into-string [{: root-dir : path : cfg : source : batch? &as opts}]
   (let [macro? (macro-source? source)]
     (if
       (and macro? batch?)
@@ -37,7 +43,7 @@
       {:status :nfnl-config-is-not-compiled
        :source-path path}
 
-      (not (core.some #(string.find path $) (cfg [:source-file-patterns])))
+      (not (core.some #(= path (fs.join-path [root-dir $])) (valid-source-files opts)))
       {:status :path-is-not-in-source-file-patterns
        :source-path path}
 
@@ -90,8 +96,8 @@
          :source-path path
          : destination-path}))))
 
-(fn mod.all-files [{: root-dir : cfg}]
-  (->> (core.mapcat #(fs.relglob root-dir $) (cfg [:source-file-patterns]))
+(fn mod.all-files [{: root-dir : cfg &as opts}]
+  (->> (valid-source-files opts)
        (core.map #(fs.join-path [root-dir $]))
        (core.map
          (fn [path]
