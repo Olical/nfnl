@@ -55,12 +55,15 @@ local function read_first_line(path)
     return nil
   end
 end
+local function absglob(dir, expr)
+  return vim.fn.globpath(dir, expr, true, true)
+end
 local function relglob(dir, expr)
   local dir_len = (2 + string.len(dir))
   local function _9_(_241)
     return string.sub(_241, dir_len)
   end
-  return core.map(_9_, vim.fn.globpath(dir, expr, true, true))
+  return core.map(_9_, absglob(dir, expr))
 end
 local function glob_dir_newer_3f(a_dir, b_dir, expr, b_dir_path_fn)
   local newer_3f = false
@@ -107,4 +110,4 @@ end
 local function fnl_path__3elua_path(fnl_path)
   return replace_dirs(replace_extension(fnl_path, "lua"), "fnl", "lua")
 end
-return {basename = basename, filename = filename, ["file-name-root"] = file_name_root, ["full-path"] = full_path, mkdirp = mkdirp, ["replace-extension"] = replace_extension, relglob = relglob, ["glob-dir-newer?"] = glob_dir_newer_3f, ["path-sep"] = path_sep, findfile = findfile, ["split-path"] = split_path, ["join-path"] = join_path, ["read-first-line"] = read_first_line, ["replace-dirs"] = replace_dirs, ["fnl-path->lua-path"] = fnl_path__3elua_path}
+return {basename = basename, filename = filename, ["file-name-root"] = file_name_root, ["full-path"] = full_path, mkdirp = mkdirp, ["replace-extension"] = replace_extension, absglob = absglob, relglob = relglob, ["glob-dir-newer?"] = glob_dir_newer_3f, ["path-sep"] = path_sep, findfile = findfile, ["split-path"] = split_path, ["join-path"] = join_path, ["read-first-line"] = read_first_line, ["replace-dirs"] = replace_dirs, ["fnl-path->lua-path"] = fnl_path__3elua_path}

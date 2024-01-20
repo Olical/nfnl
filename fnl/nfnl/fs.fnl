@@ -34,11 +34,15 @@
         (f:close)
         line))))
 
+(fn absglob [dir expr]
+  "Glob all files under dir matching the expression and return the absolute paths."
+  (vim.fn.globpath dir expr true true))
+
 (fn relglob [dir expr]
   "Glob all files under dir matching the expression and return the paths
   relative to the dir argument."
   (let [dir-len (+ 2 (string.len dir))]
-    (->> (vim.fn.globpath dir expr true true)
+    (->> (absglob dir expr)
          (core.map #(string.sub $1 dir-len)))))
 
 (fn glob-dir-newer? [a-dir b-dir expr b-dir-path-fn]
@@ -93,6 +97,7 @@
  : full-path
  : mkdirp
  : replace-extension
+ : absglob
  : relglob
  : glob-dir-newer?
  : path-sep
