@@ -9,14 +9,15 @@
     (it "compiles good Fennel to Lua"
         (fn []
           (assert.are.same
-            {:result "-- [nfnl] Compiled from foo.fnl by https://github.com/Olical/nfnl, do not edit.\nreturn (10 + 20)\n"
-             :source-path "/my/dir/foo.fnl"
+            {:result "-- [nfnl] Compiled from bar.fnl by https://github.com/Olical/nfnl, do not edit.\nreturn (10 + 20)\n"
+             :source-path "/tmp/foo/bar.fnl"
              :status "ok"}
             (compile.into-string
-              {:root-dir "/my/dir"
-               :path "/my/dir/foo.fnl"
+              {:root-dir "/tmp/foo"
+               :path "/tmp/foo/bar.fnl"
                :cfg (config.cfg-fn {} {:root-dir "/tmp/foo"})
                :batch? true
+               :file-exists-on-disk? false
                :source "(+ 10 20)"}))))
 
     (it "skips macro files"
@@ -29,6 +30,7 @@
                :path "/my/dir/foo.fnl"
                :cfg (config.cfg-fn {} {:root-dir "/tmp/foo"})
                :batch? true
+               :file-exists-on-disk? false
                :source (.. "; [nfnl" "-" "macro]\n(+ 10 20)")}))))
 
     (it "won't compile the .nfnl.fnl config file"
@@ -41,6 +43,7 @@
                :path "/my/dir/.nfnl.fnl"
                :cfg (config.cfg-fn {} {:root-dir "/tmp/foo"})
                :batch? true
+               :file-exists-on-disk? false
                :source "(+ 10 20)"}))))
 
     (it "returns compilation errors"
@@ -54,4 +57,5 @@
                :path "/my/dir/foo.fnl"
                :cfg (config.cfg-fn {} {:root-dir "/tmp/foo"})
                :batch? true
+               :file-exists-on-disk? false
                :source "10 / 20"}))))))

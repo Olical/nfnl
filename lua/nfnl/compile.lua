@@ -18,12 +18,12 @@ end
 local function macro_source_3f(source)
   return string.find(source, "%s*;+%s*%[nfnl%-macro%]")
 end
-local function valid_source_files(_2_)
+local function valid_source_files(glob_fn, _2_)
   local _arg_3_ = _2_
   local root_dir = _arg_3_["root-dir"]
   local cfg = _arg_3_["cfg"]
   local function _4_(_241)
-    return fs.relglob(root_dir, _241)
+    return glob_fn(root_dir, _241)
   end
   return core.mapcat(_4_, cfg({"source-file-patterns"}))
 end
@@ -34,6 +34,7 @@ mod["into-string"] = function(_5_)
   local cfg = _arg_6_["cfg"]
   local source = _arg_6_["source"]
   local batch_3f = _arg_6_["batch?"]
+  local file_exists_on_disk_3f = _arg_6_["file-exists-on-disk?"]
   local opts = _arg_6_
   local macro_3f = macro_source_3f(source)
   if (macro_3f and batch_3f) then
@@ -44,9 +45,9 @@ mod["into-string"] = function(_5_)
     return {status = "nfnl-config-is-not-compiled", ["source-path"] = path}
   else
     local function _7_(_241)
-      return (path == fs["join-path"]({root_dir, _241}))
+      return (path == _241)
     end
-    if not core.some(_7_, valid_source_files(opts)) then
+    if ((false ~= file_exists_on_disk_3f) and not core.some(_7_, valid_source_files(fs.absglob, opts))) then
       return {status = "path-is-not-in-source-file-patterns", ["source-path"] = path}
     else
       local rel_file_name = path:sub((2 + root_dir:len()))
@@ -112,6 +113,6 @@ mod["all-files"] = function(_17_)
   local function _20_(_241)
     return fs["join-path"]({root_dir, _241})
   end
-  return core.map(_19_, core.map(_20_, valid_source_files(opts)))
+  return core.map(_19_, core.map(_20_, valid_source_files(fs.relglob, opts)))
 end
 return mod
