@@ -1,6 +1,6 @@
 (local {: autoload} (require :nfnl.module))
 (local core (autoload :nfnl.core))
-(local str (autoload :nfnl.str))
+(local str (autoload :nfnl.string))
 (local fs (autoload :nfnl.fs))
 (local nvim (autoload :nfnl.nvim))
 (local compile (autoload :nfnl.compile))
