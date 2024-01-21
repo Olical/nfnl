@@ -2,6 +2,7 @@
 local _local_1_ = require("nfnl.module")
 local autoload = _local_1_["autoload"]
 local core = autoload("nfnl.core")
+local str = autoload("nfnl.str")
 local fs = autoload("nfnl.fs")
 local nvim = autoload("nfnl.nvim")
 local compile = autoload("nfnl.compile")
@@ -27,7 +28,7 @@ local function fennel_filetype_callback(ev)
         notify.info("Found nfnl config, setting up autocmds: ", root_dir)
       else
       end
-      vim.api.nvim_create_autocmd({"BufWritePost"}, {group = vim.api.nvim_create_augroup(("nfnl-dir-" .. root_dir), {}), buffer = ev.buf, callback = fennel_buf_write_post_callback_fn(root_dir, cfg)})
+      vim.api.nvim_create_autocmd({"BufWritePost"}, {group = vim.api.nvim_create_augroup(str.join({"nfnl-on-write", root_dir, ev.buf}), {}), buffer = ev.buf, callback = fennel_buf_write_post_callback_fn(root_dir, cfg)})
       local function _5_(_241)
         return api.dofile(core.first(core.get(_241, "fargs")))
       end

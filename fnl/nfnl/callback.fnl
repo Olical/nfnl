@@ -1,5 +1,6 @@
 (local {: autoload} (require :nfnl.module))
 (local core (autoload :nfnl.core))
+(local str (autoload :nfnl.str))
 (local fs (autoload :nfnl.fs))
 (local nvim (autoload :nfnl.nvim))
 (local compile (autoload :nfnl.compile))
@@ -41,7 +42,7 @@
 
           (vim.api.nvim_create_autocmd
             ["BufWritePost"]
-            {:group (vim.api.nvim_create_augroup (.. "nfnl-dir-" root-dir) {})
+            {:group (vim.api.nvim_create_augroup (str.join ["nfnl-on-write" root-dir ev.buf]) {})
              :buffer ev.buf
              :callback (fennel-buf-write-post-callback-fn root-dir cfg)})
 
