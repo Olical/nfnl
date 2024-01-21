@@ -10,6 +10,7 @@ local fs = require("nfnl.fs")
 local nfnl = require("nfnl")
 nfnl.setup({})
 local temp_dir = vim.fn.tempname()
+local unrelated_temp_dir = vim.fn.tempname()
 local fnl_dir = fs["join-path"]({temp_dir, "fnl"})
 local lua_dir = fs["join-path"]({temp_dir, "lua"})
 local config_path = fs["join-path"]({temp_dir, ".nfnl.fnl"})
@@ -18,13 +19,13 @@ local macro_fnl_path = fs["join-path"]({fnl_dir, "bar.fnl"})
 local macro_lua_path = fs["join-path"]({lua_dir, "bar.lua"})
 local lua_path = fs["join-path"]({lua_dir, "foo.lua"})
 fs.mkdirp(fnl_dir)
+fs.mkdirp(unrelated_temp_dir)
 local function delete_buf_file(path)
-  pcall(vim.cmd, ("bdelete! " .. path))
+  pcall(vim.cmd, ("bwipeout! " .. path))
   return os.remove(path)
 end
 local function run_e2e_tests()
   core["run!"](delete_buf_file, {config_path, fnl_path, macro_fnl_path, lua_path})
-  vim.api.nvim_clear_autocmds({group = vim.api.nvim_create_augroup(("nfnl-dir-" .. temp_dir), {})})
   local function _2_()
     vim.cmd(("edit " .. fnl_path))
     vim.o.filetype = "fennel"
@@ -68,17 +69,27 @@ local function _5_()
   local initial_cwd = nil
   local function _6_()
     initial_cwd = vim.fn.getcwd()
-    return vim.cmd(("cd " .. temp_dir))
+    return vim.api.nvim_set_current_dir(temp_dir)
   end
   before_each(_6_)
   local function _7_()
-    return vim.cmd(("cd " .. initial_cwd))
+    return vim.api.nvim_set_current_dir(initial_cwd)
   end
   after_each(_7_)
   return run_e2e_tests()
 end
 describe("e2e file compiling from a project dir", _5_)
 local function _8_()
+  local initial_cwd = nil
+  local function _9_()
+    initial_cwd = vim.fn.getcwd()
+    return vim.api.nvim_set_current_dir(unrelated_temp_dir)
+  end
+  before_each(_9_)
+  local function _10_()
+    return vim.api.nvim_set_current_dir(initial_cwd)
+  end
+  after_each(_10_)
   return run_e2e_tests()
 end
 return describe("e2e file compiling from outside project dir", _8_)

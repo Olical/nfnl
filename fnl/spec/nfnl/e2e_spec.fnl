@@ -8,6 +8,7 @@
 
 ;; These temp directories are auto deleted on Neovim exit.
 (local temp-dir (vim.fn.tempname))
+(local unrelated-temp-dir (vim.fn.tempname))
 
 (local fnl-dir (fs.join-path [temp-dir "fnl"]))
 (local lua-dir (fs.join-path [temp-dir "lua"]))
@@ -18,16 +19,15 @@
 (local lua-path (fs.join-path [lua-dir "foo.lua"]))
 
 (fs.mkdirp fnl-dir)
+(fs.mkdirp unrelated-temp-dir)
 
 (fn delete-buf-file [path]
-  (pcall vim.cmd (.. "bdelete! " path))
+  (pcall vim.cmd (.. "bwipeout! " path))
   (os.remove path))
 
 (fn run-e2e-tests []
-  ;; Reset the files and autocmds between each test run.
+  ;; Reset the files between each test run.
   (core.run! delete-buf-file [config-path fnl-path macro-fnl-path lua-path])
-  (vim.api.nvim_clear_autocmds
-    {:group (vim.api.nvim_create_augroup (.. "nfnl-dir-" temp-dir) {})})
 
   (it "does nothing when there's no .nfnl.fnl configuration"
       (fn []
@@ -87,15 +87,26 @@
     (before_each
       (fn []
         (set initial-cwd (vim.fn.getcwd))
-        (vim.cmd (.. "cd " temp-dir))))
+        (vim.api.nvim_set_current_dir temp-dir)))
 
     (after_each
       (fn []
-        (vim.cmd (.. "cd " initial-cwd))))
+        (vim.api.nvim_set_current_dir initial-cwd)))
 
     (run-e2e-tests)))
 
 (describe
   "e2e file compiling from outside project dir"
   (fn []
+    (var initial-cwd nil)
+
+    (before_each
+      (fn []
+        (set initial-cwd (vim.fn.getcwd))
+        (vim.api.nvim_set_current_dir unrelated-temp-dir)))
+
+    (after_each
+      (fn []
+        (vim.api.nvim_set_current_dir initial-cwd)))
+
     (run-e2e-tests)))
