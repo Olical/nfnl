@@ -488,7 +488,7 @@ experience.
 [plug]: https://github.com/junegunn/vim-plug
 [packer]: https://github.com/wbthomason/packer.nvim
 [lazy]: https://github.com/folke/lazy.nvim
-[fenneldoc]: https://github.com/andreyorst/fenneldoc
+[fenneldoc]: https://gitlab.com/andreyorst/fenneldoc
 [telescope]: https://github.com/nvim-telescope/telescope.nvim
 [neotree]: https://github.com/nvim-neo-tree/neo-tree.nvim
 [astronvim]: https://astronvim.com/
