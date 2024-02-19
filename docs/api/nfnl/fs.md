@@ -2,6 +2,7 @@
 
 **Table of contents**
 
+- [`absglob`](#absglob)
 - [`basename`](#basename)
 - [`file-name-root`](#file-name-root)
 - [`filename`](#filename)
@@ -17,6 +18,15 @@
 - [`replace-dirs`](#replace-dirs)
 - [`replace-extension`](#replace-extension)
 - [`split-path`](#split-path)
+
+## `absglob`
+Function signature:
+
+```
+(absglob dir expr)
+```
+
+Glob all files under dir matching the expression and return the absolute paths.
 
 ## `basename`
 Function signature:

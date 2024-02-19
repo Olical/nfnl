@@ -60,7 +60,12 @@ Function signature:
 (assoc t ...)
 ```
 
-**Undocumented**
+Set the key `k` in table `t` to the value `v` while safely handling `nil`.
+
+   Accepts more `k` and `v` pairs as after the initial pair. This allows you
+   to assoc multiple values in one call.
+
+   Returns the table `t` once it has been mutated.
 
 ## `assoc-in`
 Function signature:
@@ -69,7 +74,9 @@ Function signature:
 (assoc-in t ks v)
 ```
 
-**Undocumented**
+Set the key path `ks` in table `t` to the value `v` while safely handling `nil`.
+
+   `(assoc-in {:foo {:bar 10}} [:foo :bar] 15) // => {:foo {:bar 15}}`
 
 ## `boolean?`
 Function signature:
@@ -87,7 +94,7 @@ Function signature:
 (butlast xs)
 ```
 
-**Undocumented**
+Return every value from the sequential table except the last one.
 
 ## `complement`
 Function signature:
@@ -96,7 +103,8 @@ Function signature:
 (complement f)
 ```
 
-**Undocumented**
+Takes a fn `f` and returns a fn that takes the same arguments as `f`, has
+   the same effects, if any, and returns the opposite truth value.
 
 ## `concat`
 Function signature:
@@ -114,7 +122,7 @@ Function signature:
 (constantly v)
 ```
 
-**Undocumented**
+Returns a function that takes any number of arguments and returns `v`.
 
 ## `count`
 Function signature:
@@ -159,7 +167,7 @@ Function signature:
 (even? n)
 ```
 
-**Undocumented**
+True if `n` is even.
 
 ## `filter`
 Function signature:
@@ -177,7 +185,7 @@ Function signature:
 (first xs)
 ```
 
-**Undocumented**
+The first item of the sequential table.
 
 ## `function?`
 Function signature:
@@ -195,7 +203,8 @@ Function signature:
 (get t k d)
 ```
 
-**Undocumented**
+Get the key `k` from table `t` while safely handling `nil`. If it's not
+   found it will return the optional default value `d`.
 
 ## `get-in`
 Function signature:
@@ -204,7 +213,10 @@ Function signature:
 (get-in t ks d)
 ```
 
-**Undocumented**
+Get the key path `ks` from table `t` while safely handling `nil`. If it's
+   not found it will return the optional default value `d`.
+
+   `(get-in {:foo {:bar 10}} [:foo :bar]) // => 10`
 
 ## `identity`
 Function signature:
@@ -249,7 +261,7 @@ Function signature:
 (last xs)
 ```
 
-**Undocumented**
+The last item of the sequential table.
 
 ## `map`
 Function signature:
@@ -276,7 +288,7 @@ Function signature:
 (mapcat f xs)
 ```
 
-**Undocumented**
+The same as `map` but then `concat` all lists within the result together.
 
 ## `merge`
 Function signature:
@@ -285,7 +297,9 @@ Function signature:
 (merge ...)
 ```
 
-**Undocumented**
+Merge the tables together, `nil` will be skipped safely so you can use
+   `(when ...)` to conditionally include tables. Merges into a fresh table so
+   no existing tables will be mutated.
 
 ## `merge!`
 Function signature:
@@ -294,7 +308,8 @@ Function signature:
 (merge! base ...)
 ```
 
-**Undocumented**
+The same as `merge` above but will mutate the first argument, so all
+   tables are merged into the first one.
 
 ## `nil?`
 Function signature:
@@ -321,7 +336,7 @@ Function signature:
 (odd? n)
 ```
 
-**Undocumented**
+True if `n` is odd.
 
 ## `pr`
 Function signature:
@@ -330,7 +345,7 @@ Function signature:
 (pr ...)
 ```
 
-**Undocumented**
+Print the arguments as data, strings will remain quoted.
 
 ## `pr-str`
 Function signature:
@@ -339,7 +354,7 @@ Function signature:
 (pr-str ...)
 ```
 
-**Undocumented**
+Convert the input arguments to a string.
 
 ## `println`
 Function signature:
@@ -348,7 +363,7 @@ Function signature:
 (println ...)
 ```
 
-**Undocumented**
+Convert the input arguments to a string (if required) and print them.
 
 ## `rand`
 Function signature:
@@ -358,7 +373,7 @@ Function signature:
 ```
 
 Draw a random floating point number between 0 and `n`, where `n` is 1.0 if omitted.
-  You must have a random seed set before running this: (math.randomseed (os.time))
+  You must have a random seed set before running this: `(math.randomseed (os.time))`
 
 ## `reduce`
 Function signature:
@@ -377,7 +392,8 @@ Function signature:
 (remove f xs)
 ```
 
-**Undocumented**
+Opposite of filter, filter `xs` down to a new sequential table containing
+   every value that `(f x)` returned falsy for.
 
 ## `rest`
 Function signature:
@@ -386,7 +402,7 @@ Function signature:
 (rest xs)
 ```
 
-**Undocumented**
+Return every value from the sequential table except the first one.
 
 ## `run!`
 Function signature:
@@ -404,7 +420,7 @@ Function signature:
 (second xs)
 ```
 
-**Undocumented**
+The second item of the sequential table.
 
 ## `select-keys`
 Function signature:
@@ -413,7 +429,7 @@ Function signature:
 (select-keys t ks)
 ```
 
-**Undocumented**
+Extract the keys listed in `ks` from `t` and return it as a new table.
 
 ## `slurp`
 Function signature:
@@ -458,7 +474,8 @@ Function signature:
 (str ...)
 ```
 
-**Undocumented**
+Concatenate the values into one string. Converting non-string values into
+   strings where required.
 
 ## `string?`
 Function signature:
@@ -485,7 +502,8 @@ Function signature:
 (update t k f)
 ```
 
-**Undocumented**
+Replace the key `k` in table `t` by passing the current value through the
+   function `f`. Returns the table after the key has been mutated.
 
 ## `update-in`
 Function signature:
@@ -494,7 +512,8 @@ Function signature:
 (update-in t ks f)
 ```
 
-**Undocumented**
+Same as `update` but replace the key path at `ks` with the result of
+   passing the current value through the function `f`.
 
 ## `vals`
 Function signature:

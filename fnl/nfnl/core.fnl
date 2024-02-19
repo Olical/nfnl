@@ -3,7 +3,7 @@
 
 (fn rand [n]
   "Draw a random floating point number between 0 and `n`, where `n` is 1.0 if omitted.
-  You must have a random seed set before running this: (math.randomseed (os.time))"
+  You must have a random seed set before running this: `(math.randomseed (os.time))`"
   (* (math.random) (or n 1)))
 
 (fn nil? [x]
@@ -54,14 +54,17 @@
   (= 0 (count xs)))
 
 (fn first [xs]
+  "The first item of the sequential table."
   (when xs
     (. xs 1)))
 
 (fn second [xs]
+  "The second item of the sequential table."
   (when xs
     (. xs 2)))
 
 (fn last [xs]
+  "The last item of the sequential table."
   (when xs
     (. xs (count xs))))
 
@@ -74,9 +77,11 @@
   (- n 1))
 
 (fn even? [n]
+  "True if `n` is even."
   (= (% n 2) 0))
 
 (fn odd? [n]
+  "True if `n` is odd."
   (not (even? n)))
 
 (fn vals [t]
@@ -104,6 +109,8 @@
           (f (. xs i)))))))
 
 (fn complement [f]
+  "Takes a fn `f` and returns a fn that takes the same arguments as `f`, has
+   the same effects, if any, and returns the opposite truth value."
   (fn [...]
     (not (f ...))))
 
@@ -118,6 +125,8 @@
     result))
 
 (fn remove [f xs]
+  "Opposite of filter, filter `xs` down to a new sequential table containing
+   every value that `(f x)` returned falsy for."
   (filter (complement f) xs))
 
 (fn map [f xs]
@@ -164,6 +173,7 @@
   result)
 
 (fn butlast [xs]
+  "Return every value from the sequential table except the last one."
   (let [total (count xs)]
     (->> (kv-pairs xs)
          (filter
@@ -172,6 +182,7 @@
          (map second))))
 
 (fn rest [xs]
+  "Return every value from the sequential table except the first one."
   (->> (kv-pairs xs)
        (filter
          (fn [[n v]]
@@ -190,9 +201,11 @@
     result))
 
 (fn mapcat [f xs]
+  "The same as `map` but then `concat` all lists within the result together."
   (concat (unpack (map f xs))))
 
 (fn pr-str [...]
+  "Convert the input arguments to a string."
   (let [s (table.concat
             (map (fn [x]
                    (fennel.view x {:one-line true}))
@@ -203,6 +216,8 @@
       s)))
 
 (fn str [...]
+  "Concatenate the values into one string. Converting non-string values into
+   strings where required."
   (->> [...]
        (map
          (fn [s]
@@ -215,6 +230,7 @@
          "")))
 
 (fn println [...]
+  "Convert the input arguments to a string (if required) and print them."
   (->> [...]
        (map
          (fn [s]
@@ -233,6 +249,7 @@
        print))
 
 (fn pr [...]
+  "Print the arguments as data, strings will remain quoted."
   (println (pr-str ...)))
 
 (fn slurp [path]
@@ -245,6 +262,8 @@
           content))))
 
 (fn get [t k d]
+  "Get the key `k` from table `t` while safely handling `nil`. If it's not
+   found it will return the optional default value `d`."
   (let [res (when (table? t)
               (let [val (. t k)]
                 (when (not (nil? val))
@@ -268,6 +287,8 @@
           nil))))
 
 (fn merge! [base ...]
+  "The same as `merge` above but will mutate the first argument, so all
+   tables are merged into the first one."
   (reduce
     (fn [acc m]
       (when m
@@ -278,9 +299,13 @@
     [...]))
 
 (fn merge [...]
+  "Merge the tables together, `nil` will be skipped safely so you can use
+   `(when ...)` to conditionally include tables. Merges into a fresh table so
+   no existing tables will be mutated."
   (merge! {} ...))
 
 (fn select-keys [t ks]
+  "Extract the keys listed in `ks` from `t` and return it as a new table."
   (if (and t ks)
     (reduce
       (fn [acc k]
@@ -292,6 +317,10 @@
     {}))
 
 (fn get-in [t ks d]
+  "Get the key path `ks` from table `t` while safely handling `nil`. If it's
+   not found it will return the optional default value `d`.
+
+   `(get-in {:foo {:bar 10}} [:foo :bar]) // => 10`"
   (let [res (reduce
               (fn [acc k]
                 (when (table? acc)
@@ -302,6 +331,12 @@
       res)))
 
 (fn assoc [t ...]
+  "Set the key `k` in table `t` to the value `v` while safely handling `nil`.
+
+   Accepts more `k` and `v` pairs as after the initial pair. This allows you
+   to assoc multiple values in one call.
+
+   Returns the table `t` once it has been mutated."
   (let [[k v & xs] [...]
         rem (count xs)
         t (or t {})]
@@ -318,6 +353,9 @@
     t))
 
 (fn assoc-in [t ks v]
+  "Set the key path `ks` in table `t` to the value `v` while safely handling `nil`.
+
+   `(assoc-in {:foo {:bar 10}} [:foo :bar] 15) // => {:foo {:bar 15}}`"
   (let [path (butlast ks)
         final (last ks)
         t (or t {})]
@@ -334,12 +372,17 @@
     t))
 
 (fn update [t k f]
+  "Replace the key `k` in table `t` by passing the current value through the
+   function `f`. Returns the table after the key has been mutated."
   (assoc t k (f (get t k))))
 
 (fn update-in [t ks f]
+  "Same as `update` but replace the key path at `ks` with the result of
+   passing the current value through the function `f`."
   (assoc-in t ks (f (get-in t ks))))
 
 (fn constantly [v]
+  "Returns a function that takes any number of arguments and returns `v`."
   (fn [] v))
 
 (fn distinct [xs]
