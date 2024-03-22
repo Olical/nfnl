@@ -4,7 +4,7 @@
 (local minimum-neovim-version "0.9.0")
 
 (when vim
-  (when (= 0 (_G.vim.fn.has (.. "nvim-" minimum-neovim-version)))
+  (when (= 0 (vim.fn.has (.. "nvim-" minimum-neovim-version)))
     (error (.. "nfnl requires Neovim > v" minimum-neovim-version)))
 
   (vim.api.nvim_create_autocmd
