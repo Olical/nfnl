@@ -17,7 +17,7 @@ local function fennel_buf_write_post_callback_fn(root_dir, cfg)
 end
 local function fennel_filetype_callback(ev)
   local file_path = fs["full-path"](ev.file)
-  if not file_path:find("^[%w-]:/") then
+  if not file_path:find("^[%w-]+:/") then
     local file_dir = fs.basename(file_path)
     local _let_3_ = config["find-and-load"](file_dir)
     local config0 = _let_3_["config"]
