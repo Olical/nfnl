@@ -77,7 +77,7 @@ local function glob_dir_newer_3f(a_dir, b_dir, expr, b_dir_path_fn)
 end
 local function path_sep()
   local os = string.lower(jit.os)
-  if (("linux" == os) or ("osx" == os) or ("bsd" == os)) then
+  if (("linux" == os) or ("osx" == os) or ("bsd" == os) or ((1 == vim.fn.exists("+shellshash")) and vim.o.shellslash)) then
     return "/"
   else
     return "\\"

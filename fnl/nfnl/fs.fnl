@@ -59,7 +59,9 @@
   (let [os (string.lower jit.os)]
     (if (or (= :linux os)
             (= :osx os)
-            (= :bsd os))
+            (= :bsd os)
+            (and (= 1 (vim.fn.exists "+shellshash"))
+                 vim.o.shellslash))
       "/"
       "\\")))
 
