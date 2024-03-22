@@ -32,7 +32,7 @@
   different .nfnl.fnl configuration, wonderful!"
 
   (let [file-path (fs.full-path (. ev :file))]
-    (when (not (file-path:find "^%w+://"))
+    (when (not (file-path:find "^[%w-]:/"))
       (let [file-dir (fs.basename file-path)
             {: config : root-dir : cfg} (config.find-and-load file-dir)]
 
