@@ -23,6 +23,13 @@
        :path (fs.full-path (. ev :file))
        :source (nvim.get-buf-content-as-string (. ev :buf))})))
 
+(fn supported-path? [file-path]
+  "Returns true if we can work with the given path. Right now we support a path if it's a string and it doesn't start with a protocol segment like fugitive://..."
+  (or
+    (when (core.string? file-path)
+      (not (file-path:find "^[%w-]+:/")))
+    false))
+
 (fn fennel-filetype-callback [ev]
   "Called whenever we enter a Fennel file. It walks up the tree to find a
   .nfnl.fnl (which can contain configuration). If found, we initialise the
@@ -32,7 +39,7 @@
   different .nfnl.fnl configuration, wonderful!"
 
   (let [file-path (fs.full-path (. ev :file))]
-    (when (not (file-path:find "^[%w-]+:/"))
+    (when (supported-path? file-path)
       (let [file-dir (fs.basename file-path)
             {: config : root-dir : cfg} (config.find-and-load file-dir)]
 
@@ -62,4 +69,5 @@
              :complete "file"
              :nargs "?"}))))))
 
-{: fennel-filetype-callback}
+{: fennel-filetype-callback
+ : supported-path?}
