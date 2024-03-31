@@ -21,7 +21,8 @@
       {: root-dir
        : cfg
        :path (fs.full-path (. ev :file))
-       :source (nvim.get-buf-content-as-string (. ev :buf))})))
+       :source (nvim.get-buf-content-as-string (. ev :buf))})
+    nil))
 
 (fn supported-path? [file-path]
   "Returns true if we can work with the given path. Right now we support a path if it's a string and it doesn't start with a protocol segment like fugitive://..."

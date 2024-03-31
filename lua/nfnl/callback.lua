@@ -11,7 +11,8 @@ local api = autoload("nfnl.api")
 local notify = autoload("nfnl.notify")
 local function fennel_buf_write_post_callback_fn(root_dir, cfg)
   local function _2_(ev)
-    return compile["into-file"]({["root-dir"] = root_dir, cfg = cfg, path = fs["full-path"](ev.file), source = nvim["get-buf-content-as-string"](ev.buf)})
+    compile["into-file"]({["root-dir"] = root_dir, cfg = cfg, path = fs["full-path"](ev.file), source = nvim["get-buf-content-as-string"](ev.buf)})
+    return nil
   end
   return _2_
 end
