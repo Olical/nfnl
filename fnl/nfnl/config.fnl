@@ -52,7 +52,7 @@
                    (-?> (vim.fn.getcwd)
                         (find) ; returns nil if .nfnl.fnl is not found
                         (fs.full-path)
-                        (string.sub 1 -2))
+                        (fs.basename))
 
                    ;; The cwd, just in case nothing else works.
                    (vim.fn.getcwd))
