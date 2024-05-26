@@ -32,7 +32,7 @@ local function default(opts)
       if (nil ~= _8_) then
         local _9_ = fs["full-path"](_8_)
         if (nil ~= _9_) then
-          return string.sub(_9_, 1, -2)
+          return fs.basename(_9_)
         else
           return _9_
         end
