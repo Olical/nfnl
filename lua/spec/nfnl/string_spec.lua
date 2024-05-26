@@ -68,4 +68,15 @@ local function _12_()
   end
   return it("trims all whitespace from start end end of a string", _13_)
 end
-return describe("trim", _12_)
+describe("trim", _12_)
+local function _14_()
+  local function _15_()
+    assert.is_true(str["ends-with?"]("foobarbaz", "baz"))
+    assert.is_true(str["ends-with?"]("foobarbaz", "arbaz"))
+    assert.is_true(str["ends-with?"]("foobarbaz", "foobarbaz"))
+    assert.is_false(str["ends-with?"]("foobarbaz", "foo"))
+    return assert.is_false(str["ends-with?"]("foobarbaz", "barbazz"))
+  end
+  return it("checks if a string ends with another string", _15_)
+end
+return describe("ends-with?", _14_)

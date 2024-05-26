@@ -64,4 +64,13 @@ end
 local function trim(s)
   return string.gsub(s, "^%s*(.-)%s*$", "%1")
 end
-return {join = join, split = split, ["blank?"] = blank_3f, triml = triml, trimr = trimr, trim = trim}
+local function ends_with_3f(s, suffix)
+  local suffix_len = #suffix
+  local s_len = #s
+  if (s_len >= suffix_len) then
+    return (suffix == string.sub(s, (s_len - suffix_len - -1)))
+  else
+    return false
+  end
+end
+return {join = join, split = split, ["blank?"] = blank_3f, triml = triml, trimr = trimr, trim = trim, ["ends-with?"] = ends_with_3f}
