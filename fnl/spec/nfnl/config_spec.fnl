@@ -2,13 +2,6 @@
 (local assert (require :luassert.assert))
 (local config (require :nfnl.config))
 (local fs (require :nfnl.fs))
-(local str (require :nfnl.string))
-
-;; wraps str.ends-with? throws an error if false that explains it for the test suite
-(fn assert-ends-with? [s end]
-  (if (str.ends-with? s end)
-    true
-    (error (string.format "expected %s to end with %s" s end))))
 
 (describe
   "default"
@@ -17,9 +10,7 @@
         (fn []
           (assert.equals :function (type config.default))
           (assert.equals :table (type (config.default {:root-dir "/tmp/foo"})))
-          (assert-ends-with?
-            (. (config.default {}) :root-dir)
-            "/.nfnl.fnl")))))
+          (assert.equals (vim.fn.getcwd) (. (config.default {}) :root-dir))))))
 
 (describe
   "cfg-fn"
