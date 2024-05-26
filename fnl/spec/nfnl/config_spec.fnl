@@ -2,6 +2,13 @@
 (local assert (require :luassert.assert))
 (local config (require :nfnl.config))
 (local fs (require :nfnl.fs))
+(local str (require :nfnl.string))
+
+;; wraps str.ends-with? throws an error if false that explains it for the test suite
+(fn assert-ends-with? [s end]
+  (if (str.ends-with? s end)
+    true
+    (error (string.format "expected %s to end with %s" s end))))
 
 (describe
   "default"
@@ -9,7 +16,10 @@
     (it "is a function that returns a table"
         (fn []
           (assert.equals :function (type config.default))
-          (assert.equals :table (type (config.default {:root-dir "/tmp/foo"})))))))
+          (assert.equals :table (type (config.default {:root-dir "/tmp/foo"})))
+          (assert-ends-with?
+            (. (config.default {}) :root-dir)
+            "/.nfnl.fnl")))))
 
 (describe
   "cfg-fn"

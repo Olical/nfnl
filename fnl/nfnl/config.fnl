@@ -65,6 +65,8 @@
     {:verbose false
      :compiler-options {:error-pinpoint false}
 
+     :root-dir root-dir
+
      :fennel-path
      (str.join
        ";"
