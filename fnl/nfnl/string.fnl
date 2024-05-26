@@ -58,9 +58,18 @@
   "Removes whitespace from both ends of string."
   (string.gsub s "^%s*(.-)%s*$" "%1"))
 
+(fn ends-with? [s suffix]
+  "Check if the string ends with suffix."
+  (let [suffix-len (# suffix)
+        s-len (# s)]
+    (if (>= s-len suffix-len)
+      (= suffix (string.sub s (- s-len suffix-len -1)))
+      false)))
+
 {: join
  : split
  : blank?
  : triml
  : trimr
- : trim}
+ : trim
+ : ends-with?}

@@ -66,3 +66,14 @@
           (assert.equals "foo" (str.trim "foo"))
           (assert.equals "foo" (str.trim " \n foo \n \n    ") "basic")
           (assert.equals "" (str.trim "           ") "just whitespace")))))
+
+(describe
+  "ends-with?"
+  (fn []
+    (it "checks if a string ends with another string"
+        (fn []
+          (assert.is_true (str.ends-with? "foobarbaz" "baz"))
+          (assert.is_true (str.ends-with? "foobarbaz" "arbaz"))
+          (assert.is_true (str.ends-with? "foobarbaz" "foobarbaz"))
+          (assert.is_false (str.ends-with? "foobarbaz" "foo"))
+          (assert.is_false (str.ends-with? "foobarbaz" "barbazz"))))))
