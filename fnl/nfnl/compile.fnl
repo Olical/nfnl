@@ -38,7 +38,11 @@
        :source-path path}
 
       macro?
-      (mod.all-files {: root-dir : cfg})
+      (do
+        ; clear loaded macro cache so it will import new
+        (let [t fennel.macro-loaded]
+          (each [k _ (pairs t)] (tset t k nil)))
+        (mod.all-files {: root-dir : cfg}))
 
       (config.config-file-path? path)
       {:status :nfnl-config-is-not-compiled
