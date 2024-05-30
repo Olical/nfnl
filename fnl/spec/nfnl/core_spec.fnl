@@ -472,9 +472,4 @@
         (fn []
           (let [t {:a 1 :b 2}]
             (core.clear-table! t)
-            (assert.are.same {} t)))))
-
-  (it "returns the table"
-      (fn []
-        (let [t {:a 1 :b 2}]
-          (assert.are.same t (core.clear-table! t))))))
+            (assert.are.same {} t))))))

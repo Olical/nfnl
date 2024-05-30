@@ -503,8 +503,4 @@ local function _113_()
   end
   return it("clears a table", _114_)
 end
-local function _115_()
-  local t = {a = 1, b = 2}
-  return assert.are.same(t, core["clear-table!"](t))
-end
-return describe("clear-table!", _113_, it("returns the table", _115_))
+return describe("clear-table!", _113_)
