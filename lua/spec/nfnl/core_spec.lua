@@ -494,4 +494,17 @@ local function _108_()
   end
   return it("removes duplicates of any type", _112_)
 end
-return describe("distinct", _108_)
+describe("distinct", _108_)
+local function _113_()
+  local function _114_()
+    local t = {a = 1, b = 2}
+    core["clear-table!"](t)
+    return assert.are.same({}, t)
+  end
+  return it("clears a table", _114_)
+end
+local function _115_()
+  local t = {a = 1, b = 2}
+  return assert.are.same(t, core["clear-table!"](t))
+end
+return describe("clear-table!", _113_, it("returns the table", _115_))

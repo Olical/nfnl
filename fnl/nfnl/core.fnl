@@ -401,6 +401,13 @@
     (table.sort copy)
     copy))
 
+(fn clear-table! [t]
+  "Clear all keys from the table."
+  (when t
+    (each [k _ (pairs t)]
+      (tset t k nil)))
+  nil)
+
 {: rand
  : nil?
  : number?
@@ -450,4 +457,5 @@
  : update-in
  : constantly
  : distinct
- : sort}
+ : sort
+ : clear-table!}
