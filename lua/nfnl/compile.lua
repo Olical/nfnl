@@ -40,12 +40,7 @@ mod["into-string"] = function(_5_)
   if (macro_3f and batch_3f) then
     return {status = "macros-are-not-compiled", ["source-path"] = path}
   elseif macro_3f then
-    do
-      local t = fennel["macro-loaded"]
-      for k, _ in pairs(t) do
-        t[k] = nil
-      end
-    end
+    core["clear-table!"](fennel["macro-loaded"])
     return mod["all-files"]({["root-dir"] = root_dir, cfg = cfg})
   elseif config["config-file-path?"](path) then
     return {status = "nfnl-config-is-not-compiled", ["source-path"] = path}

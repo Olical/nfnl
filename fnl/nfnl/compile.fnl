@@ -39,9 +39,7 @@
 
       macro?
       (do
-        ; clear loaded macro cache so it will import new
-        (let [t fennel.macro-loaded]
-          (each [k _ (pairs t)] (tset t k nil)))
+        (core.clear-table! fennel.macro-loaded)
         (mod.all-files {: root-dir : cfg}))
 
       (config.config-file-path? path)
