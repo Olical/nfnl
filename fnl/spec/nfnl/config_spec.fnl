@@ -45,7 +45,9 @@
 
     (it "returns an empty table if a config file isn't found"
         (fn []
-          (assert.are.same {} (config.find-and-load "/some/made/up/dir"))))))
+          (if (= jit.os "Windows")
+            (assert.are.same {} (config.find-and-load "\\some\\made\\up\\dir"))
+            (assert.are.same {} (config.find-and-load "/some/made/up/dir")))))))
 
 (fn sorted [xs]
   (table.sort xs)

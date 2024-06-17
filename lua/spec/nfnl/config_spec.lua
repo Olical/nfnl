@@ -1,4 +1,4 @@
--- [nfnl] Compiled from fnl/spec/nfnl/config_spec.fnl by https://github.com/Olical/nfnl, do not edit.
+-- [nfnl] Compiled from fnl\spec\nfnl\config_spec.fnl by https://github.com/Olical/nfnl, do not edit.
 local _local_1_ = require("plenary.busted")
 local describe = _local_1_["describe"]
 local it = _local_1_["it"]
@@ -46,7 +46,11 @@ local function _8_()
   end
   it("loads the repo config file", _9_)
   local function _11_()
-    return assert.are.same({}, config["find-and-load"]("/some/made/up/dir"))
+    if (jit.os == "Windows") then
+      return assert.are.same({}, config["find-and-load"]("\\some\\made\\up\\dir"))
+    else
+      return assert.are.same({}, config["find-and-load"]("/some/made/up/dir"))
+    end
   end
   return it("returns an empty table if a config file isn't found", _11_)
 end
@@ -55,11 +59,11 @@ local function sorted(xs)
   table.sort(xs)
   return xs
 end
-local function _12_()
-  local function _13_()
+local function _13_()
+  local function _14_()
     assert.are.same({"/foo/bar/nfnl", "/foo/baz/my-proj"}, sorted(config["path-dirs"]({runtimepath = "/foo/bar/nfnl,/foo/bar/other-thing", ["rtp-patterns"] = {(fs["path-sep"]() .. "nfnl$")}, ["base-dirs"] = {"/foo/baz/my-proj"}})))
     return assert.are.same({"/foo/bar/nfnl", "/foo/baz/my-proj"}, sorted(config["path-dirs"]({runtimepath = "/foo/bar/nfnl,/foo/bar/other-thing", ["rtp-patterns"] = {(fs["path-sep"]() .. "nfnl$")}, ["base-dirs"] = {"/foo/baz/my-proj", "/foo/bar/nfnl"}})))
   end
-  return it("builds path dirs from runtimepath, deduplicates the base-dirs", _13_)
+  return it("builds path dirs from runtimepath, deduplicates the base-dirs", _14_)
 end
-return describe("path-dirs", _12_)
+return describe("path-dirs", _13_)

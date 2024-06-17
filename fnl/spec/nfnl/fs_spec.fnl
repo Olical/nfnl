@@ -2,6 +2,9 @@
 (local assert (require :luassert.assert))
 (local fs (require :nfnl.fs))
 
+(fn windows []
+  (= jit.os "Windows"))
+
 (describe
   "basename"
   (fn []
@@ -20,7 +23,9 @@
   (fn []
     (it "returns the OS path separator (test assumes Linux)"
         (fn []
-          (assert.equals "/" (fs.path-sep))))))
+          (if (windows)
+              (assert.equals "\\" (fs.path-sep))
+              (assert.equals "/" (fs.path-sep)))))))
 
 (describe
   "replace-extension"
@@ -34,22 +39,32 @@
   (fn []
     (it "splits a path into parts"
         (fn []
-          (assert.are.same ["foo" "bar" "baz"] (fs.split-path "foo/bar/baz"))
-          (assert.are.same ["" "foo" "bar" "baz"] (fs.split-path "/foo/bar/baz"))))))
+          (if (windows)
+              (do (assert.are.same ["foo" "bar" "baz"] (fs.split-path "foo\\bar\\baz"))
+                  (assert.are.same ["" "foo" "bar" "baz"] (fs.split-path "\\foo\\bar\\baz")))
+              (do (assert.are.same ["foo" "bar" "baz"] (fs.split-path "foo/bar/baz"))
+                  (assert.are.same ["" "foo" "bar" "baz"] (fs.split-path "/foo/bar/baz"))))))))
 
 (describe
   "join-path"
   (fn []
     (it "joins a path together"
         (fn []
-          (assert.equals "foo/bar/baz" (fs.join-path ["foo" "bar" "baz"]))
-          (assert.equals "/foo/bar/baz" (fs.join-path ["" "foo" "bar" "baz"]))))))
+          (if (windows)
+              (do (assert.equals "foo\\bar\\baz" (fs.join-path ["foo" "bar" "baz"]))
+                  (assert.equals "\\foo\\bar\\baz" (fs.join-path ["" "foo" "bar" "baz"])))
+              (do (assert.equals "foo/bar/baz" (fs.join-path ["foo" "bar" "baz"]))
+                  (assert.equals "/foo/bar/baz" (fs.join-path ["" "foo" "bar" "baz"]))))))))
 
 (describe
   "replace-dirs"
   (fn []
     (it "replaces directories in a path that match a string with another string"
         (fn []
-          (assert.equals "foo/lua/bar" (fs.replace-dirs "foo/fnl/bar" "fnl" "lua"))
-          (assert.equals "/foo/lua/bar" (fs.replace-dirs "/foo/fnl/bar" "fnl" "lua"))
-          (assert.equals "/foo/nfnl/bar" (fs.replace-dirs "/foo/nfnl/bar" "fnl" "lua"))))))
+          (if (windows)
+              (do (assert.equals "foo\\lua\\bar" (fs.replace-dirs "foo\\fnl\\bar" "fnl" "lua"))
+                  (assert.equals "\\foo\\lua\\bar" (fs.replace-dirs "\\foo\\fnl\\bar" "fnl" "lua"))
+                  (assert.equals "\\foo\\nfnl\\bar" (fs.replace-dirs "\\foo\\nfnl\\bar" "fnl" "lua")))
+              (do (assert.equals "foo/lua/bar" (fs.replace-dirs "foo/fnl/bar" "fnl" "lua"))
+                  (assert.equals "/foo/lua/bar" (fs.replace-dirs "/foo/fnl/bar" "fnl" "lua"))
+                  (assert.equals "/foo/nfnl/bar" (fs.replace-dirs "/foo/nfnl/bar" "fnl" "lua"))))))))
