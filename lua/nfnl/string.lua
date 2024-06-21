@@ -1,4 +1,4 @@
--- [nfnl] Compiled from fnl/nfnl/string.fnl by https://github.com/Olical/nfnl, do not edit.
+-- [nfnl] Compiled from fnl\nfnl\string.fnl by https://github.com/Olical/nfnl, do not edit.
 local _local_1_ = require("nfnl.module")
 local autoload = _local_1_["autoload"]
 local core = autoload("nfnl.core")
@@ -73,4 +73,7 @@ local function ends_with_3f(s, suffix)
     return false
   end
 end
-return {join = join, split = split, ["blank?"] = blank_3f, triml = triml, trimr = trimr, trim = trim, ["ends-with?"] = ends_with_3f}
+local function replace(s, from, to)
+  return string.gsub(s, from, to)
+end
+return {join = join, split = split, ["blank?"] = blank_3f, triml = triml, trimr = trimr, trim = trim, ["ends-with?"] = ends_with_3f, replace = replace}
