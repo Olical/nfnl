@@ -1,4 +1,4 @@
--- [nfnl] Compiled from fnl/nfnl/fs.fnl by https://github.com/Olical/nfnl, do not edit.
+-- [nfnl] Compiled from fnl\nfnl\fs.fnl by https://github.com/Olical/nfnl, do not edit.
 local _local_1_ = require("nfnl.module")
 local autoload = _local_1_["autoload"]
 local core = autoload("nfnl.core")
@@ -110,4 +110,7 @@ end
 local function fnl_path__3elua_path(fnl_path)
   return replace_dirs(replace_extension(fnl_path, "lua"), "fnl", "lua")
 end
-return {basename = basename, filename = filename, ["file-name-root"] = file_name_root, ["full-path"] = full_path, mkdirp = mkdirp, ["replace-extension"] = replace_extension, absglob = absglob, relglob = relglob, ["glob-dir-newer?"] = glob_dir_newer_3f, ["path-sep"] = path_sep, findfile = findfile, ["split-path"] = split_path, ["join-path"] = join_path, ["read-first-line"] = read_first_line, ["replace-dirs"] = replace_dirs, ["fnl-path->lua-path"] = fnl_path__3elua_path}
+local function standardize_path(path)
+  return str.replace(path, "\\", "/")
+end
+return {basename = basename, filename = filename, ["file-name-root"] = file_name_root, ["full-path"] = full_path, mkdirp = mkdirp, ["replace-extension"] = replace_extension, absglob = absglob, relglob = relglob, ["glob-dir-newer?"] = glob_dir_newer_3f, ["path-sep"] = path_sep, findfile = findfile, ["split-path"] = split_path, ["join-path"] = join_path, ["read-first-line"] = read_first_line, ["replace-dirs"] = replace_dirs, ["fnl-path->lua-path"] = fnl_path__3elua_path, ["standardize-path"] = standardize_path}
