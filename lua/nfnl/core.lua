@@ -1,4 +1,4 @@
--- [nfnl] Compiled from fnl/nfnl/core.fnl by https://github.com/Olical/nfnl, do not edit.
+-- [nfnl] Compiled from fnl\nfnl\core.fnl by https://github.com/Olical/nfnl, do not edit.
 local _local_1_ = require("nfnl.module")
 local autoload = _local_1_["autoload"]
 local fennel = autoload("nfnl.fennel")
@@ -443,4 +443,8 @@ local function clear_table_21(t)
   end
   return nil
 end
-return {rand = rand, ["nil?"] = nil_3f, ["number?"] = number_3f, ["boolean?"] = boolean_3f, ["string?"] = string_3f, ["table?"] = table_3f, ["function?"] = function_3f, keys = keys, count = count, ["empty?"] = empty_3f, first = first, second = second, last = last, inc = inc, dec = dec, ["even?"] = even_3f, ["odd?"] = odd_3f, vals = vals, ["kv-pairs"] = kv_pairs, ["run!"] = run_21, complement = complement, filter = filter, remove = remove, map = map, ["map-indexed"] = map_indexed, identity = identity, reduce = reduce, some = some, butlast = butlast, rest = rest, concat = concat, mapcat = mapcat, ["pr-str"] = pr_str, str = str, println = println, pr = pr, slurp = slurp, spit = spit, ["merge!"] = merge_21, merge = merge, ["select-keys"] = select_keys, get = get, ["get-in"] = get_in, assoc = assoc, ["assoc-in"] = assoc_in, update = update, ["update-in"] = update_in, constantly = constantly, distinct = distinct, sort = sort, ["clear-table!"] = clear_table_21}
+local function dbg(x)
+  print(vim.inspect(x))
+  return x
+end
+return {rand = rand, ["nil?"] = nil_3f, ["number?"] = number_3f, ["boolean?"] = boolean_3f, ["string?"] = string_3f, ["table?"] = table_3f, ["function?"] = function_3f, keys = keys, count = count, ["empty?"] = empty_3f, first = first, second = second, last = last, inc = inc, dec = dec, ["even?"] = even_3f, ["odd?"] = odd_3f, vals = vals, ["kv-pairs"] = kv_pairs, ["run!"] = run_21, complement = complement, filter = filter, remove = remove, map = map, ["map-indexed"] = map_indexed, identity = identity, reduce = reduce, some = some, butlast = butlast, rest = rest, concat = concat, mapcat = mapcat, ["pr-str"] = pr_str, str = str, println = println, pr = pr, slurp = slurp, spit = spit, ["merge!"] = merge_21, merge = merge, ["select-keys"] = select_keys, get = get, ["get-in"] = get_in, assoc = assoc, ["assoc-in"] = assoc_in, update = update, ["update-in"] = update_in, constantly = constantly, distinct = distinct, sort = sort, ["clear-table!"] = clear_table_21, dbg = dbg}
