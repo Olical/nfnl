@@ -113,4 +113,8 @@ end
 local function standardize_path(path)
   return str.replace(path, "\\", "/")
 end
-return {basename = basename, filename = filename, ["file-name-root"] = file_name_root, ["full-path"] = full_path, mkdirp = mkdirp, ["replace-extension"] = replace_extension, absglob = absglob, relglob = relglob, ["glob-dir-newer?"] = glob_dir_newer_3f, ["path-sep"] = path_sep, findfile = findfile, ["split-path"] = split_path, ["join-path"] = join_path, ["read-first-line"] = read_first_line, ["replace-dirs"] = replace_dirs, ["fnl-path->lua-path"] = fnl_path__3elua_path, ["standardize-path"] = standardize_path}
+local function correct_separators(path)
+  str.replace(path, "\\", path_sep())
+  return str.replace(path, "/", path_sep())
+end
+return {basename = basename, filename = filename, ["file-name-root"] = file_name_root, ["full-path"] = full_path, mkdirp = mkdirp, ["replace-extension"] = replace_extension, absglob = absglob, relglob = relglob, ["glob-dir-newer?"] = glob_dir_newer_3f, ["path-sep"] = path_sep, findfile = findfile, ["split-path"] = split_path, ["join-path"] = join_path, ["read-first-line"] = read_first_line, ["replace-dirs"] = replace_dirs, ["fnl-path->lua-path"] = fnl_path__3elua_path, ["standardize-path"] = standardize_path, ["correct-separators"] = correct_separators}
