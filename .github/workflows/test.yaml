@@ -9,13 +9,12 @@ jobs:
         neovim-version: [ "v0.9.0", "v0.9.1", "stable", "nightly" ]
         os: [ windows-latest, ubuntu-latest ]
     runs-on: ${{ matrix.os }}
-
-
     steps:
-      - uses: actions/checkout@v3
-      - uses: MunifTanjim/setup-neovim-action@v1
+      - uses: actions/checkout@v4
+      - uses: rhysd/action-setup-vim@v1
         with:
-          tag: ${{ matrix.neovim-version }}
+          neovim: true
+          version: ${{ matrix.neovim-version }}
       - name: Install Neovim plugins
         run: |
           ./script/setup-test-deps
