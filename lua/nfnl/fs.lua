@@ -89,7 +89,7 @@ end
 local function findfile(name, path)
   local res = vim.fn.findfile(name, path)
   if not core["empty?"](res) then
-    return full_path(normalize_path(res))
+    return normalize_path(full_path(res))
   else
     return nil
   end
