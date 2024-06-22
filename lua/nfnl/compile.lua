@@ -1,4 +1,4 @@
--- [nfnl] Compiled from fnl\nfnl\compile.fnl by https://github.com/Olical/nfnl, do not edit.
+-- [nfnl] Compiled from fnl/nfnl/compile.fnl by https://github.com/Olical/nfnl, do not edit.
 local _local_1_ = require("nfnl.module")
 local autoload = _local_1_["autoload"]
 local core = autoload("nfnl.core")
@@ -9,8 +9,7 @@ local config = autoload("nfnl.config")
 local mod = {}
 local header_marker = "[nfnl]"
 local function with_header(file, src)
-  local file0 = fs["standardize-path"](file)
-  return ("-- " .. header_marker .. " Compiled from " .. file0 .. " by https://github.com/Olical/nfnl, do not edit.\n" .. src)
+  return ("-- " .. header_marker .. " Compiled from " .. file .. " by https://github.com/Olical/nfnl, do not edit.\n" .. src)
 end
 local function safe_target_3f(path)
   local header = fs["read-first-line"](path)
@@ -110,7 +109,7 @@ mod["all-files"] = function(_17_)
   local cfg = _arg_18_["cfg"]
   local opts = _arg_18_
   local function _19_(path)
-    return mod["into-file"]({["root-dir"] = root_dir, path = path, cfg = cfg, source = core.slurp(path), ["batch?"] = true})
+    return mod["into-file"]({cfg = cfg, ["root-dir"] = root_dir, path = path, source = core.slurp(path), ["batch?"] = true})
   end
   local function _20_(_241)
     return fs["join-path"]({root_dir, _241})

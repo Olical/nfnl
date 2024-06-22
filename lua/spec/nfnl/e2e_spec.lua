@@ -68,7 +68,7 @@ end
 local function _5_()
   local initial_cwd = nil
   local function _6_()
-    initial_cwd = vim.fn.getcwd()
+    initial_cwd = fs.cwd()
     return vim.api.nvim_set_current_dir(temp_dir)
   end
   before_each(_6_)
@@ -82,7 +82,7 @@ describe("e2e file compiling from a project dir", _5_)
 local function _8_()
   local initial_cwd = nil
   local function _9_()
-    initial_cwd = vim.fn.getcwd()
+    initial_cwd = fs.cwd()
     return vim.api.nvim_set_current_dir(unrelated_temp_dir)
   end
   before_each(_9_)

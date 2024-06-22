@@ -49,17 +49,17 @@
                    (core.get opts :root-dir)
 
                    ;; The closest .nfnl.fnl file parent directory to the cwd.
-                   (-?> (vim.fn.getcwd)
+                   (-?> (fs.cwd)
                         (find) ; returns nil if .nfnl.fnl is not found
                         (fs.full-path)
                         (fs.basename))
 
                    ;; The cwd, just in case nothing else works.
-                   (vim.fn.getcwd))
+                   (fs.cwd))
 
         dirs (path-dirs
                {:runtimepath vim.o.runtimepath
-                :rtp-patterns (core.get opts :rtp-patterns [(.. (fs.path-sep) "nfnl$")])
+                :rtp-patterns (core.get opts :rtp-patterns ["/nfnl$"])
                 :base-dirs [root-dir]})]
 
     {:verbose false
