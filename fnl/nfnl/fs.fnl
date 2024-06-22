@@ -93,6 +93,15 @@
       (replace-extension "lua")
       (replace-dirs "fnl" "lua")))
 
+(fn standardize-path [path]
+  "Replaces all non standard path separators with the standard forward slash"
+  (str.replace path "\\" "/"))
+
+(fn correct-separators [path]
+  "Replaces all path separators with the ones appropriate for this system"
+  (str.replace path "\\" (path-sep))
+  (str.replace path "/" (path-sep)))
+
 {: basename
  : filename
  : file-name-root
@@ -108,4 +117,6 @@
  : join-path
  : read-first-line
  : replace-dirs
- : fnl-path->lua-path}
+ : fnl-path->lua-path
+ : standardize-path
+ : correct-separators}

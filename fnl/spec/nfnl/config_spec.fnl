@@ -1,4 +1,5 @@
 (local {: describe : it} (require :plenary.busted))
+(local core (autoload :nfnl.core))
 (local assert (require :luassert.assert))
 (local config (require :nfnl.config))
 (local fs (require :nfnl.fs))
@@ -33,8 +34,23 @@
           (assert.is_false (config.config-file-path? ".fnl.fnl"))))))
 
 (describe
+  "find"
+  (fn []
+    (it "finds the nearest .nfnl file to the given path"
+        (fn []
+          (assert.equals 
+            (fs.join-path (fs.full-path ".") ".nfnl.fnl") 
+            (fs.join-path ".nfnl.fnl" (config.find ".")))))))
+
+(describe
   "find-and-load"
   (fn []
+    ; (it "can read found path securely"
+    ;     (fn []
+    ;       (let [config-file-path (config.find ".")
+    ;             config-source (vim.secure.read (core.dbg (fs.standardize-path config-file-path)))]
+    ;         (assert.equals "{:verbose true}" config-source))))
+
     (it "loads the repo config file"
         (fn []
           (let [{: cfg : root-dir : config}
@@ -45,7 +61,7 @@
 
     (it "returns an empty table if a config file isn't found"
         (fn []
-          (assert.are.same {} (config.find-and-load "/some/made/up/dir"))))))
+          (assert.are.same {} (config.find-and-load (fs.correct-separators "/some/made/up/dir")))))))
 
 (fn sorted [xs]
   (table.sort xs)

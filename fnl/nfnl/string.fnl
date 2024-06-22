@@ -66,10 +66,15 @@
       (= suffix (string.sub s (- s-len suffix-len -1)))
       false)))
 
+(fn replace [s from to]
+  "Replace all occurrences of from with to in the string."
+  (string.gsub s from to))
+
 {: join
  : split
  : blank?
  : triml
  : trimr
  : trim
- : ends-with?}
+ : ends-with?
+ : replace}
