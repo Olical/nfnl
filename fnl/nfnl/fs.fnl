@@ -34,9 +34,13 @@
         (f:close)
         line))))
 
+(fn normalize-path [path]
+  "Run through vim.fs.normalize, replacing all path separators with forward slashes and expanding various shorthands."
+  (vim.fs.normalize path))
+
 (fn absglob [dir expr]
   "Glob all files under dir matching the expression and return the absolute paths."
-  (vim.fn.globpath dir expr true true))
+  (core.map normalize-path (vim.fn.globpath dir expr true true)))
 
 (fn relglob [dir expr]
   "Glob all files under dir matching the expression and return the paths
@@ -70,13 +74,15 @@
   instead of an empty string."
   (let [res (vim.fn.findfile name path)]
     (when (not (core.empty? res))
-      (full-path res))))
+      (full-path (normalize-path res)))))
 
 (fn split-path [path]
-  (str.split path (path-sep)))
+  "Assumes the path uses `/`, so make sure you run it through normalize-path first."
+  (str.split path "/"))
 
 (fn join-path [parts]
-  (str.join (path-sep) (core.concat parts)))
+  "Assumes the path uses `/`, so make sure you run it through normalize-path first."
+  (str.join "/" (core.concat parts)))
 
 (fn replace-dirs [path from to]
   "Replaces directories in `path` that match `from` with `to`."
@@ -93,14 +99,13 @@
       (replace-extension "lua")
       (replace-dirs "fnl" "lua")))
 
-(fn standardize-path [path]
-  "Replaces all non standard path separators with the standard forward slash"
-  (str.replace path "\\" "/"))
+(fn localize-path [path]
+  "Replace all the path seperators with the ones native to this OS. You should run your path through normalize-path first to ensure it uses `/`."
+  (string.gsub (normalize-path path) "/" (path-sep)))
 
-(fn correct-separators [path]
-  "Replaces all path separators with the ones appropriate for this system"
-  (str.replace path "\\" (path-sep))
-  (str.replace path "/" (path-sep)))
+(fn cwd []
+  "Get the normalized current working directory of this Neovim process."
+  (normalize-path (vim.fn.getcwd)))
 
 {: basename
  : filename
@@ -118,5 +123,6 @@
  : read-first-line
  : replace-dirs
  : fnl-path->lua-path
- : standardize-path
- : correct-separators}
+ : normalize-path
+ : localize-path
+ : cwd}

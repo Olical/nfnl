@@ -1,4 +1,4 @@
--- [nfnl] Compiled from fnl\nfnl\config.fnl by https://github.com/Olical/nfnl, do not edit.
+-- [nfnl] Compiled from fnl/nfnl/config.fnl by https://github.com/Olical/nfnl, do not edit.
 local _local_1_ = require("nfnl.module")
 local autoload = _local_1_["autoload"]
 local core = autoload("nfnl.core")
@@ -26,7 +26,7 @@ local function default(opts)
   local root_dir
   local or_5_ = core.get(opts, "root-dir")
   if not or_5_ then
-    local tmp_3_auto = vim.fn.getcwd()
+    local tmp_3_auto = fs.cwd()
     if (nil ~= tmp_3_auto) then
       local tmp_3_auto0 = find(tmp_3_auto)
       if (nil ~= tmp_3_auto0) then
@@ -43,8 +43,8 @@ local function default(opts)
       or_5_ = nil
     end
   end
-  root_dir = (or_5_ or vim.fn.getcwd())
-  local dirs = path_dirs({runtimepath = vim.o.runtimepath, ["rtp-patterns"] = core.get(opts, "rtp-patterns", {(fs["path-sep"]() .. "nfnl$")}), ["base-dirs"] = {root_dir}})
+  root_dir = (or_5_ or fs.cwd())
+  local dirs = path_dirs({runtimepath = vim.o.runtimepath, ["rtp-patterns"] = core.get(opts, "rtp-patterns", {"/nfnl$"}), ["base-dirs"] = {root_dir}})
   local function _12_(root_dir0)
     return core.map(fs["join-path"], {{root_dir0, "?.fnl"}, {root_dir0, "?", "init.fnl"}, {root_dir0, "fnl", "?.fnl"}, {root_dir0, "fnl", "?", "init.fnl"}})
   end

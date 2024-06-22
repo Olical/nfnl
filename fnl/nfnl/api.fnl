@@ -12,7 +12,7 @@
   Will do nothing if you execute it on a directory that doesn't contain an nfnl configuration file.
 
   Also displays all results via the notify system."
-  (let [dir (or dir (vim.fn.getcwd))
+  (let [dir (or dir (fs.cwd))
         {: config : root-dir : cfg} (config.find-and-load dir)]
     (if config
       (let [results (compile.all-files {: root-dir : cfg})]

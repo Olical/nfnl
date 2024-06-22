@@ -86,7 +86,7 @@
 
     (before_each
       (fn []
-        (set initial-cwd (vim.fn.getcwd))
+        (set initial-cwd (fs.cwd))
         (vim.api.nvim_set_current_dir temp-dir)))
 
     (after_each
@@ -102,7 +102,7 @@
 
     (before_each
       (fn []
-        (set initial-cwd (vim.fn.getcwd))
+        (set initial-cwd (fs.cwd))
         (vim.api.nvim_set_current_dir unrelated-temp-dir)))
 
     (after_each
