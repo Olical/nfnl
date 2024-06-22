@@ -1,5 +1,5 @@
 $env:XDG_CONFIG_HOME = "$PWD/.test-config"
-$env:XDG_STATE_HOME = "$PWD/.test-state"
+$env:XDG_STATE_HOME = "$PWD/.test-config/state"
 
 rm -for -rec $env:XDG_STATE_HOME -erroraction 'silentlycontinue'
 
