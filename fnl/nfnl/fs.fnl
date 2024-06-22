@@ -74,7 +74,7 @@
   instead of an empty string."
   (let [res (vim.fn.findfile name path)]
     (when (not (core.empty? res))
-      (full-path (normalize-path res)))))
+      (normalize-path (full-path res)))))
 
 (fn split-path [path]
   "Assumes the path uses `/`, so make sure you run it through normalize-path first."
