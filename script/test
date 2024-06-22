@@ -3,8 +3,8 @@
 XDG_CONFIG_HOME=$(pwd)/.test-config
 export XDG_CONFIG_HOME
 
-XDG_CONFIG_STATE=$(pwd)/.test-config/state
-export XDG_CONFIG_STATE
+XDG_STATE_HOME=$(pwd)/.test-config/state
+export XDG_STATE_HOME
 
 nvim --headless -c 'edit .nfnl.fnl' -c trust -c qa
 nvim --headless -c 'PlenaryBustedDirectory lua/spec'
