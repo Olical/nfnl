@@ -122,9 +122,14 @@
     (let [config-file-path (find dir)]
       (when config-file-path
         (let [root-dir (fs.basename config-file-path)
+
+              ;; This override is used by the Windows CI tests due to a suspected Neovim bug.
+              ;; It is set in ./script/test.ps1
+              ;; See https://github.com/Olical/nfnl/pull/42 for more information.
               read-fn (if (= vim.g._nfnl_dev_config_secure_read false)
                         core.slurp
                         vim.secure.read)
+
               config-source (read-fn config-file-path)
 
               (ok config)
