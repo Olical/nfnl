@@ -70,10 +70,10 @@ local function find_and_load(dir)
     if config_file_path then
       local root_dir = fs.basename(config_file_path)
       local read_fn
-      if (vim.g._nfnl_dev_config_secure_read == false) then
-        read_fn = core.slurp
-      else
+      if ("false" ~= vim.env.NFNL_USE_SECURE_READ) then
         read_fn = vim.secure.read
+      else
+        read_fn = core.slurp
       end
       local config_source = read_fn(config_file_path)
       local ok, config = nil, nil
