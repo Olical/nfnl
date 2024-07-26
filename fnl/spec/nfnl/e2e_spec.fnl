@@ -7,8 +7,8 @@
 (nfnl.setup {})
 
 ;; These temp directories are auto deleted on Neovim exit.
-(local temp-dir (vim.fn.tempname))
-(local unrelated-temp-dir (vim.fn.tempname))
+(local temp-dir (vim.fs.normalize (vim.fn.tempname)))
+(local unrelated-temp-dir (vim.fs.normalize (vim.fn.tempname)))
 
 (local fnl-dir (fs.join-path [temp-dir "fnl"]))
 (local lua-dir (fs.join-path [temp-dir "lua"]))
