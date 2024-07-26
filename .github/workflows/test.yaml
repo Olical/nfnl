@@ -10,6 +10,9 @@ jobs:
         os: [windows-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Print git config
+        run: |
+          git config -l
       - uses: actions/checkout@v4
       - uses: rhysd/action-setup-vim@v1
         with:
