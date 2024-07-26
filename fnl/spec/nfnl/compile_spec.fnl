@@ -49,7 +49,7 @@
     (it "returns compilation errors"
         (fn []
           (assert.are.same
-            {:error "/my/dir/foo.fnl:1:3 Compile error: tried to reference a special form without calling it\n\n10 / 20\n* Try making sure to use prefix operators, not infix.\n* Try wrapping the special in a function if you need it to be first class."
+            {:error "/my/dir/foo.fnl:1:3: Compile error: tried to reference a special form without calling it\n\n10 / 20\n* Try making sure to use prefix operators, not infix.\n* Try wrapping the special in a function if you need it to be first class."
              :source-path "/my/dir/foo.fnl"
              :status "compilation-error"}
             (compile.into-string
