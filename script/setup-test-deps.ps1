@@ -1,4 +1,3 @@
-
 $PACK_DIR = "./.test-config/nvim/pack/nfnl-tests/start"
 
 mkdir $PACK_DIR -erroraction 'silentlycontinue'

@@ -10,9 +10,9 @@ jobs:
         os: [windows-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Print git config
+      - name: Configure line endings in git (keep line endings as they're committed)
         run: |
-          git config -l
+          git config --global core.autocrlf input
       - uses: actions/checkout@v4
       - uses: rhysd/action-setup-vim@v1
         with:
