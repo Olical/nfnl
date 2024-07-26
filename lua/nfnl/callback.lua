@@ -17,14 +17,13 @@ local function fennel_buf_write_post_callback_fn(root_dir, cfg)
   return _2_
 end
 local function supported_path_3f(file_path)
-  local function _3_()
-    if core["string?"](file_path) then
-      return not file_path:find("^[%w-]+:/")
-    else
-      return nil
-    end
+  local _3_
+  if core["string?"](file_path) then
+    _3_ = not file_path:find("^[%w-]+:/")
+  else
+    _3_ = nil
   end
-  return (_3_() or false)
+  return (_3_ or false)
 end
 local function fennel_filetype_callback(ev)
   local file_path = fs["full-path"](ev.file)

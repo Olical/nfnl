@@ -9,7 +9,7 @@ local function _2_()
   local function _3_()
     assert.equals("function", type(config.default))
     assert.equals("table", type(config.default({["root-dir"] = "/tmp/foo"})))
-    return assert.equals(vim.fn.getcwd(), (config.default({}))["root-dir"])
+    return assert.equals(vim.fn.getcwd(), config.default({})["root-dir"])
   end
   return it("is a function that returns a table", _3_)
 end

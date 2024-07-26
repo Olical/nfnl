@@ -24,10 +24,10 @@ local function _2_()
     end
     assert.equals("nope", _6_())
     local function _9_()
-      local value_6_auto = {a = 1}
-      local _let_8_ = (value_6_auto or {})
+      local value_5_auto = {a = 1}
+      local _let_8_ = (value_5_auto or {})
       local a = _let_8_["a"]
-      if value_6_auto then
+      if value_5_auto then
         return "yes"
       else
         return "no"
@@ -35,10 +35,10 @@ local function _2_()
     end
     assert.equals("yes", _9_())
     local function _12_()
-      local value_6_auto = nil
-      local _let_11_ = (value_6_auto or {})
+      local value_5_auto = nil
+      local _let_11_ = (value_5_auto or {})
       local a = _let_11_["a"]
-      if value_6_auto then
+      if value_5_auto then
         return "yes"
       else
         return "no"
