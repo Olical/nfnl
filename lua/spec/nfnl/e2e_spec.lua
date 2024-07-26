@@ -46,6 +46,7 @@ local function run_e2e_tests()
     vim.o.filetype = "fennel"
     vim.api.nvim_buf_set_lines(0, 0, -1, false, {"(print \"Hello, World!\")"})
     vim.cmd("write")
+    print("Checking for Lua in: ", lua_dir)
     assert.are.equal(1, vim.fn.isdirectory(lua_dir))
     local lua_result = core.slurp(lua_path)
     print("Lua result:", lua_result)
