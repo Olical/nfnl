@@ -408,6 +408,12 @@
       (tset t k nil)))
   nil)
 
+(fn dbg [x]
+  "Prints each of the arguments using vim.inspect and returns them.
+   Great for debugging some confusing code without changing the behavior"
+   (print (vim.inspect x))
+   x)
+
 {: rand
  : nil?
  : number?
@@ -458,4 +464,5 @@
  : constantly
  : distinct
  : sort
- : clear-table!}
+ : clear-table!
+ : dbg}
