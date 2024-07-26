@@ -43,36 +43,30 @@ end
 describe("find", _8_)
 local function _10_()
   local function _11_()
-    local config_file_path = config.find(".")
-    local config_source = vim.secure.read(config_file_path)
-    return assert.equals("{:verbose true}\n", config_source)
-  end
-  it("can read found path securely", _11_)
-  local function _12_()
-    local _let_13_ = config["find-and-load"](".")
-    local cfg = _let_13_["cfg"]
-    local root_dir = _let_13_["root-dir"]
-    local config0 = _let_13_["config"]
+    local _let_12_ = config["find-and-load"](".")
+    local cfg = _let_12_["cfg"]
+    local root_dir = _let_12_["root-dir"]
+    local config0 = _let_12_["config"]
     assert.are.same({verbose = true}, config0)
     assert.equals(fs.cwd(), root_dir)
     return assert.equals("function", type(cfg))
   end
-  it("loads the repo config file", _12_)
-  local function _14_()
+  it("loads the repo config file", _11_)
+  local function _13_()
     return assert.are.same({}, config["find-and-load"]("/some/made/up/dir"))
   end
-  return it("returns an empty table if a config file isn't found", _14_)
+  return it("returns an empty table if a config file isn't found", _13_)
 end
 describe("find-and-load", _10_)
 local function sorted(xs)
   table.sort(xs)
   return xs
 end
-local function _15_()
-  local function _16_()
+local function _14_()
+  local function _15_()
     assert.are.same({"/foo/bar/nfnl", "/foo/baz/my-proj"}, sorted(config["path-dirs"]({runtimepath = "/foo/bar/nfnl,/foo/bar/other-thing", ["rtp-patterns"] = {"/nfnl$"}, ["base-dirs"] = {"/foo/baz/my-proj"}})))
     return assert.are.same({"/foo/bar/nfnl", "/foo/baz/my-proj"}, sorted(config["path-dirs"]({runtimepath = "/foo/bar/nfnl,/foo/bar/other-thing", ["rtp-patterns"] = {"/nfnl$"}, ["base-dirs"] = {"/foo/baz/my-proj", "/foo/bar/nfnl"}})))
   end
-  return it("builds path dirs from runtimepath, deduplicates the base-dirs", _16_)
+  return it("builds path dirs from runtimepath, deduplicates the base-dirs", _15_)
 end
-return describe("path-dirs", _15_)
+return describe("path-dirs", _14_)

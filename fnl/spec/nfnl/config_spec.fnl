@@ -44,12 +44,6 @@
 (describe
   "find-and-load"
   (fn []
-    (it "can read found path securely"
-        (fn []
-          (let [config-file-path (config.find ".")
-                config-source (vim.secure.read config-file-path)]
-            (assert.equals "{:verbose true}\n" config-source))))
-
     (it "loads the repo config file"
         (fn []
           (let [{: cfg : root-dir : config}

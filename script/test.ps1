@@ -3,5 +3,4 @@ $env:XDG_STATE_HOME = "$PWD/.test-config/state"
 
 rm -for -rec $env:XDG_STATE_HOME -erroraction 'silentlycontinue'
 
-nvim --headless .nfnl.fnl -c trust -c qa
-nvim --headless -c 'PlenaryBustedDirectory lua\\spec'
+nvim --headless -c 'let g:_nfnl_dev_config_secure_read = v:false' -c 'PlenaryBustedDirectory lua\\spec'

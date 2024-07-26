@@ -122,7 +122,10 @@
     (let [config-file-path (find dir)]
       (when config-file-path
         (let [root-dir (fs.basename config-file-path)
-              config-source (vim.secure.read config-file-path)
+              read-fn (if (= vim.g._nfnl_dev_config_secure_read false)
+                        core.slurp
+                        vim.secure.read)
+              config-source (read-fn config-file-path)
 
               (ok config)
               (if

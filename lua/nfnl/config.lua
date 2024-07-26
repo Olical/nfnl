@@ -69,7 +69,13 @@ local function find_and_load(dir)
     local config_file_path = find(dir)
     if config_file_path then
       local root_dir = fs.basename(config_file_path)
-      local config_source = vim.secure.read(config_file_path)
+      local read_fn
+      if (vim.g._nfnl_dev_config_secure_read == false) then
+        read_fn = core.slurp
+      else
+        read_fn = vim.secure.read
+      end
+      local config_source = read_fn(config_file_path)
       local ok, config = nil, nil
       if core["nil?"](config_source) then
         ok, config = false, (config_file_path .. " is not trusted, refusing to compile.")
