@@ -284,10 +284,19 @@
       ;; We should never get here, but just in case.
       (assert (.. "unknown bind-expr type: " (type bind-expr))))))
 
+(fn if-let [bindings ...]
+  (assert (<= (length [...]) 2) (.. "if-let does not support more than two branches"))
+  (conditional-let 'if bindings ...))
+
+(fn when-let [bindings ...]
+  (conditional-let 'when bindings ...))
+
 {:module module
  :def- def- :def def
  :defn- defn- :defn defn
  :defonce- defonce- :defonce defonce
  :wrap-last-expr wrap-last-expr
  :wrap-module-body wrap-module-body
- :deftest deftest}
+ :deftest deftest
+ :if-let if-let
+ :when-let when-let}
