@@ -3,6 +3,8 @@
 ;; Copied over from Aniseed. Contains all of the def* module macro systems.
 ;; https://github.com/Olical/aniseed
 
+;; WARNING: These do not work in newer versions of the Fennel compiler. I highly recommend you avoid these specific macros.
+
 ;; In nfnl they are not automatically required, you must use import-macros to
 ;; require them explicitly when migrating your Aniseed based projects.
 
