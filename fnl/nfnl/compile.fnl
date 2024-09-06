@@ -57,7 +57,7 @@
               (set fennel.path (cfg [:fennel-path]))
               (set fennel.macro-path (cfg [:fennel-macro-path]))
               (pcall
-                fennel.compileString
+                fennel.compile-string
                 source
                 (core.merge
                   {:filename path}
