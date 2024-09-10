@@ -1,7 +1,8 @@
--- [nfnl] Compiled from fnl/spec/nfnl/config_spec.fnl by https://github.com/Olical/nfnl, do not edit.
+-- [nfnl] Compiled from fnl\spec\nfnl\config_spec.fnl by https://github.com/Olical/nfnl, do not edit.
 local _local_1_ = require("plenary.busted")
 local describe = _local_1_["describe"]
 local it = _local_1_["it"]
+local core = autoload("nfnl.core")
 local assert = require("luassert.assert")
 local config = require("nfnl.config")
 local fs = require("nfnl.fs")
@@ -36,30 +37,37 @@ end
 describe("config-file-path?", _6_)
 local function _8_()
   local function _9_()
-    local _let_10_ = config["find-and-load"](".")
-    local cfg = _let_10_["cfg"]
-    local root_dir = _let_10_["root-dir"]
-    local config0 = _let_10_["config"]
+    return assert.equals(fs["join-path"](fs["full-path"]("."), ".nfnl.fnl"), fs["join-path"](".nfnl.fnl", config.find(".")))
+  end
+  return it("finds the nearest .nfnl file to the given path", _9_)
+end
+describe("find", _8_)
+local function _10_()
+  local function _11_()
+    local _let_12_ = config["find-and-load"](".")
+    local cfg = _let_12_["cfg"]
+    local root_dir = _let_12_["root-dir"]
+    local config0 = _let_12_["config"]
     assert.are.same({verbose = true}, config0)
     assert.equals(vim.fn.getcwd(), root_dir)
     return assert.equals("function", type(cfg))
   end
-  it("loads the repo config file", _9_)
-  local function _11_()
-    return assert.are.same({}, config["find-and-load"]("/some/made/up/dir"))
+  it("loads the repo config file", _11_)
+  local function _13_()
+    return assert.are.same({}, config["find-and-load"](fs["correct-separators"]("/some/made/up/dir")))
   end
-  return it("returns an empty table if a config file isn't found", _11_)
+  return it("returns an empty table if a config file isn't found", _13_)
 end
-describe("find-and-load", _8_)
+describe("find-and-load", _10_)
 local function sorted(xs)
   table.sort(xs)
   return xs
 end
-local function _12_()
-  local function _13_()
+local function _14_()
+  local function _15_()
     assert.are.same({"/foo/bar/nfnl", "/foo/baz/my-proj"}, sorted(config["path-dirs"]({runtimepath = "/foo/bar/nfnl,/foo/bar/other-thing", ["rtp-patterns"] = {(fs["path-sep"]() .. "nfnl$")}, ["base-dirs"] = {"/foo/baz/my-proj"}})))
     return assert.are.same({"/foo/bar/nfnl", "/foo/baz/my-proj"}, sorted(config["path-dirs"]({runtimepath = "/foo/bar/nfnl,/foo/bar/other-thing", ["rtp-patterns"] = {(fs["path-sep"]() .. "nfnl$")}, ["base-dirs"] = {"/foo/baz/my-proj", "/foo/bar/nfnl"}})))
   end
-  return it("builds path dirs from runtimepath, deduplicates the base-dirs", _13_)
+  return it("builds path dirs from runtimepath, deduplicates the base-dirs", _15_)
 end
-return describe("path-dirs", _12_)
+return describe("path-dirs", _14_)
