@@ -10,7 +10,7 @@
           (local r (repl.new))
           (assert.are.same [[10 20]] (r "[10 20]"))
 
-          (assert.are.same [:foo :bar] (r ":foo :bar"))
+          (assert.are.same [:foo :bar] (r ":foo :bar\n"))
           (assert.are.same [:foo :bar] (r "(values :foo :bar)"))
 
           ;; A nil closes the REPL and returns nil.

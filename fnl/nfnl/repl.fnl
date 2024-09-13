@@ -30,14 +30,7 @@
   (coroutine.resume co)
 
   (fn [input]
-    ;; Split the input into single characters and evaluate each, one at a time.
-    ;; This is to ensure evaluating ":foo :bar" returns both values.
-    (if (core.string? input) 
-      (core.run!
-        (fn [char]
-          (coroutine.resume co char))
-        (core.seq (.. input "\n")))
-      (coroutine.resume co input))
+    (coroutine.resume co input)
 
     (let [prev-eval-values results-to-return]
       (set results-to-return nil)
