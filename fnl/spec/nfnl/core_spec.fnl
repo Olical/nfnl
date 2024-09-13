@@ -473,3 +473,29 @@
           (let [t {:a 1 :b 2}]
             (core.clear-table! t)
             (assert.are.same {} t))))))
+
+(describe
+  "sequential?"
+  (fn []
+    (it "returns true for sequential tables"
+        (fn []
+          (assert.is_true (core.sequential? [1 2 3]))
+          (assert.is_true (core.sequential? []))
+          (assert.is_false (core.sequential? {:a 1 :b 2}))
+          (assert.is_false (core.sequential? nil))
+          (assert.is_false (core.sequential? "foo"))
+          nil))))
+
+(describe
+  "seq"
+  (fn []
+    (it "converts appropriately as the docstring says"
+        (fn []
+          (assert.are.same [1 2 3] (core.seq [1 2 3]))
+          (assert.are.same nil (core.seq nil))
+          (assert.are.same nil (core.seq {}))
+          (assert.are.same nil (core.seq ""))
+          (assert.are.same ["f" "o" "o" " " "b" "a" "r"] (core.seq "foo bar"))
+          (assert.are.same nil (core.seq ""))
+          (assert.are.same [[:a :b]] (core.seq {:a :b}))
+          nil))))

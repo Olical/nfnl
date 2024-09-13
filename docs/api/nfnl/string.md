@@ -3,6 +3,7 @@
 **Table of contents**
 
 - [`blank?`](#blank)
+- [`ends-with?`](#ends-with)
 - [`join`](#join)
 - [`split`](#split)
 - [`trim`](#trim)
@@ -17,6 +18,15 @@ Function signature:
 ```
 
 Check if the string is nil, empty or only whitespace.
+
+## `ends-with?`
+Function signature:
+
+```
+(ends-with? s suffix)
+```
+
+Check if the string ends with suffix.
 
 ## `join`
 Function signature:

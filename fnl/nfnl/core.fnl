@@ -38,6 +38,16 @@
         (table.insert result k)))
     result))
 
+(fn first [xs]
+  "The first item of the sequential table."
+  (when xs
+    (. xs 1)))
+
+(fn second [xs]
+  "The second item of the sequential table."
+  (when xs
+    (. xs 2)))
+
 (fn count [xs]
   "Count the items / characters in the input. Can handle tables, nil, strings and anything else that works with `(length xs)`."
   (if
@@ -53,15 +63,33 @@
   "Returns true if the argument is empty, this includes empty strings, lists and nil."
   (= 0 (count xs)))
 
-(fn first [xs]
-  "The first item of the sequential table."
-  (when xs
-    (. xs 1)))
+(fn sequential? [xs]
+  "True if the value is a sequential table."
+  (and (table? xs) (or (empty? xs) (= 1 (first (keys xs))))))
 
-(fn second [xs]
-  "The second item of the sequential table."
-  (when xs
-    (. xs 2)))
+(fn kv-pairs [t]
+  "Get all keys and values of a table zipped up in pairs."
+  (let [result []]
+    (when t
+      (each [k v (pairs t)]
+        (table.insert result [k v])))
+    result))
+
+(fn seq [x]
+  "Sequential tables are just returned, associative tables are returned as [[k v]], strings are returned as sequential tables of characters and nil returns nil. Empty tables and strings also coerce to nil."
+  (if
+    (empty? x) nil
+    (sequential? x) x
+    (table? x) (kv-pairs x)
+
+    (string? x)
+    (let [acc []]
+      (for [i 1 (count x)]
+        (table.insert acc (x:sub i i)))
+      (when (not (empty? acc))
+        acc))
+
+    nil))
 
 (fn last [xs]
   "The last item of the sequential table."
@@ -90,14 +118,6 @@
     (when t
       (each [_ v (pairs t)]
         (table.insert result v)))
-    result))
-
-(fn kv-pairs [t]
-  "Get all keys and values of a table zipped up in pairs."
-  (let [result []]
-    (when t
-      (each [k v (pairs t)]
-        (table.insert result [k v])))
     result))
 
 (fn run! [f xs]
@@ -458,4 +478,6 @@
  : constantly
  : distinct
  : sort
- : clear-table!}
+ : clear-table!
+ : sequential?
+ : seq}

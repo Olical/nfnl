@@ -8,10 +8,7 @@
 - [`defn-`](#defn-)
 - [`defonce`](#defonce)
 - [`defonce-`](#defonce-)
-- [`deftest`](#deftest)
 - [`module`](#module)
-- [`wrap-last-expr`](#wrap-last-expr)
-- [`wrap-module-body`](#wrap-module-body)
 
 ## `def`
 Function signature:
@@ -67,38 +64,11 @@ Function signature:
 
 **Undocumented**
 
-## `deftest`
-Function signature:
-
-```
-(deftest name ...)
-```
-
-**Undocumented**
-
 ## `module`
 Function signature:
 
 ```
-(module mod-name mod-fns mod-base)
-```
-
-**Undocumented**
-
-## `wrap-last-expr`
-Function signature:
-
-```
-(wrap-last-expr last-expr)
-```
-
-**Undocumented**
-
-## `wrap-module-body`
-Function signature:
-
-```
-(wrap-module-body ...)
+(module mod-name mod-base)
 ```
 
 **Undocumented**

@@ -6,6 +6,7 @@
 - [`assoc-in`](#assoc-in)
 - [`boolean?`](#boolean)
 - [`butlast`](#butlast)
+- [`clear-table!`](#clear-table)
 - [`complement`](#complement)
 - [`concat`](#concat)
 - [`constantly`](#constantly)
@@ -42,6 +43,8 @@
 - [`run!`](#run)
 - [`second`](#second)
 - [`select-keys`](#select-keys)
+- [`seq`](#seq)
+- [`sequential?`](#sequential)
 - [`slurp`](#slurp)
 - [`some`](#some)
 - [`sort`](#sort)
@@ -95,6 +98,15 @@ Function signature:
 ```
 
 Return every value from the sequential table except the last one.
+
+## `clear-table!`
+Function signature:
+
+```
+(clear-table! t)
+```
+
+Clear all keys from the table.
 
 ## `complement`
 Function signature:
@@ -430,6 +442,24 @@ Function signature:
 ```
 
 Extract the keys listed in `ks` from `t` and return it as a new table.
+
+## `seq`
+Function signature:
+
+```
+(seq x)
+```
+
+Sequential tables are just returned, associative tables are returned as [[k v]], strings are returned as sequential tables of characters and nil returns nil. Empty tables and strings also coerce to nil.
+
+## `sequential?`
+Function signature:
+
+```
+(sequential? xs)
+```
+
+True if the value is a sequential table.
 
 ## `slurp`
 Function signature:

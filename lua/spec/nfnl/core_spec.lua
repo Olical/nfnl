@@ -502,4 +502,30 @@ local function _112_()
   end
   return it("clears a table", _113_)
 end
-return describe("clear-table!", _112_)
+describe("clear-table!", _112_)
+local function _114_()
+  local function _115_()
+    assert.is_true(core["sequential?"]({1, 2, 3}))
+    assert.is_true(core["sequential?"]({}))
+    assert.is_false(core["sequential?"]({a = 1, b = 2}))
+    assert.is_false(core["sequential?"](nil))
+    assert.is_false(core["sequential?"]("foo"))
+    return nil
+  end
+  return it("returns true for sequential tables", _115_)
+end
+describe("sequential?", _114_)
+local function _116_()
+  local function _117_()
+    assert.are.same({1, 2, 3}, core.seq({1, 2, 3}))
+    assert.are.same(nil, core.seq(nil))
+    assert.are.same(nil, core.seq({}))
+    assert.are.same(nil, core.seq(""))
+    assert.are.same({"f", "o", "o", " ", "b", "a", "r"}, core.seq("foo bar"))
+    assert.are.same(nil, core.seq(""))
+    assert.are.same({{"a", "b"}}, core.seq({a = "b"}))
+    return nil
+  end
+  return it("converts appropriately as the docstring says", _117_)
+end
+return describe("seq", _116_)
