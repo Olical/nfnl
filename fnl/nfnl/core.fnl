@@ -428,6 +428,18 @@
       (tset t k nil)))
   nil)
 
+(fn take-while [f xs]
+  (local xs (seq xs))
+  (when xs
+    (var acc [])
+    (var done? false)
+    (for [i 1 (count xs) 1]
+      (let [v (. xs i)]
+        (if (and (not done?) (f v))
+          (table.insert acc v)
+          (set done? true))))
+    acc))
+
 {: rand
  : nil?
  : number?
@@ -480,4 +492,5 @@
  : sort
  : clear-table!
  : sequential?
- : seq}
+ : seq
+ : take-while}

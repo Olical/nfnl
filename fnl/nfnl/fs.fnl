@@ -3,6 +3,7 @@
 (local str (autoload :nfnl.string))
 
 (fn basename [path]
+  "Remove the file part of the path."
   (when path
     (vim.fn.fnamemodify path ":h")))
 
@@ -12,6 +13,7 @@
     (vim.fn.fnamemodify path ":t")))
 
 (fn file-name-root [path]
+  "Remove the suffix / extension of the file in a path."
   (when path
     (vim.fn.fnamemodify path ":r")))
 

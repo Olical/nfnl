@@ -528,4 +528,27 @@ local function _116_()
   end
   return it("converts appropriately as the docstring says", _117_)
 end
-return describe("seq", _116_)
+describe("seq", _116_)
+local function _118_()
+  local function _119_()
+    local function _120_(_241)
+      return (_241 > 0)
+    end
+    assert.are.same({1, 2, 3}, core["take-while"](_120_, {1, 2, 3, -1, -2, -3}))
+    local function _121_(_241)
+      return (_241 > 0)
+    end
+    assert.are.same({}, core["take-while"](_121_, {-1, -2, -3}))
+    local function _122_(_241)
+      return (_241 > 0)
+    end
+    assert.are.same(nil, core["take-while"](_122_, nil))
+    local function _123_(_241)
+      return (_241[1] == "hi")
+    end
+    assert.are.same({{"hi", "world"}}, core["take-while"](_123_, {hi = "world"}))
+    return nil
+  end
+  return it("takes values while f is true", _119_)
+end
+return describe("take-while", _118_)

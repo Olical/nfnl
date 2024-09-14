@@ -52,6 +52,7 @@
 - [`str`](#str)
 - [`string?`](#string)
 - [`table?`](#table)
+- [`take-while`](#take-while)
 - [`update`](#update)
 - [`update-in`](#update-in)
 - [`vals`](#vals)
@@ -524,6 +525,15 @@ Function signature:
 ```
 
 True if the value is of type 'table'.
+
+## `take-while`
+Function signature:
+
+```
+(take-while f xs)
+```
+
+**Undocumented**
 
 ## `update`
 Function signature:

@@ -35,7 +35,7 @@ Function signature:
 (basename path)
 ```
 
-**Undocumented**
+Remove the file part of the path.
 
 ## `file-name-root`
 Function signature:
@@ -44,7 +44,7 @@ Function signature:
 (file-name-root path)
 ```
 
-**Undocumented**
+Remove the suffix / extension of the file in a path.
 
 ## `filename`
 Function signature:

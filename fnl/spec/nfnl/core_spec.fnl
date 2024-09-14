@@ -499,3 +499,16 @@
           (assert.are.same nil (core.seq ""))
           (assert.are.same [[:a :b]] (core.seq {:a :b}))
           nil))))
+
+(describe
+  "take-while"
+  (fn []
+    (it "takes values while f is true"
+        (fn []
+          (assert.are.same [1 2 3] (core.take-while #(> $1 0) [1 2 3 -1 -2 -3]))
+          (assert.are.same [] (core.take-while #(> $1 0) [-1 -2 -3]))
+          (assert.are.same nil (core.take-while #(> $1 0) nil))
+          (assert.are.same
+            [[:hi :world]]
+            (core.take-while #(= (. $1 1) :hi) {:hi :world}))
+          nil))))
