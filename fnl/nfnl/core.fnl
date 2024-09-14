@@ -429,6 +429,7 @@
   nil)
 
 (fn take-while [f xs]
+  "Takes values from xs while (f x) returns true."
   (local xs (seq xs))
   (when xs
     (var acc [])

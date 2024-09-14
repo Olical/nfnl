@@ -533,7 +533,7 @@ Function signature:
 (take-while f xs)
 ```
 
-**Undocumented**
+Takes values from xs while (f x) returns true.
 
 ## `update`
 Function signature:
