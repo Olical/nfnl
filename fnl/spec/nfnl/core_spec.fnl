@@ -512,3 +512,14 @@
             [[:hi :world]]
             (core.take-while #(= (. $1 1) :hi) {:hi :world}))
           nil))))
+
+(describe
+  "drop-while"
+  (fn []
+    (it "drops values while f is true"
+        (fn []
+          (assert.are.same [1 2 3] (core.drop-while #(< $1 0) [-1 -2 -3 1 2 3]))
+          (assert.are.same [2 3] (core.drop-while #(< $1 2) [1 2 3]))
+          (assert.are.same nil (core.drop-while #(> $1 0) nil))
+          (assert.are.same [] (core.drop-while #(= (. $1 1) :hi) {:hi :world}))
+          nil))))

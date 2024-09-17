@@ -551,4 +551,27 @@ local function _118_()
   end
   return it("takes values while f is true", _119_)
 end
-return describe("take-while", _118_)
+describe("take-while", _118_)
+local function _124_()
+  local function _125_()
+    local function _126_(_241)
+      return (_241 < 0)
+    end
+    assert.are.same({1, 2, 3}, core["drop-while"](_126_, {-1, -2, -3, 1, 2, 3}))
+    local function _127_(_241)
+      return (_241 < 2)
+    end
+    assert.are.same({2, 3}, core["drop-while"](_127_, {1, 2, 3}))
+    local function _128_(_241)
+      return (_241 > 0)
+    end
+    assert.are.same(nil, core["drop-while"](_128_, nil))
+    local function _129_(_241)
+      return (_241[1] == "hi")
+    end
+    assert.are.same({}, core["drop-while"](_129_, {hi = "world"}))
+    return nil
+  end
+  return it("drops values while f is true", _125_)
+end
+return describe("drop-while", _124_)

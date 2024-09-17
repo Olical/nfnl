@@ -13,6 +13,7 @@
 - [`count`](#count)
 - [`dec`](#dec)
 - [`distinct`](#distinct)
+- [`drop-while`](#drop-while)
 - [`empty?`](#empty)
 - [`even?`](#even)
 - [`filter`](#filter)
@@ -163,6 +164,15 @@ Function signature:
 ```
 
 Takes a sequential table of values (xs) and returns a distinct sequential table with all duplicates removed.
+
+## `drop-while`
+Function signature:
+
+```
+(drop-while f xs)
+```
+
+Drop values while (f x) returns true.
 
 ## `empty?`
 Function signature:

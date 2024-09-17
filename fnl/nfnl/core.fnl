@@ -441,6 +441,19 @@
           (set done? true))))
     acc))
 
+(fn drop-while [f xs]
+  "Drop values while (f x) returns true."
+  (local xs (seq xs))
+  (when xs
+    (var acc [])
+    (var done? false)
+    (for [i 1 (count xs) 1]
+      (let [v (. xs i)]
+        (when (or done? (not (f v)))
+          (table.insert acc v)
+          (set done? true))))
+    acc))
+
 {: rand
  : nil?
  : number?
@@ -494,4 +507,5 @@
  : clear-table!
  : sequential?
  : seq
- : take-while}
+ : take-while
+ : drop-while}
