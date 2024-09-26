@@ -67,7 +67,7 @@ fine!) will default to these values that should work fine for most people.
 
 ```fennel
 {;; Enables verbose notifications from nfnl, including notifications about
- ;; when it starts up and when it compiles successfully. Useful for debugging 
+ ;; when it starts up and when it compiles successfully. Useful for debugging
  ;; the plugin itself and checking that it's running when you expect it to.
  :verbose false
 
@@ -97,7 +97,7 @@ fine!) will default to these values that should work fine for most people.
  ;; autocmd, so it'll only apply to buffers you're interested in.
  ;; Will use backslashes on Windows.
  ;; Defaults to compiling all .fnl files, you may want to limit it to your fnl/ directory.
- :source-file-patterns ["*.fnl" "**/*.fnl"]
+ :source-file-patterns [".*.fnl" "*.fnl" "**/*.fnl"]
 
  ;; A function that is given the absolute path of a Fennel file and should return
  ;; the equivalent Lua path, by default this will translate `fnl/foo/bar.fnl` to `lua/foo/bar.lua`.
@@ -375,12 +375,15 @@ detected, they are just thin wrappers around the function found in `nfnl.api`
 which you can read about under the next header.
 
 - `:NfnlFile [path]`
+
   - `path` defaults to `%`
 
   Run the matching Lua file for this Fennel file from disk. Does not recompile
   the Lua, you must use nfnl to compile your Fennel to Lua first. Calls
   nfnl.api/dofile under the hood.
+
 - `:NfnlCompileAllFiles [path]`
+
   - `path` defaults to `.`
 
   Executes (nfnl.api/compile-all-files) which will, you guessed it, compile all

@@ -95,7 +95,7 @@
               [root-dir "fnl" "?" "init.fnl"]]))
          dirs))
 
-     :source-file-patterns ["*.fnl" (fs.join-path ["**" "*.fnl"])]
+     :source-file-patterns [".*.fnl" "*.fnl" (fs.join-path ["**" "*.fnl"])]
      :fnl-path->lua-path fs.fnl-path->lua-path}))
 
 (fn cfg-fn [t opts]
