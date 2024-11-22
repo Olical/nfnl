@@ -22,6 +22,7 @@
                    (let [m (require name)]
                      (tset res module-key m)
                      m)))]
+
     (setmetatable
       res
 

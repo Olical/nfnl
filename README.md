@@ -382,12 +382,31 @@ which you can read about under the next header.
   the Lua, you must use nfnl to compile your Fennel to Lua first. Calls
   nfnl.api/dofile under the hood.
 
+- `:NfnlCompileFile [file]`
+
+  - `file` defaults to the current file
+
+  Executes (nfnl.api/compile-file) which will compile the specified file and write it to the appropriate `.lua` path.
+
 - `:NfnlCompileAllFiles [path]`
 
   - `path` defaults to `.`
 
   Executes (nfnl.api/compile-all-files) which will, you guessed it, compile all
   of your files.
+
+### Options
+
+nfnl's user experience can be configured by `g:nfnl#...` prefixed global variables which can also be set by `.setup()` like so:
+
+```lua
+require("nfnl").setup({ compile_on_write = false })
+```
+
+These options customise general behaviour of the plugin that aren't limited to a specific directory or project.
+
+- `g:nfnl#compile_on_write`
+  Set to `false` to disable the automatic compilation on buffer write. You will then need to use the `:NfnlCompile*` commands to compile your Fennel into Lua.
 
 ### API
 

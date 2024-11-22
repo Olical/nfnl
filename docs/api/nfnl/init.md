@@ -8,10 +8,10 @@
 Function signature:
 
 ```
-(setup)
+(setup opts)
 ```
 
-**Undocumented**
+Sets the vim.g.nfnl#... variables in a slightly more Lua friendly way.
 
 
 <!-- Generated with Fenneldoc v1.0.1

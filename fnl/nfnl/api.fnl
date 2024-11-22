@@ -1,10 +1,33 @@
 (local {: autoload} (require :nfnl.module))
+(local core (autoload :nfnl.core))
 (local compile (autoload :nfnl.compile))
 (local config (autoload :nfnl.config))
 (local notify (autoload :nfnl.notify))
 (local fs (autoload :nfnl.fs))
 
 (local mod {})
+
+(fn mod.compile-file [{: path : dir}]
+  "Compiles a file into the matching Lua file. Returns the compilation result. Takes an optional `dir` key that changes the working directory.
+
+  Will do nothing if you execute it on a directory that doesn't contain an nfnl configuration file.
+
+  Also displays all results via the notify system."
+  (let [dir (or dir (vim.fn.getcwd))
+        {: config : root-dir : cfg} (config.find-and-load dir)]
+    (if config
+      (let [path (fs.join-path [root-dir (vim.fn.expand (or path "%"))])
+            result (compile.into-file
+                     {: root-dir
+                      : cfg
+                      : path
+                      :source (core.slurp path)
+                      :batch? true})]
+        (notify.info "Compilation complete.\n" result)
+        result)
+      (do
+        (notify.warn "No .nfnl.fnl configuration found.")
+        []))))
 
 (fn mod.compile-all-files [dir]
   "Compiles all files in the given dir (optional), defaulting to the current working directory. Returns a sequential table with each of the files compilation result.

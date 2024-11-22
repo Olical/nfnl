@@ -48,16 +48,25 @@
           (when (cfg [:verbose])
             (notify.info "Found nfnl config, setting up autocmds: " root-dir))
 
-          (vim.api.nvim_create_autocmd
-            ["BufWritePost"]
-            {:group (vim.api.nvim_create_augroup (str.join ["nfnl-on-write" root-dir ev.buf]) {})
-             :buffer ev.buf
-             :callback (fennel-buf-write-post-callback-fn root-dir cfg)})
+          (when (not= false vim.g.nfnl#compile_on_write)
+            (vim.api.nvim_create_autocmd
+              ["BufWritePost"]
+              {:group (vim.api.nvim_create_augroup (str.join ["nfnl-on-write" root-dir ev.buf]) {})
+               :buffer ev.buf
+               :callback (fennel-buf-write-post-callback-fn root-dir cfg)}))
 
           (vim.api.nvim_buf_create_user_command
             ev.buf :NfnlFile
             #(api.dofile (core.first (core.get $ :fargs)))
             {:desc "Run the matching Lua file for this Fennel file from disk. Does not recompile the Lua, you must use nfnl to compile your Fennel to Lua first. Calls nfnl.api/dofile under the hood."
+             :force true
+             :complete "file"
+             :nargs "?"})
+
+          (vim.api.nvim_buf_create_user_command
+            ev.buf :NfnlCompileFile
+            #(api.compile-file {:path (core.first (core.get $ :fargs))})
+            {:desc "Executes (nfnl.api/compile-file) which compiles the current file or the one provided as an argumet. The output is written to the appropriate Lua file."
              :force true
              :complete "file"
              :nargs "?"})

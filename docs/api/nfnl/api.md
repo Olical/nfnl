@@ -3,6 +3,7 @@
 **Table of contents**
 
 - [`compile-all-files`](#compile-all-files)
+- [`compile-file`](#compile-file)
 - [`dofile`](#dofile)
 
 ## `compile-all-files`
@@ -13,6 +14,19 @@ Function signature:
 ```
 
 Compiles all files in the given dir (optional), defaulting to the current working directory. Returns a sequential table with each of the files compilation result.
+
+  Will do nothing if you execute it on a directory that doesn't contain an nfnl configuration file.
+
+  Also displays all results via the notify system.
+
+## `compile-file`
+Function signature:
+
+```
+(compile-file {:dir dir :path path})
+```
+
+Compiles a file into the matching Lua file. Returns the compilation result. Takes an optional `dir` key that changes the working directory.
 
   Will do nothing if you execute it on a directory that doesn't contain an nfnl configuration file.
 

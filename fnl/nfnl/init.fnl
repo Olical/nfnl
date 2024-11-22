@@ -18,7 +18,10 @@
       {:file (vim.fn.expand "%")
        :buf (vim.api.nvim_get_current_buf)})))
 
-(fn setup []
-  "A noop for now, may be used one day. You just need to load this module for the plugin to initialise for now.")
+(fn setup [opts]
+  "Sets the vim.g.nfnl#... variables in a slightly more Lua friendly way."
+
+  (when opts
+    (set vim.g.nfnl#compile_on_write opts.compile_on_write)))
 
 {: setup}
