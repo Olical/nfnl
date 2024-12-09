@@ -17,7 +17,19 @@
                :path "/tmp/foo/bar.fnl"
                :cfg (config.cfg-fn {} {:root-dir "/tmp/foo"})
                :batch? true
-               :file-exists-on-disk? false
+               :source "(+ 10 20)"}))))
+
+    (it "skips files that don't match :source-file-patterns"
+        (fn []
+          (assert.are.same
+            {:source-path "/my/dir/baz.fnl"
+             :status "path-is-not-in-source-file-patterns"}
+            (compile.into-string
+              {:root-dir "/my/dir"
+               :path "/my/dir/baz.fnl"
+               :cfg (config.cfg-fn {:source-file-patterns ["bar.fnl"]}
+                                   {:root-dir "/tmp/foo"})
+               :batch? true
                :source "(+ 10 20)"}))))
 
     (it "skips macro files"
@@ -30,7 +42,6 @@
                :path "/my/dir/foo.fnl"
                :cfg (config.cfg-fn {} {:root-dir "/tmp/foo"})
                :batch? true
-               :file-exists-on-disk? false
                :source (.. "; [nfnl" "-" "macro]\n(+ 10 20)")}))))
 
     (it "won't compile the .nfnl.fnl config file"
@@ -43,7 +54,6 @@
                :path "/my/dir/.nfnl.fnl"
                :cfg (config.cfg-fn {} {:root-dir "/tmp/foo"})
                :batch? true
-               :file-exists-on-disk? false
                :source "(+ 10 20)"}))))
 
     (it "returns compilation errors"
@@ -57,5 +67,4 @@
                :path "/my/dir/foo.fnl"
                :cfg (config.cfg-fn {} {:root-dir "/tmp/foo"})
                :batch? true
-               :file-exists-on-disk? false
                :source "10 / 20"}))))))

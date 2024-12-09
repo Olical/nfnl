@@ -28,7 +28,7 @@ Function signature:
 Function signature:
 
 ```
-(into-string {:batch? batch? :cfg cfg :file-exists-on-disk? file-exists-on-disk? :path path :root-dir root-dir :source source &as opts})
+(into-string {:batch? batch? :cfg cfg :path path :root-dir root-dir :source source &as opts})
 ```
 
 **Undocumented**

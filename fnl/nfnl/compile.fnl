@@ -29,8 +29,13 @@
   configuration."
   (core.mapcat #(glob-fn root-dir $) (cfg [:source-file-patterns])))
 
-(fn mod.into-string [{: root-dir : path : cfg : source : batch?
-                      : file-exists-on-disk? &as opts}]
+(fn valid-source-file? [path {: root-dir : cfg }]
+  "Return whether we're allowed to compile the given file. This is determined by
+  matching the given absolute path against each :source-file-patterns value from
+  the configuration."
+  (core.some #(fs.glob-matches? root-dir $ path) (cfg [:source-file-patterns])))
+
+(fn mod.into-string [{: root-dir : path : cfg : source : batch? &as opts}]
   (let [macro? (macro-source? source)]
     (if
       (and macro? batch?)
@@ -46,8 +51,7 @@
       {:status :nfnl-config-is-not-compiled
        :source-path path}
 
-      (and (not= false file-exists-on-disk?)
-           (not (core.some #(= path $) (valid-source-files fs.absglob opts))))
+      (not (valid-source-file? path opts))
       {:status :path-is-not-in-source-file-patterns
        :source-path path}
 

@@ -1,6 +1,7 @@
 (local {: autoload} (require :nfnl.module))
 (local core (autoload :nfnl.core))
 (local str (autoload :nfnl.string))
+(local notify (autoload :nfnl.notify))
 
 (fn basename [path]
   "Remove the file part of the path."
@@ -95,6 +96,11 @@
       (replace-extension "lua")
       (replace-dirs "fnl" "lua")))
 
+(fn glob-matches? [dir expr path]
+  "Return true if path matches the glob expression. The path should be absolute and the glob should be relative to dir."
+  (let [regex (vim.regex (vim.fn.glob2regpat (join-path [dir expr])))]
+    (regex:match_str path)))
+
 {: basename
  : filename
  : file-name-root
@@ -110,4 +116,5 @@
  : join-path
  : read-first-line
  : replace-dirs
- : fnl-path->lua-path}
+ : fnl-path->lua-path
+ : glob-matches?}

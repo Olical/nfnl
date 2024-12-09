@@ -10,6 +10,7 @@
 - [`fnl-path->lua-path`](#fnl-path-lua-path)
 - [`full-path`](#full-path)
 - [`glob-dir-newer?`](#glob-dir-newer)
+- [`glob-matches?`](#glob-matches)
 - [`join-path`](#join-path)
 - [`mkdirp`](#mkdirp)
 - [`path-sep`](#path-sep)
@@ -91,6 +92,15 @@ Function signature:
 ```
 
 Returns true if a-dir has newer changes than b-dir. All paths from a-dir are mapped through b-dir-path-fn before comparing to b-dir.
+
+## `glob-matches?`
+Function signature:
+
+```
+(glob-matches? dir expr path)
+```
+
+Return true if path matches the glob expression. The path should be absolute and the glob should be relative to dir.
 
 ## `join-path`
 Function signature:
