@@ -1,7 +1,6 @@
 (local {: autoload} (require :nfnl.module))
 (local core (autoload :nfnl.core))
 (local str (autoload :nfnl.string))
-(local notify (autoload :nfnl.notify))
 
 (fn basename [path]
   "Remove the file part of the path."

@@ -3,7 +3,6 @@ local _local_1_ = require("nfnl.module")
 local autoload = _local_1_["autoload"]
 local core = autoload("nfnl.core")
 local str = autoload("nfnl.string")
-local notify = autoload("nfnl.notify")
 local function basename(path)
   if path then
     return vim.fn.fnamemodify(path, ":h")
