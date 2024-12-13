@@ -31,7 +31,7 @@
              (fn [err-type err lua-source]
                (if (?. opts :on-error)
                  (opts.on-error err-type err lua-source)
-                 (notify.error (str.join "\n\n" [(.. "[" err-type "] " err) lua-source]))))}
+                 (notify.error (str.trim (str.join "\n\n" [(.. "[" err-type "] " err) lua-source])))))}
             (when cfg
               (cfg [:compiler-options])))))))
 

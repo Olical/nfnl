@@ -35,7 +35,7 @@ local function new(opts)
       if _8_ then
         return opts["on-error"](err_type, err, lua_source)
       else
-        return notify.error(str.join("\n\n", {("[" .. err_type .. "] " .. err), lua_source}))
+        return notify.error(str.trim(str.join("\n\n", {("[" .. err_type .. "] " .. err), lua_source})))
       end
     end
     local function _11_()
