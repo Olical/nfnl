@@ -45,7 +45,7 @@ local function new(opts)
         return nil
       end
     end
-    return fennel.repl(core["merge!"]({pp = core.identity, readChunk = coroutine.yield, onValues = _5_, onError = _6_}, _11_()))
+    return fennel.repl(core["merge!"]({pp = core.identity, readChunk = coroutine.yield, env = core.merge(_G), onValues = _5_, onError = _6_}, _11_()))
   end
   co = coroutine.create(_4_)
   coroutine.resume(co)

@@ -23,6 +23,9 @@
             {:pp core.identity
              :readChunk coroutine.yield
 
+             ;; Possible Fennel bug? We need to clone _G or multiple REPLs interfere with each other sometimes.
+             :env (core.merge _G)
+
              :onValues
              (fn [results]
                (set results-to-return (core.concat results-to-return results)))
