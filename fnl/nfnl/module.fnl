@@ -1,7 +1,9 @@
 (local module-key :nfnl/autoload-module)
 (local enabled-key :nfnl/autoload-enabled?)
 
-(fn autoload [name]
+(local M {})
+
+(fn M.autoload [name]
   "Like autoload from Vim Script! A replacement for require that will load the
   module when you first use it.
 
@@ -38,4 +40,16 @@
        (fn [t k v]
          (tset (ensure) k v))})))
 
-{: autoload}
+(fn M.define [mod-name base]
+  "Looks up the mod-name in package.loaded, if it's the same type as base it'll use the loaded value. If it's different it'll use base.
+
+  The returned result should be used as your default value for M like so: (local M (define :my.mod {}))
+
+  Then return M at the bottom of your file and define functions on M like so: (fn M.my-fn [x] (+ x 1))"
+
+  (let [loaded (. package.loaded mod-name)]
+    (if (= (type loaded) (type base))
+      loaded
+      base)))
+
+M
