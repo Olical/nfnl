@@ -2,13 +2,17 @@
 
 set -xe
 
-SRC_DIR=${SRC_DIR:-lua/nfnl}
-SRC_PREFIX=${SRC_PREFIX:-'"nfnl\.'}
+SRC_DIR=${SRC_DIR:-.}
+SRC_PREFIX=${SRC_PREFIX:-'nfnl\.'}
 
-PROJECT=${PROJECT:-myprojectnamehere}
-DEST_DIR=${DEST_DIR:-$PROJECT/lua/$PROJECT}
-DEST_PREFIX=${DEST_PREFIX:-"\"$PROJECT.nfnl."}
+DEST_DIR=$1
+PROJECT=${PROJECT:-$(basename $DEST_DIR)}
+DEST_PREFIX=${DEST_PREFIX:-"$PROJECT.nfnl."}
 
-mkdir -p "$DEST_DIR"
-cp -r "$SRC_DIR" "$DEST_DIR"
-fd --no-ignore --extension .lua . "$DEST_DIR" --exec sd "$SRC_PREFIX" "$DEST_PREFIX"
+rm -r "$DEST_DIR/fnl/$PROJECT/nfnl" "$DEST_DIR/lua/$PROJECT/nfnl"
+mkdir -p "$DEST_DIR/fnl/$PROJECT/nfnl" "$DEST_DIR/lua/$PROJECT/nfnl"
+cp -r "$SRC_DIR/lua/nfnl" "$DEST_DIR/lua/$PROJECT/nfnl"
+rsync -R $(rg -l '\[nfnl-macro\]' "$SRC_DIR/fnl/nfnl") "$DEST_DIR/fnl/$PROJECT/nfnl"
+
+fd --no-ignore --extension .fnl . "$DEST_DIR/fnl/$PROJECT/nfnl" --exec sd " :$SRC_PREFIX" " :$DEST_PREFIX"
+fd --no-ignore --extension .lua . "$DEST_DIR/lua/$PROJECT/nfnl" --exec sd "\"$SRC_PREFIX" "\"$DEST_PREFIX"
