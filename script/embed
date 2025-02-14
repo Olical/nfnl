@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+# Assumes your project is named the same at the root directory and under `fnl/`.
+# Copies the lua files and fnl macro source files into the destination project.
+#
+# Example: `conjure/fnl/conjure/**/*.fnl`.
+# Usage: ./embed ../conjure
+# Requires: rsync, fd, sd
+
+set -xe
+
+SRC_DIR=${SRC_DIR:-.}
+SRC_PROJECT=${SRC_PROJECT:-nfnl}
+SRC_PREFIX=${SRC_PREFIX:-"$SRC_PROJECT\."}
+
+DEST_DIR=$1
+DEST_PROJECT=${DEST_PROJECT:-$(basename $DEST_DIR)}
+DEST_PREFIX=${DEST_PREFIX:-"$DEST_PROJECT.$SRC_PROJECT."}
+
+rm -rf "$DEST_DIR/fnl/$DEST_PROJECT/$SRC_PROJECT" "$DEST_DIR/lua/$DEST_PROJECT/$SRC_PROJECT"
+rsync -av "$SRC_DIR/lua/$SRC_PROJECT" "$DEST_DIR/lua/$DEST_PROJECT/"
+rg -l '\[nfnl-macro\]' "$SRC_DIR/fnl/$SRC_PROJECT" --no-heading --replace '{path}' --path-separator '/' |
+	sed "s|$SRC_DIR/fnl/$SRC_PROJECT/||" |
+	rsync -av --files-from=- "$SRC_DIR/fnl/$SRC_PROJECT/" "$DEST_DIR/fnl/$DEST_PROJECT/$SRC_PROJECT"
+
+fd --no-ignore --extension .fnl . "$DEST_DIR/fnl/$DEST_PROJECT/$SRC_PROJECT" --exec sd " :$SRC_PREFIX" " :$DEST_PREFIX"
+fd --no-ignore --extension .lua . "$DEST_DIR/lua/$DEST_PROJECT/$SRC_PROJECT" --exec sd "\"$SRC_PREFIX" "\"$DEST_PREFIX"
