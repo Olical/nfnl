@@ -322,7 +322,7 @@ If you want to ship a plugin ([nfnl-plugin-example][nfnl-plugin-example]) that
 depends on nfnl modules you'll need to embed it inside your project. You can
 either `cp -r lua/nfnl` into `your-project/lua/nfnl` if you don't mind your
 plugin's copy of nfnl colliding with other plugins or you can use
-`script/embed-library` to copy the files into a lower level directory and modify
+`script/embed` to copy the files into a lower level directory and modify
 them to isolate them for your plugin specifically.
 
 ```bash
@@ -337,8 +337,8 @@ may use my embedding script (or your own) to avoid this though:
 
 ```bash
 # There are more paths and options available, see the script source for more information.
-# This will write to $PROJECT/lua/$PROJECT/nfnl.
-SRC_DIR=nfnl/lua/nfnl PROJECT=my-plugin ./nfnl/script/embed-library
+# This will write to my-project/lua/my-project/nfnl.
+./script/embed-library ../my-project
 ```
 
 This will copy nfnl's Lua code into your project's directory under a namespaced
