@@ -574,4 +574,38 @@ local function _124_()
   end
   return it("drops values while f is true", _125_)
 end
-return describe("drop-while", _124_)
+describe("drop-while", _124_)
+local function _130_()
+  local function _131_()
+    assert.is_nil(core["->set"](nil))
+    assert.is_nil(core["->set"]())
+    return nil
+  end
+  it("ignores nil", _131_)
+  local function _132_()
+    assert.are.same({a = true, b = true, c = true}, core["->set"]({"a", "b", "c"}))
+    return nil
+  end
+  return it("it turns sequential tables into associative sets", _132_)
+end
+describe("->set", _130_)
+local function _133_()
+  local function _134_()
+    assert.is_nil(core["contains?"](nil, "foo"))
+    return nil
+  end
+  it("ignores nil", _134_)
+  local function _135_()
+    assert.is_true(core["contains?"]({"foo", "bar"}, "foo"))
+    assert.is_false(core["contains?"]({"foo", "bar"}, "baz"))
+    return nil
+  end
+  it("works on sequential tables", _135_)
+  local function _136_()
+    assert.is_true(core["contains?"](core["->set"]({"foo", "bar"}), "foo"))
+    assert.is_false(core["contains?"](core["->set"]({"foo", "bar"}), "baz"))
+    return nil
+  end
+  return it("works on associative tables", _136_)
+end
+return describe("contains?", _133_)

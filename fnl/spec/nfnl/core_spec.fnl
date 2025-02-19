@@ -523,3 +523,39 @@
           (assert.are.same nil (core.drop-while #(> $1 0) nil))
           (assert.are.same [] (core.drop-while #(= (. $1 1) :hi) {:hi :world}))
           nil))))
+
+(describe
+  "->set"
+  (fn []
+    (it "ignores nil"
+        (fn []
+          (assert.is_nil (core.->set nil))
+          (assert.is_nil (core.->set))
+          nil))
+
+    (it "it turns sequential tables into associative sets"
+        (fn []
+          (assert.are.same
+            {:a true :b true :c true}
+            (core.->set [:a :b :c]))
+          nil))))
+
+(describe
+  "contains?"
+  (fn []
+    (it "ignores nil"
+        (fn []
+          (assert.is_nil (core.contains? nil :foo))
+          nil))
+
+    (it "works on sequential tables"
+        (fn []
+          (assert.is_true (core.contains? [:foo :bar] :foo))
+          (assert.is_false (core.contains? [:foo :bar] :baz))
+          nil))
+
+    (it "works on associative tables"
+        (fn []
+          (assert.is_true (core.contains? (core.->set [:foo :bar]) :foo))
+          (assert.is_false (core.contains? (core.->set [:foo :bar]) :baz))
+          nil))))

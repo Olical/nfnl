@@ -2,6 +2,7 @@
 
 **Table of contents**
 
+- [`->set`](#set)
 - [`assoc`](#assoc)
 - [`assoc-in`](#assoc-in)
 - [`boolean?`](#boolean)
@@ -10,6 +11,7 @@
 - [`complement`](#complement)
 - [`concat`](#concat)
 - [`constantly`](#constantly)
+- [`contains?`](#contains)
 - [`count`](#count)
 - [`dec`](#dec)
 - [`distinct`](#distinct)
@@ -57,6 +59,15 @@
 - [`update`](#update)
 - [`update-in`](#update-in)
 - [`vals`](#vals)
+
+## `->set`
+Function signature:
+
+```
+(->set tbl)
+```
+
+Converts a table `tbl` to a 'set' - which means [:a :b] becomes {:a true :b true}. You can then use contains? to check membership, or just (. my-set :foo) - if that returns true, it's in your set.
 
 ## `assoc`
 Function signature:
@@ -137,6 +148,15 @@ Function signature:
 ```
 
 Returns a function that takes any number of arguments and returns `v`.
+
+## `contains?`
+Function signature:
+
+```
+(contains? tbl v)
+```
+
+Does the table `tbl` contain the value `v`? If given an associative table it'll check for membership of the key, if given a sequential table it will scan for the value. Associative is essentially O(1), sequential is O(n). You can use `->set` if you need to perform many lookups, it will turn [:a :b] into {:a true :b true} which is O(1) to check.
 
 ## `count`
 Function signature:

@@ -454,6 +454,24 @@
           (set done? true))))
     acc))
 
+(fn ->set [tbl]
+  "Converts a table `tbl` to a 'set' - which means [:a :b] becomes {:a true :b true}. You can then use contains? to check membership, or just (. my-set :foo) - if that returns true, it's in your set."
+
+  (when tbl
+    (assert (table? tbl) "Table required as input to ->set.")
+    (let [result {}]
+      (each [_n v (ipairs tbl)]
+        (tset result v true))
+      result)))
+
+(fn contains? [tbl v]
+  "Does the table `tbl` contain the value `v`? If given an associative table it'll check for membership of the key, if given a sequential table it will scan for the value. Associative is essentially O(1), sequential is O(n). You can use `->set` if you need to perform many lookups, it will turn [:a :b] into {:a true :b true} which is O(1) to check."
+  (when tbl
+    (assert (table? tbl) "contains? expects a table")
+    (if (sequential? tbl)
+      (or (some #(= $ v) tbl) false)
+      (= true (. tbl v)))))
+
 {: rand
  : nil?
  : number?
@@ -508,4 +526,6 @@
  : sequential?
  : seq
  : take-while
- : drop-while}
+ : drop-while
+ : ->set
+ : contains?}
