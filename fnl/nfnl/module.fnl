@@ -55,17 +55,11 @@
   changes will be reflected in all other modules that depend on this one
   without having to reload the dependant modules.
 
-  If the currently loaded value _and_ the base value are both nil then an empty
-  table is used by default."
+  The base value defaults to {}, an empty table."
 
   (let [loaded (. package.loaded mod-name)]
-    (if
-      (and (= nil loaded base))
-      {}
-
-      (= (type loaded) (type base))
+    (if (= (type loaded) (type base))
       loaded
-
-      base)))
+      (or base {}))))
 
 M

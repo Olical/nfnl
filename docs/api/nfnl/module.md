@@ -45,8 +45,7 @@ Looks up the mod-name in package.loaded, if it's the same type as base it'll
   changes will be reflected in all other modules that depend on this one
   without having to reload the dependant modules.
 
-  If the currently loaded value _and_ the base value are both nil then an empty
-  table is used by default.
+  The base value defaults to {}, an empty table.
 
 
 <!-- Generated with Fenneldoc v1.0.1
