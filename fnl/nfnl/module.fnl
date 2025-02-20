@@ -53,11 +53,19 @@
   This technique helps you have extremely reloadable modules through Conjure.
   You can reload the entire file or induvidual function definitions and the
   changes will be reflected in all other modules that depend on this one
-  without having to reload the dependant modules."
+  without having to reload the dependant modules.
+
+  If the currently loaded value _and_ the base value are both nil then an empty
+  table is used by default."
 
   (let [loaded (. package.loaded mod-name)]
-    (if (= (type loaded) (type base))
+    (if
+      (and (= nil loaded base))
+      {}
+
+      (= (type loaded) (type base))
       loaded
+
       base)))
 
 M
