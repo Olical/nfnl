@@ -63,6 +63,7 @@
                 :base-dirs [root-dir]})]
 
     {:verbose false
+     :header-comment true
      :compiler-options {:error-pinpoint false}
 
      :root-dir root-dir

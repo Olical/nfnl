@@ -73,7 +73,10 @@
               (notify.info "Successfully compiled: " path))
             {:status :ok
              :source-path path
-             :result (.. (with-header rel-file-name res) "\n")})
+             :result (.. (if (cfg [:header-comment])
+                           (with-header rel-file-name res)
+                           res)
+                         "\n")})
           (do
             (when (not batch?)
               (notify.error res))
@@ -90,7 +93,8 @@
       (not= :ok status)
       res
 
-      (safe-target? destination-path)
+      (or (safe-target? destination-path)
+          (not (cfg [:header-comment])))
       (do
         (fs.mkdirp (fs.basename destination-path))
         (core.spit destination-path result)
