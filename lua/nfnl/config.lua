@@ -26,13 +26,13 @@ local function default(opts)
   local root_dir
   local or_5_ = core.get(opts, "root-dir")
   if not or_5_ then
-    local tmp_3_auto = vim.fn.getcwd()
-    if (nil ~= tmp_3_auto) then
-      local tmp_3_auto0 = find(tmp_3_auto)
-      if (nil ~= tmp_3_auto0) then
-        local tmp_3_auto1 = fs["full-path"](tmp_3_auto0)
-        if (nil ~= tmp_3_auto1) then
-          or_5_ = fs.basename(tmp_3_auto1)
+    local tmp_3_ = vim.fn.getcwd()
+    if (nil ~= tmp_3_) then
+      local tmp_3_0 = find(tmp_3_)
+      if (nil ~= tmp_3_0) then
+        local tmp_3_1 = fs["full-path"](tmp_3_0)
+        if (nil ~= tmp_3_1) then
+          or_5_ = fs.basename(tmp_3_1)
         else
           or_5_ = nil
         end
