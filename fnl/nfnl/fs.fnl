@@ -30,9 +30,9 @@
     (.. (file-name-root path) (.. "." ext))))
 
 (fn read-first-line [path]
-  (let [f (io.open path)]
+  (let [f (io.open path "r")]
     (when (and f (not (core.string? f)))
-      (let [line (f:read)]
+      (let [line (f:read "*line")]
         (f:close)
         line))))
 

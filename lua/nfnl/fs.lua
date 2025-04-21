@@ -46,9 +46,9 @@ local function replace_extension(path, ext)
   end
 end
 local function read_first_line(path)
-  local f = io.open(path)
+  local f = io.open(path, "r")
   if (f and not core["string?"](f)) then
-    local line = f:read()
+    local line = f:read("*line")
     f:close()
     return line
   else
