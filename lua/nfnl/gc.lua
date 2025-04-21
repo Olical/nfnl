@@ -5,14 +5,15 @@ local define = _local_1_["define"]
 local core = autoload("nfnl.core")
 local str = autoload("nfnl.string")
 local fs = autoload("nfnl.fs")
+local header = autoload("nfnl.header")
 local M = define("nfnl.gc")
 M["find-orphan-lua-files"] = function(_2_)
   local cfg = _2_["cfg"]
   local root_dir = _2_["root-dir"]
   local fnl_path__3elua_path = cfg({"fnl-path->lua-path"})
   local function _3_(path)
-    local header = fs["read-first-line"](path)
-    return (header and not core["nil?"](header:find("[nfnl]", 1, true)) and not vim.uv.fs_stat(core.last(str.split(path, "%s+"))))
+    local line = fs["read-first-line"](path)
+    return (header["tagged?"](line) and not fs["exists?"](header["source-path"](line)))
   end
   local function _4_(fnl_pattern)
     local lua_pattern = fnl_path__3elua_path(fnl_pattern)

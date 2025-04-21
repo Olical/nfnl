@@ -2,6 +2,7 @@
 (local core (autoload :nfnl.core))
 (local str (autoload :nfnl.string))
 (local fs (autoload :nfnl.fs))
+(local header (autoload :nfnl.header))
 
 (local M (define :nfnl.gc))
 
@@ -16,12 +17,9 @@
          (core.keys)
          (core.filter
            (fn [path]
-             ;; TODO This needs to share code with nfnl.compile.
-             ;; TODO Need to check if the header matches our pattern of [nfnl] file-path
-             (let [header (fs.read-first-line path)]
-               (and header
-                    (not (core.nil? (header:find "[nfnl]" 1 true)))
-                    (not (vim.uv.fs_stat (core.last (str.split path "%s+")))))))))))
+             (let [line (fs.read-first-line path)]
+               (and (header.tagged? line)
+                    (not (fs.exists? (header.source-path line))))))))))
 
 (comment
   (local config (require :nfnl.config))
