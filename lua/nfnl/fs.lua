@@ -69,7 +69,7 @@ M.relglob = function(dir, expr)
 end
 M["glob-dir-newer?"] = function(a_dir, b_dir, expr, b_dir_path_fn)
   local newer_3f = false
-  for _, path in ipairs(relglob(a_dir, expr)) do
+  for _, path in ipairs(M.relglob(a_dir, expr)) do
     if (vim.fn.getftime((a_dir .. path)) > vim.fn.getftime((b_dir .. b_dir_path_fn(path)))) then
       newer_3f = true
     else
@@ -115,5 +115,12 @@ end
 M["glob-matches?"] = function(dir, expr, path)
   local regex = vim.regex(vim.fn.glob2regpat(M["join-path"]({dir, expr})))
   return regex:match_str(path)
+end
+M["exists?"] = function(path)
+  if path then
+    return ("table" == type(vim.uv.fs_stat(path)))
+  else
+    return nil
+  end
 end
 return M

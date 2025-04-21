@@ -52,7 +52,7 @@
 (fn M.glob-dir-newer? [a-dir b-dir expr b-dir-path-fn]
   "Returns true if a-dir has newer changes than b-dir. All paths from a-dir are mapped through b-dir-path-fn M.before comparing to b-dir."
   (var newer? false)
-  (each [_ path (ipairs (relglob a-dir expr))]
+  (each [_ path (ipairs (M.relglob a-dir expr))]
     (when (> (vim.fn.getftime (.. a-dir path))
              (vim.fn.getftime (.. b-dir (b-dir-path-fn path))))
       (set newer? true)))
@@ -101,5 +101,9 @@
   "Return true if path matches the glob expression. The path should be absolute and the glob should be relative to dir."
   (let [regex (vim.regex (vim.fn.glob2regpat (M.join-path [dir expr])))]
     (regex:match_str path)))
+
+(fn M.exists? [path]
+  (when path
+    (= "table" (type (vim.uv.fs_stat path)))))
 
 M
