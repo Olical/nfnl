@@ -9,7 +9,7 @@
     (it "compiles good Fennel to Lua"
         (fn []
           (assert.are.same
-            {:result "-- [nfnl] Compiled from bar.fnl by https://github.com/Olical/nfnl, do not edit.\nreturn (10 + 20)\n"
+            {:result "-- [nfnl] bar.fnl\nreturn (10 + 20)\n"
              :source-path "/tmp/foo/bar.fnl"
              :status "ok"}
             (compile.into-string

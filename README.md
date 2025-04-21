@@ -71,7 +71,7 @@ fine!) will default to these values that should work fine for most people.
  ;; the plugin itself and checking that it's running when you expect it to.
  :verbose false
 
- ;; When false, will not write the protective `-- [nfnl] Compiled from ...` header to the resulting .lua files.
+ ;; When false, will not write the protective `-- [nfnl] ...` header to the resulting .lua files.
  ;; It will also prevent nfnl from checking for this header before overwriting .lua files.
  ;; Intended for users who wish to write shebang comments at the top of their .lua for easier execution.
  :header-comment true

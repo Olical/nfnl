@@ -7,7 +7,7 @@ local config = require("nfnl.config")
 local compile = require("nfnl.compile")
 local function _2_()
   local function _3_()
-    return assert.are.same({result = "-- [nfnl] Compiled from bar.fnl by https://github.com/Olical/nfnl, do not edit.\nreturn (10 + 20)\n", ["source-path"] = "/tmp/foo/bar.fnl", status = "ok"}, compile["into-string"]({["root-dir"] = "/tmp/foo", path = "/tmp/foo/bar.fnl", cfg = config["cfg-fn"]({}, {["root-dir"] = "/tmp/foo"}), ["batch?"] = true, source = "(+ 10 20)"}))
+    return assert.are.same({result = "-- [nfnl] bar.fnl\nreturn (10 + 20)\n", ["source-path"] = "/tmp/foo/bar.fnl", status = "ok"}, compile["into-string"]({["root-dir"] = "/tmp/foo", path = "/tmp/foo/bar.fnl", cfg = config["cfg-fn"]({}, {["root-dir"] = "/tmp/foo"}), ["batch?"] = true, source = "(+ 10 20)"}))
   end
   it("compiles good Fennel to Lua", _3_)
   local function _4_()

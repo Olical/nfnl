@@ -53,7 +53,7 @@
         (print "Lua result:" lua-result)
 
         (assert.are.equal
-          "-- [nfnl] Compiled from fnl/foo.fnl by https://github.com/Olical/nfnl, do not edit.\nreturn print(\"Hello, World!\")\n"
+          "-- [nfnl] fnl/foo.fnl\nreturn print(\"Hello, World!\")\n"
           lua-result)))
 
   (it "can import-macros and use them, the macros aren't compiled"
@@ -76,7 +76,7 @@
         (print "Lua result:" lua-result)
 
         (assert.are.equal
-          "-- [nfnl] Compiled from fnl/foo.fnl by https://github.com/Olical/nfnl, do not edit.\nreturn (10 + 20)\n"
+          "-- [nfnl] fnl/foo.fnl\nreturn (10 + 20)\n"
           lua-result))))
 
 (describe

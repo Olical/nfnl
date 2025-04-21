@@ -115,7 +115,7 @@
                        (notify! (str fnl-path " compilation failed") (::err lua))))
                    (println "[error]" lua)))
                (when (not dry)
-                 (spit lua-path (str "-- [nfnl] Compiled from " fnl-path " by https://github.com/Olical/nfnl, do not edit.\n" lua))))))))
+                 (spit lua-path (str "-- [nfnl] " fnl-path "\n" lua))))))))
      fnl-paths)))
 
 (defn print-fennel-file-paths! [{:keys [root] :or {root "."}}]

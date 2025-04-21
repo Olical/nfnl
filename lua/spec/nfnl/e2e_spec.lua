@@ -46,7 +46,7 @@ local function run_e2e_tests()
     assert.are.equal(1, vim.fn.isdirectory(lua_dir))
     local lua_result = core.slurp(lua_path)
     print("Lua result:", lua_result)
-    return assert.are.equal("-- [nfnl] Compiled from fnl/foo.fnl by https://github.com/Olical/nfnl, do not edit.\nreturn print(\"Hello, World!\")\n", lua_result)
+    return assert.are.equal("-- [nfnl] fnl/foo.fnl\nreturn print(\"Hello, World!\")\n", lua_result)
   end
   it("compiles when there's a trusted .nfnl.fnl configuration file", _3_)
   local function _4_()
@@ -61,7 +61,7 @@ local function run_e2e_tests()
     assert.is_nil(core.slurp(macro_lua_path))
     local lua_result = core.slurp(lua_path)
     print("Lua result:", lua_result)
-    return assert.are.equal("-- [nfnl] Compiled from fnl/foo.fnl by https://github.com/Olical/nfnl, do not edit.\nreturn (10 + 20)\n", lua_result)
+    return assert.are.equal("-- [nfnl] fnl/foo.fnl\nreturn (10 + 20)\n", lua_result)
   end
   return it("can import-macros and use them, the macros aren't compiled", _4_)
 end
