@@ -3,7 +3,6 @@ local _local_1_ = require("nfnl.module")
 local autoload = _local_1_["autoload"]
 local define = _local_1_["define"]
 local core = autoload("nfnl.core")
-local str = autoload("nfnl.string")
 local fs = autoload("nfnl.fs")
 local header = autoload("nfnl.header")
 local M = define("nfnl.gc")
@@ -17,7 +16,7 @@ M["find-orphan-lua-files"] = function(_2_)
   end
   local function _4_(fnl_pattern)
     local lua_pattern = fnl_path__3elua_path(fnl_pattern)
-    return fs.absglob(root_dir, lua_pattern)
+    return fs.relglob(root_dir, lua_pattern)
   end
   return core.filter(_3_, core.keys(core["->set"](core.mapcat(_4_, cfg({"source-file-patterns"})))))
 end

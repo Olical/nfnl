@@ -1,6 +1,5 @@
 (local {: autoload : define} (require :nfnl.module))
 (local core (autoload :nfnl.core))
-(local str (autoload :nfnl.string))
 (local fs (autoload :nfnl.fs))
 (local header (autoload :nfnl.header))
 
@@ -12,7 +11,7 @@
          (core.mapcat
            (fn [fnl-pattern]
              (let [lua-pattern (fnl-path->lua-path fnl-pattern)]
-               (fs.absglob root-dir lua-pattern))))
+               (fs.relglob root-dir lua-pattern))))
          (core.->set)
          (core.keys)
          (core.filter
