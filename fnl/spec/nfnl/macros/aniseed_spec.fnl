@@ -63,4 +63,4 @@
     (it "defines public once values"
       (fn []
         (assert.equals "this is public once val" public-once-val)
-        (assert.equals "this is public once val" (. mod :public-once-val)))))
+        (assert.equals "this is public once val" (. mod :public-once-val))))))
