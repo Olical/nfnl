@@ -4,21 +4,16 @@
 (local fennel (autoload :nfnl.fennel))
 (local notify (autoload :nfnl.notify))
 (local config (autoload :nfnl.config))
+(local header (autoload :nfnl.header))
 
 (local mod {})
-
-(local header-marker "[nfnl]")
-
-(fn with-header [file src]
-  (.. "-- " header-marker " " file "\n" src))
 
 (fn safe-target? [path]
   "Reads the given file and checks if it contains our header marker on the
   first line. Returns true if it contains the marker, we're allowed to
   overwrite this file."
-  (let [header (fs.read-first-line path)]
-    (or (core.nil? header)
-        (not (core.nil? (header:find header-marker 1 true))))))
+  (let [line (fs.read-first-line path)]
+    (or (not line) (header.tagged? line))))
 
 (fn macro-source? [source]
   (string.find source "%s*;+%s*%[nfnl%-macro%]"))
@@ -74,7 +69,7 @@
             {:status :ok
              :source-path path
              :result (.. (if (cfg [:header-comment])
-                           (with-header rel-file-name res)
+                           (header.with-header rel-file-name res)
                            res)
                          "\n")})
           (do
