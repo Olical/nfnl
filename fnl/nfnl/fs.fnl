@@ -84,7 +84,7 @@
 
 (fn M.replace-dirs [path from to]
   "Replaces directories in `path` that match `from` with `to`."
-  (->> (split-path path)
+  (->> (M.split-path path)
        (core.map
          (fn [segment]
            (if (= from segment)

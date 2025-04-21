@@ -107,7 +107,7 @@ M["replace-dirs"] = function(path, from, to)
       return segment
     end
   end
-  return M["join-path"](core.map(_13_, __fnl_global__split_2dpath(path)))
+  return M["join-path"](core.map(_13_, M["split-path"](path)))
 end
 M["fnl-path->lua-path"] = function(fnl_path)
   return M["replace-dirs"](M["replace-extension"](fnl_path, "lua"), "fnl", "lua")
