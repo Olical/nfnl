@@ -77,7 +77,19 @@
             {:desc "Executes (nfnl.api/compile-all-files) which will, you guessed it, compile all of your files."
              :force true
              :complete "file"
-             :nargs "?"}))))))
+             :nargs "?"})
+
+          (vim.api.nvim_buf_create_user_command
+            ev.buf :NfnlFindOrphans
+            #(api.find-orphans)
+            {:desc "Executes (nfnl.api/find-orphans) which will find and display all Lua files that no longer have a matching Fennel file."
+             :force true})
+
+          (vim.api.nvim_buf_create_user_command
+            ev.buf :NfnlDeleteOrphans
+            #(api.delete-orphans)
+            {:desc "Executes (nfnl.api/delete-orphans) deletes any orphan Lua files that no longer have their original Fennel file they were compiled from."
+             :force true}))))))
 
 {: fennel-filetype-callback
  : supported-path?}

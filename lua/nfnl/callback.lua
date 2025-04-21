@@ -53,7 +53,15 @@ local function fennel_filetype_callback(ev)
       local function _10_(_241)
         return api["compile-all-files"](core.first(core.get(_241, "fargs")))
       end
-      return vim.api.nvim_buf_create_user_command(ev.buf, "NfnlCompileAllFiles", _10_, {desc = "Executes (nfnl.api/compile-all-files) which will, you guessed it, compile all of your files.", force = true, complete = "file", nargs = "?"})
+      vim.api.nvim_buf_create_user_command(ev.buf, "NfnlCompileAllFiles", _10_, {desc = "Executes (nfnl.api/compile-all-files) which will, you guessed it, compile all of your files.", force = true, complete = "file", nargs = "?"})
+      local function _11_()
+        return api["find-orphans"]()
+      end
+      vim.api.nvim_buf_create_user_command(ev.buf, "NfnlFindOrphans", _11_, {desc = "Executes (nfnl.api/find-orphans) which will find and display all Lua files that no longer have a matching Fennel file.", force = true})
+      local function _12_()
+        return api["delete-orphans"]()
+      end
+      return vim.api.nvim_buf_create_user_command(ev.buf, "NfnlDeleteOrphans", _12_, {desc = "Executes (nfnl.api/delete-orphans) deletes any orphan Lua files that no longer have their original Fennel file they were compiled from.", force = true})
     else
       return nil
     end

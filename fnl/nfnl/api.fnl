@@ -1,11 +1,55 @@
 (local {: autoload : define} (require :nfnl.module))
 (local core (autoload :nfnl.core))
+(local str (autoload :nfnl.string))
 (local compile (autoload :nfnl.compile))
 (local config (autoload :nfnl.config))
 (local notify (autoload :nfnl.notify))
 (local fs (autoload :nfnl.fs))
+(local gc (autoload :nfnl.gc))
 
 (local M (define :nfnl.api))
+
+(fn M.find-orphans []
+  "Find orphan Lua files that were compiled from a Fennel file that no longer exists. Display them with notify."
+  (let [dir (vim.fn.getcwd)
+        {: config : root-dir : cfg} (config.find-and-load dir)]
+    (if config
+      (let [orphan-files (gc.find-orphan-lua-files {: root-dir : cfg})]
+        (if (core.empty? orphan-files)
+            (notify.info "No orphan files detected.")
+            (notify.warn
+              "Orphan files detected, delete them with :NfnlDeleteOrphans.\n"
+              (->> orphan-files
+                   (core.map
+                     (fn [f]
+                       (.. " - " f)))
+                   (str.join "\n"))))
+        orphan-files)
+      (do
+        (notify.warn "No .nfnl.fnl configuration found.")
+        []))))
+
+(fn M.delete-orphans []
+  "Delete orphan Lua files that were compiled from a Fennel file that no longer exists."
+  (let [dir (vim.fn.getcwd)
+        {: config : root-dir : cfg} (config.find-and-load dir)]
+    (if config
+      (let [orphan-files (gc.find-orphan-lua-files {: root-dir : cfg})]
+        (if (core.empty? orphan-files)
+          (notify.info "No orphan files detected.")
+          (do
+            (notify.info
+              "Deleting orphan files:\n"
+              (->> orphan-files
+                   (core.map
+                     (fn [f]
+                       (.. " - " f)))
+                   (str.join "\n")))
+            (core.map os.remove orphan-files)))
+        orphan-files)
+      (do
+        (notify.warn "No .nfnl.fnl configuration found.")
+        []))))
 
 (fn M.compile-file [{: path : dir}]
   "Compiles a file into the matching Lua file. Returns the compilation result. Takes an optional `dir` key that changes the working directory.
