@@ -58,7 +58,8 @@
   The base value defaults to {}, an empty table."
 
   (let [loaded (. package.loaded mod-name)]
-    (if (= (type loaded) (type base))
+    (if (and (= (type loaded) (type base))
+             (not= nil loaded))
       loaded
       (or base {}))))
 
