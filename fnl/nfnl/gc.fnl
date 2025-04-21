@@ -3,4 +3,7 @@
 
 (local M (define :nfnl.gc))
 
+(fn M.find-orphan-lua-files []
+  (fs.relglob "." "**/*.lua"))
+
 M
