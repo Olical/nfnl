@@ -1,4 +1,4 @@
--- [nfnl] Compiled from fnl/nfnl/module.fnl by https://github.com/Olical/nfnl, do not edit.
+-- [nfnl] fnl/nfnl/module.fnl
 local module_key = "nfnl/autoload-module"
 local enabled_key = "nfnl/autoload-enabled?"
 local M = {}

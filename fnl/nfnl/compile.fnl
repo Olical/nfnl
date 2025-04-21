@@ -10,7 +10,7 @@
 (local header-marker "[nfnl]")
 
 (fn with-header [file src]
-  (.. "-- " header-marker " Compiled from " file " by https://github.com/Olical/nfnl, do not edit.\n" src))
+  (.. "-- " header-marker " " file "\n" src))
 
 (fn safe-target? [path]
   "Reads the given file and checks if it contains our header marker on the
