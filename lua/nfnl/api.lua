@@ -1,13 +1,14 @@
 -- [nfnl] fnl/nfnl/api.fnl
 local _local_1_ = require("nfnl.module")
 local autoload = _local_1_["autoload"]
+local define = _local_1_["define"]
 local core = autoload("nfnl.core")
 local compile = autoload("nfnl.compile")
 local config = autoload("nfnl.config")
 local notify = autoload("nfnl.notify")
 local fs = autoload("nfnl.fs")
-local mod = {}
-mod["compile-file"] = function(_2_)
+local M = define("nfnl.api")
+M["compile-file"] = function(_2_)
   local path = _2_["path"]
   local dir = _2_["dir"]
   local dir0 = (dir or vim.fn.getcwd())
@@ -25,7 +26,7 @@ mod["compile-file"] = function(_2_)
     return {}
   end
 end
-mod["compile-all-files"] = function(dir)
+M["compile-all-files"] = function(dir)
   local dir0 = (dir or vim.fn.getcwd())
   local _let_5_ = config["find-and-load"](dir0)
   local config0 = _let_5_["config"]
@@ -40,7 +41,7 @@ mod["compile-all-files"] = function(dir)
     return {}
   end
 end
-mod.dofile = function(file)
+M.dofile = function(file)
   return dofile(fs["fnl-path->lua-path"](vim.fn.expand((file or "%"))))
 end
-return mod
+return M
