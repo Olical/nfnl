@@ -1,5 +1,6 @@
 (local {: autoload : define} (require :nfnl.module))
 (local core (autoload :nfnl.core))
+(local str (autoload :nfnl.string))
 
 (local M (define :nfnl.header))
 
@@ -11,9 +12,10 @@
 
 (fn M.tagged? [s]
   "Is the line an nfnl tagged header line?"
-  (core.string? (s:find tag 1 true)))
+  (core.number? (s:find tag 1 true)))
 
-(fn M.source-path []
-  "")
+(fn M.source-path [s]
+  (when (M.tagged? s)
+    (core.last (str.split s "%s+"))))
 
 M
