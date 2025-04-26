@@ -1,4 +1,4 @@
--- [nfnl] Compiled from fnl/spec/nfnl/macros/aniseed_spec.fnl by https://github.com/Olical/nfnl, do not edit.
+-- [nfnl] fnl/spec/nfnl/macros/aniseed_spec.fnl
 local _local_1_ = require("plenary.busted")
 local describe = _local_1_["describe"]
 local it = _local_1_["it"]
@@ -78,4 +78,12 @@ local function _10_()
   end
   return it("defines private once values", _11_)
 end
-return describe("defonce-", _10_)
+describe("defonce-", _10_)
+local function _12_()
+  local function _13_()
+    assert.equals("this is public once val", public_once_val0)
+    return assert.equals("this is public once val", mod["public-once-val"])
+  end
+  return it("defines public once values", _13_)
+end
+return describe("defonce", _12_)

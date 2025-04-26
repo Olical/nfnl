@@ -102,8 +102,10 @@
   (let [regex (vim.regex (vim.fn.glob2regpat (M.join-path [dir expr])))]
     (regex:match_str path)))
 
+(local uv (or vim.uv vim.loop))
+
 (fn M.exists? [path]
   (when path
-    (= "table" (type (vim.uv.fs_stat path)))))
+    (= "table" (type (uv.fs_stat path)))))
 
 M

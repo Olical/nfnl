@@ -65,6 +65,8 @@
     {:verbose false
      :header-comment true
      :compiler-options {:error-pinpoint false}
+     :orphan-detection {:auto? true
+                        :ignore-patterns []}
 
      :root-dir root-dir
 
