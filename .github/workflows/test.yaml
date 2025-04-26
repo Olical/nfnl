@@ -1,13 +1,13 @@
 name: Test
 
-on: [ push ]
+on: [push]
 
 jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        neovim-version: [ "v0.9.0", "v0.9.1", "stable", "nightly" ]
+        neovim-version: ["v0.9.5", "v0.10.4", "stable", "nightly"]
 
     steps:
       - uses: actions/checkout@v3
