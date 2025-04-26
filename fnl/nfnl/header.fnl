@@ -16,6 +16,9 @@
 
 (fn M.source-path [s]
   (when (M.tagged? s)
-    (core.last (str.split s "%s+"))))
+    (core.some
+      (fn [part]
+        (and (str.ends-with? part ".fnl") part))
+      (str.split s "%s+"))))
 
 M

@@ -14,7 +14,10 @@ M["tagged?"] = function(s)
 end
 M["source-path"] = function(s)
   if M["tagged?"](s) then
-    return core.last(str.split(s, "%s+"))
+    local function _2_(part)
+      return (str["ends-with?"](part, ".fnl") and part)
+    end
+    return core.some(_2_, str.split(s, "%s+"))
   else
     return nil
   end
