@@ -116,9 +116,10 @@ M["glob-matches?"] = function(dir, expr, path)
   local regex = vim.regex(vim.fn.glob2regpat(M["join-path"]({dir, expr})))
   return regex:match_str(path)
 end
+local uv = (vim.uv or vim.loop)
 M["exists?"] = function(path)
   if path then
-    return ("table" == type(vim.uv.fs_stat(path)))
+    return ("table" == type(uv.fs_stat(path)))
   else
     return nil
   end
