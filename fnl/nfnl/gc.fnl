@@ -6,7 +6,8 @@
 (local M (define :nfnl.gc))
 
 (fn M.find-orphan-lua-files [{: cfg : root-dir}]
-  (let [fnl-path->lua-path (cfg [:fnl-path->lua-path])]
+  (let [fnl-path->lua-path (cfg [:fnl-path->lua-path])
+        ignore-patterns (cfg [:orphan-detection :ignore-patterns])]
     (->> (cfg [:source-file-patterns])
          (core.mapcat
            (fn [fnl-pattern]
@@ -17,7 +18,11 @@
          (core.filter
            (fn [path]
              (let [line (fs.read-first-line path)]
-               (and (header.tagged? line)
+               (and (not (core.some
+                           (fn [pat]
+                             (path:find pat))
+                           ignore-patterns))
+                    (header.tagged? line)
                     (not (fs.exists? (header.source-path line))))))))))
 
 (comment
