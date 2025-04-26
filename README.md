@@ -76,6 +76,10 @@ fine!) will default to these values that should work fine for most people.
  ;; Intended for users who wish to write shebang comments at the top of their .lua for easier execution.
  :header-comment true
 
+ ;; Automatically invoke :NfnlFindOrphans whenever you write to a .fnl file. This acts as a passive garbage collection check and will warn you about dangling .lua files left over from .fnl deletions or renames.
+ ;; If an orphan is found, you can use :NfnlDeleteOrphans to delete all of the files listed automatically. This command will NOT prompt you, so make sure you check the list first!
+ :find-orphan-lua-files true
+
  ;; Passed to fennel.compileString when your code is compiled.
  ;; See https://fennel-lang.org/api for more information.
  :compiler-options {;; Disables ansi escape sequences in compiler output.

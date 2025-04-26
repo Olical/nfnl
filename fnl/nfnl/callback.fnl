@@ -22,6 +22,10 @@
        : cfg
        :path (fs.full-path (. ev :file))
        :source (nvim.get-buf-content-as-string (. ev :buf))})
+
+    (when (cfg [:find-orphan-lua-files])
+      (api.find-orphans {:passive? true}))
+
     nil))
 
 (fn supported-path? [file-path]

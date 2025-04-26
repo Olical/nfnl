@@ -64,6 +64,7 @@
 
     {:verbose false
      :header-comment true
+     :find-orphan-lua-files true
      :compiler-options {:error-pinpoint false}
 
      :root-dir root-dir
