@@ -16,6 +16,8 @@ jobs:
 
       - name: Mise
         uses: jdx/mise-action@v2
+        with:
+          version: 2025.4.0
 
       - name: Cache
         uses: actions/cache@v4
