@@ -10,14 +10,18 @@ M["with-header"] = function(file, src)
   return ("-- " .. tag .. " " .. file .. "\n" .. src)
 end
 M["tagged?"] = function(s)
-  return core["number?"](s:find(tag, 1, true))
+  if s then
+    return core["number?"](s:find(tag, 1, true))
+  else
+    return nil
+  end
 end
 M["source-path"] = function(s)
   if M["tagged?"](s) then
-    local function _2_(part)
+    local function _3_(part)
       return (str["ends-with?"](part, ".fnl") and part)
     end
-    return core.some(_2_, str.split(s, "%s+"))
+    return core.some(_3_, str.split(s, "%s+"))
   else
     return nil
   end

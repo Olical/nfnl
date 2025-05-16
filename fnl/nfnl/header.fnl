@@ -12,7 +12,8 @@
 
 (fn M.tagged? [s]
   "Is the line an nfnl tagged header line?"
-  (core.number? (s:find tag 1 true)))
+  (when s
+    (core.number? (s:find tag 1 true))))
 
 (fn M.source-path [s]
   (when (M.tagged? s)
