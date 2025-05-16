@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: [ubuntu-latest, macos-latest]
     strategy:
       matrix:
         neovim-version: ["v0.9.5", "v0.10.4", "stable", "nightly"]
