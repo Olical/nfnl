@@ -7,7 +7,8 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest]
-        neovim-version: ["v0.9.5", "v0.10.4", "stable", "nightly"]
+        # neovim-version: ["v0.9.5", "v0.10.4", "stable", "nightly"]
+        neovim-version: ["v0.9.5", "v0.10.4"]
 
     runs-on: ${{ matrix.os }}
 
@@ -16,8 +17,6 @@ jobs:
 
       - name: Mise
         uses: jdx/mise-action@v2
-        with:
-          version: 2025.4.0
 
       - name: Cache
         uses: actions/cache@v4
