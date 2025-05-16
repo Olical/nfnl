@@ -4,19 +4,29 @@ on: [push]
 
 jobs:
   test:
-    runs-on: [ubuntu-latest, macos-latest]
     strategy:
       matrix:
+        os: [ubuntu-latest, macOS-latest]
         neovim-version: ["v0.9.5", "v0.10.4", "stable", "nightly"]
 
+    runs-on: ${{ matrix.os }}
+
     steps:
-      - uses: actions/checkout@v3
-      - uses: MunifTanjim/setup-neovim-action@v1
+      - uses: actions/checkout@v4
+
+      - name: Mise
+        uses: jdx/mise-action@v2
+
+      - name: Cache
+        uses: actions/cache@v4
         with:
-          tag: ${{ matrix.neovim-version }}
-      - name: Install Neovim plugins
+          path: |
+            .test-config/nvim/pack
+          key: nfnl-${{ hashFiles('script/setup-test-deps') }}
+          restore-keys: nfnl-
+
+      - name: Test
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          ./script/setup-test-deps
-      - name: Test with plenary / busted
-        run: |
-          ./script/test
+          mise run -t neovim@${{ matrix.neovim-version }} test
