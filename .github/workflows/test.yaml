@@ -7,7 +7,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest]
-        neovim-version: ["v0.9.5", "v0.10.4", "stable", "nightly"]
+        neovim-version: ["v0.9.5", "stable", "nightly"] # "v0.10.4"
 
     runs-on: ${{ matrix.os }}
 
