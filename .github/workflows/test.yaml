@@ -7,7 +7,9 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest]
-        neovim-version: ["v0.9.5", "stable", "nightly"] # "v0.10.4"
+
+        # TODO Reinstate "v0.10.4" once it works through mise again.
+        neovim-version: ["v0.9.5", "stable", "nightly"]
 
     runs-on: ${{ matrix.os }}
 
