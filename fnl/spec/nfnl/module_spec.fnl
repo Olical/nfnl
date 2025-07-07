@@ -17,6 +17,9 @@
   (fn []
     (it "returns the loaded module if it's the same type as the base"
         (fn []
+          (local m1 (define :nfnl.module))
+          (assert.equals define m1.define)
+
           (local m2 (define :nfnl.module {}))
           (assert.equals define m2.define)
 

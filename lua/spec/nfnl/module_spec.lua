@@ -17,6 +17,8 @@ end
 describe("autoload", _3_)
 local function _5_()
   local function _6_()
+    local m1 = define("nfnl.module")
+    assert.equals(define, m1.define)
     local m2 = define("nfnl.module", {})
     assert.equals(define, m2.define)
     local m3 = define("nfnl.module.nope", {nope = true})
