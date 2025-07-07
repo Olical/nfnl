@@ -5,4 +5,6 @@ PACK_DIR=./.test-config/nvim/pack/nfnl-tests/start
 mkdir -p "$PACK_DIR"
 git clone https://github.com/nvim-lua/plenary.nvim.git "$PACK_DIR/plenary.nvim"
 git clone https://github.com/bakpakin/fennel.vim.git "$PACK_DIR/fennel.vim"
-ln -sf "${GITHUB_WORKSPACE:-$(pwd)}" "$PACK_DIR/nfnl"
+
+rm -f "$PACK_DIR/nfnl"
+ln -s "${GITHUB_WORKSPACE:-$(pwd)}" "$PACK_DIR/nfnl"
