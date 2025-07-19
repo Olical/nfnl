@@ -13,7 +13,7 @@ local function fennel_buf_write_post_callback_fn(root_dir, cfg)
   local function _2_(ev)
     compile["into-file"]({["root-dir"] = root_dir, cfg = cfg, path = fs["full-path"](ev.file), source = nvim["get-buf-content-as-string"](ev.buf)})
     if cfg({"orphan-detection", "auto?"}) then
-      api["find-orphans"]({["passive?"] = true})
+      api["find-orphans"]({dir = root_dir, ["passive?"] = true})
     else
     end
     return nil
@@ -58,14 +58,14 @@ local function fennel_filetype_callback(ev)
         return api["compile-all-files"](core.first(core.get(_241, "fargs")))
       end
       vim.api.nvim_buf_create_user_command(ev.buf, "NfnlCompileAllFiles", _11_, {desc = "Executes (nfnl.api/compile-all-files) which will, you guessed it, compile all of your files.", force = true, complete = "file", nargs = "?"})
-      local function _12_()
-        return api["find-orphans"]()
+      local function _12_(_241)
+        return api["find-orphans"]({dir = core.first(core.get(_241, "fargs"))})
       end
-      vim.api.nvim_buf_create_user_command(ev.buf, "NfnlFindOrphans", _12_, {desc = "Executes (nfnl.api/find-orphans) which will find and display all Lua files that no longer have a matching Fennel file.", force = true})
-      local function _13_()
-        return api["delete-orphans"]()
+      vim.api.nvim_buf_create_user_command(ev.buf, "NfnlFindOrphans", _12_, {desc = "Executes (nfnl.api/find-orphans) which will find and display all Lua files that no longer have a matching Fennel file.", force = true, complete = "file", nargs = "?"})
+      local function _13_(_241)
+        return api["delete-orphans"]({dir = core.first(core.get(_241, "fargs"))})
       end
-      return vim.api.nvim_buf_create_user_command(ev.buf, "NfnlDeleteOrphans", _13_, {desc = "Executes (nfnl.api/delete-orphans) deletes any orphan Lua files that no longer have their original Fennel file they were compiled from.", force = true})
+      return vim.api.nvim_buf_create_user_command(ev.buf, "NfnlDeleteOrphans", _13_, {desc = "Executes (nfnl.api/delete-orphans) deletes any orphan Lua files that no longer have their original Fennel file they were compiled from.", force = true, complete = "file", nargs = "?"})
     else
       return nil
     end

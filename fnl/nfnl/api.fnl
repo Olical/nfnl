@@ -9,14 +9,14 @@
 
 (local M (define :nfnl.api))
 
-(fn M.find-orphans [opts]
+(fn M.find-orphans [{: passive? : dir}]
   "Find orphan Lua files that were compiled from a Fennel file that no longer exists. Display them with notify. Set opts.passive? to true if you don't want it to tell you that there are no orphans."
-  (let [dir (vim.fn.getcwd)
+  (let [dir (or dir (vim.fn.getcwd))
         {: config : root-dir : cfg} (config.find-and-load dir)]
     (if config
       (let [orphan-files (gc.find-orphan-lua-files {: root-dir : cfg})]
         (if (core.empty? orphan-files)
-            (when (not (core.get opts :passive?))
+            (when (not passive?)
               (notify.info "No orphan files detected."))
             (notify.warn
               "Orphan files detected, delete them with :NfnlDeleteOrphans.\n"
@@ -30,9 +30,9 @@
         (notify.warn "No .nfnl.fnl configuration found.")
         []))))
 
-(fn M.delete-orphans []
+(fn M.delete-orphans [{: dir}]
   "Delete orphan Lua files that were compiled from a Fennel file that no longer exists."
-  (let [dir (vim.fn.getcwd)
+  (let [dir (or dir (vim.fn.getcwd))
         {: config : root-dir : cfg} (config.find-and-load dir)]
     (if config
       (let [orphan-files (gc.find-orphan-lua-files {: root-dir : cfg})]

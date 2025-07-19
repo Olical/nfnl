@@ -24,7 +24,9 @@
        :source (nvim.get-buf-content-as-string (. ev :buf))})
 
     (when (cfg [:orphan-detection :auto?])
-      (api.find-orphans {:passive? true}))
+      (api.find-orphans
+        {:dir root-dir
+         :passive? true}))
 
     nil))
 
@@ -85,15 +87,19 @@
 
           (vim.api.nvim_buf_create_user_command
             ev.buf :NfnlFindOrphans
-            #(api.find-orphans)
+            #(api.find-orphans {:dir (core.first (core.get $ :fargs))})
             {:desc "Executes (nfnl.api/find-orphans) which will find and display all Lua files that no longer have a matching Fennel file."
-             :force true})
+             :force true
+             :complete "file"
+             :nargs "?"})
 
           (vim.api.nvim_buf_create_user_command
             ev.buf :NfnlDeleteOrphans
-            #(api.delete-orphans)
+            #(api.delete-orphans {:dir (core.first (core.get $ :fargs))})
             {:desc "Executes (nfnl.api/delete-orphans) deletes any orphan Lua files that no longer have their original Fennel file they were compiled from."
-             :force true}))))))
+             :force true
+             :complete "file"
+             :nargs "?"}))))))
 
 {: fennel-filetype-callback
  : supported-path?}
