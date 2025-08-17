@@ -3,7 +3,7 @@
 Enhance your [Neovim][neovim] experience through [Fennel][fennel] with zero
 overhead. Write Fennel, run Lua, nfnl will not load unless you're actively
 modifying your Neovim configuration or plugin source code
-([nfnl-plugin-example][nfnl-plugin-example]).
+([nfnl-plugin-example][nfnl-plugin-example], [my Neovim configuration][config]).
 
 - Only loads when working in directories containing a `.nfnl.fnl` configuration
   file.
@@ -540,3 +540,4 @@ experience.
 [lua-in-git-justifications]: https://github.com/Olical/nfnl/issues/5#issuecomment-1655447175
 [api-module-doc]: https://github.com/Olical/nfnl/blob/main/docs/api/nfnl/api.md
 [config-default-doc]: https://github.com/Olical/nfnl/blob/main/docs/api/nfnl/config.md#default
+[config]: https://github.com/Olical/dotfiles/blob/7bd84056d3b55dd1abcaf3e28ee83413d2edd164/stowed/.config/nvim/init.fnl
