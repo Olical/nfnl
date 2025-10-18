@@ -1,7 +1,7 @@
 -- [nfnl] fnl/spec/nfnl/macros_spec.fnl
 local _local_1_ = require("plenary.busted")
-local describe = _local_1_["describe"]
-local it = _local_1_["it"]
+local describe = _local_1_.describe
+local it = _local_1_.it
 local assert = require("luassert.assert")
 local function _2_()
   local function _3_()
@@ -26,7 +26,7 @@ local function _2_()
     local function _9_()
       local value_5_auto = {a = 1}
       local _let_8_ = (value_5_auto or {})
-      local a = _let_8_["a"]
+      local a = _let_8_.a
       if value_5_auto then
         return "yes"
       else
@@ -37,7 +37,7 @@ local function _2_()
     local function _12_()
       local value_5_auto = nil
       local _let_11_ = (value_5_auto or {})
-      local a = _let_11_["a"]
+      local a = _let_11_.a
       if value_5_auto then
         return "yes"
       else
@@ -70,7 +70,7 @@ local function _14_()
     end
     assert.equals(nil, _18_())
     local function _21_()
-      local ok_3f, val = nil, nil
+      local ok_3f, val
       local function _20_()
         return "yarp"
       end
@@ -83,7 +83,7 @@ local function _14_()
     end
     assert.equals("yarp", _21_())
     local function _25_()
-      local bind_23_, val = nil, nil
+      local bind_23_, val
       local function _24_()
         return "yarp"
       end
@@ -96,7 +96,7 @@ local function _14_()
     end
     assert.equals("yarp", _25_())
     local function _28_()
-      local ok_3f, val = nil, nil
+      local ok_3f, val
       local function _27_()
         return error("narp")
       end
