@@ -29,15 +29,15 @@
       res
 
       {:__call
-       (fn [t ...]
+       (fn [_t ...]
          ((ensure) ...))
 
        :__index
-       (fn [t k]
+       (fn [_t k]
          (. (ensure) k))
 
        :__newindex
-       (fn [t k v]
+       (fn [_t k v]
          (tset (ensure) k v))})))
 
 (fn M.define [mod-name base]
