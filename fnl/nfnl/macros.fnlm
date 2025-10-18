@@ -1,5 +1,3 @@
-;; [nfnl-macro]
-
 (fn time [...]
   `(let [start# (vim.loop.hrtime)
          result# (do ,...)
