@@ -1,6 +1,6 @@
 -- [nfnl] fnl/nfnl/init.fnl
 local _local_1_ = require("nfnl.module")
-local autoload = _local_1_["autoload"]
+local autoload = _local_1_.autoload
 local callback = autoload("nfnl.callback")
 local minimum_neovim_version = "0.9.0"
 if vim then

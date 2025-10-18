@@ -1,6 +1,6 @@
 -- [nfnl] fnl/nfnl/config.fnl
 local _local_1_ = require("nfnl.module")
-local autoload = _local_1_["autoload"]
+local autoload = _local_1_.autoload
 local core = autoload("nfnl.core")
 local fs = autoload("nfnl.fs")
 local str = autoload("nfnl.string")
@@ -12,7 +12,7 @@ local function find(dir)
 end
 local function path_dirs(_2_)
   local rtp_patterns = _2_["rtp-patterns"]
-  local runtimepath = _2_["runtimepath"]
+  local runtimepath = _2_.runtimepath
   local base_dirs = _2_["base-dirs"]
   local function _3_(path)
     local function _4_(_241)
@@ -70,7 +70,7 @@ local function find_and_load(dir)
     if config_file_path then
       local root_dir = fs.basename(config_file_path)
       local config_source = vim.secure.read(config_file_path)
-      local ok, config = nil, nil
+      local ok, config
       if core["nil?"](config_source) then
         ok, config = false, (config_file_path .. " is not trusted, refusing to compile.")
       elseif (str["blank?"](config_source) or ("{}" == str.trim(config_source))) then

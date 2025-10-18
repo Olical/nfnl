@@ -1,7 +1,7 @@
 -- [nfnl] fnl/spec/nfnl/config_spec.fnl
 local _local_1_ = require("plenary.busted")
-local describe = _local_1_["describe"]
-local it = _local_1_["it"]
+local describe = _local_1_.describe
+local it = _local_1_.it
 local assert = require("luassert.assert")
 local config = require("nfnl.config")
 local fs = require("nfnl.fs")
@@ -37,9 +37,9 @@ describe("config-file-path?", _6_)
 local function _8_()
   local function _9_()
     local _let_10_ = config["find-and-load"](".")
-    local cfg = _let_10_["cfg"]
+    local cfg = _let_10_.cfg
     local root_dir = _let_10_["root-dir"]
-    local config0 = _let_10_["config"]
+    local config0 = _let_10_.config
     assert.are.same({verbose = true}, config0)
     assert.equals(vim.fn.getcwd(), root_dir)
     return assert.equals("function", type(cfg))

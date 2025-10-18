@@ -1,7 +1,7 @@
 -- [nfnl] fnl/spec/nfnl/repl_spec.fnl
 local _local_1_ = require("plenary.busted")
-local describe = _local_1_["describe"]
-local it = _local_1_["it"]
+local describe = _local_1_.describe
+local it = _local_1_.it
 local core = require("nfnl.core")
 local assert = require("luassert.assert")
 local repl = require("nfnl.repl")

@@ -1,6 +1,6 @@
 -- [nfnl] fnl/nfnl/string.fnl
 local _local_1_ = require("nfnl.module")
-local autoload = _local_1_["autoload"]
+local autoload = _local_1_.autoload
 local core = autoload("nfnl.core")
 local function join(...)
   local args = {...}

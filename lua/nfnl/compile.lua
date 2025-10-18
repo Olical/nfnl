@@ -1,6 +1,6 @@
 -- [nfnl] fnl/nfnl/compile.fnl
 local _local_1_ = require("nfnl.module")
-local autoload = _local_1_["autoload"]
+local autoload = _local_1_.autoload
 local core = autoload("nfnl.core")
 local fs = autoload("nfnl.fs")
 local fennel = autoload("nfnl.fennel")
@@ -17,7 +17,7 @@ local function macro_source_3f(source)
 end
 local function valid_source_files(glob_fn, _2_)
   local root_dir = _2_["root-dir"]
-  local cfg = _2_["cfg"]
+  local cfg = _2_.cfg
   local function _3_(_241)
     return glob_fn(root_dir, _241)
   end
@@ -25,7 +25,7 @@ local function valid_source_files(glob_fn, _2_)
 end
 local function valid_source_file_3f(path, _4_)
   local root_dir = _4_["root-dir"]
-  local cfg = _4_["cfg"]
+  local cfg = _4_.cfg
   local function _5_(_241)
     return fs["glob-matches?"](root_dir, _241, path)
   end
@@ -33,9 +33,9 @@ local function valid_source_file_3f(path, _4_)
 end
 mod["into-string"] = function(_6_)
   local root_dir = _6_["root-dir"]
-  local path = _6_["path"]
-  local cfg = _6_["cfg"]
-  local source = _6_["source"]
+  local path = _6_.path
+  local cfg = _6_.cfg
+  local source = _6_.source
   local batch_3f = _6_["batch?"]
   local opts = _6_
   local macro_3f = macro_source_3f(source)
@@ -50,7 +50,7 @@ mod["into-string"] = function(_6_)
     return {status = "path-is-not-in-source-file-patterns", ["source-path"] = path}
   else
     local rel_file_name = path:sub((2 + root_dir:len()))
-    local ok, res = nil, nil
+    local ok, res
     do
       fennel.path = cfg({"fennel-path"})
       fennel["macro-path"] = cfg({"fennel-macro-path"})
@@ -79,17 +79,17 @@ mod["into-string"] = function(_6_)
 end
 mod["into-file"] = function(_13_)
   local _root_dir = _13_["_root-dir"]
-  local cfg = _13_["cfg"]
-  local _source = _13_["_source"]
-  local path = _13_["path"]
+  local cfg = _13_.cfg
+  local _source = _13_._source
+  local path = _13_.path
   local batch_3f = _13_["batch?"]
   local opts = _13_
   local fnl_path__3elua_path = cfg({"fnl-path->lua-path"})
   local destination_path = fnl_path__3elua_path(path)
   local _let_14_ = mod["into-string"](opts)
-  local status = _let_14_["status"]
+  local status = _let_14_.status
   local source_path = _let_14_["source-path"]
-  local result = _let_14_["result"]
+  local result = _let_14_.result
   local res = _let_14_
   if ("ok" ~= status) then
     return res
@@ -107,7 +107,7 @@ mod["into-file"] = function(_13_)
 end
 mod["all-files"] = function(_17_)
   local root_dir = _17_["root-dir"]
-  local cfg = _17_["cfg"]
+  local cfg = _17_.cfg
   local opts = _17_
   local function _18_(path)
     return mod["into-file"]({["root-dir"] = root_dir, path = path, cfg = cfg, source = core.slurp(path), ["batch?"] = true})

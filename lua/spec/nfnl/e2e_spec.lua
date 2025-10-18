@@ -1,9 +1,9 @@
 -- [nfnl] fnl/spec/nfnl/e2e_spec.fnl
 local _local_1_ = require("plenary.busted")
-local describe = _local_1_["describe"]
-local it = _local_1_["it"]
-local before_each = _local_1_["before_each"]
-local after_each = _local_1_["after_each"]
+local describe = _local_1_.describe
+local it = _local_1_.it
+local before_each = _local_1_.before_each
+local after_each = _local_1_.after_each
 local assert = require("luassert.assert")
 local core = require("nfnl.core")
 local fs = require("nfnl.fs")

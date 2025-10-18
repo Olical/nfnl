@@ -1,6 +1,6 @@
 -- [nfnl] fnl/nfnl/callback.fnl
 local _local_1_ = require("nfnl.module")
-local autoload = _local_1_["autoload"]
+local autoload = _local_1_.autoload
 local core = autoload("nfnl.core")
 local str = autoload("nfnl.string")
 local fs = autoload("nfnl.fs")
@@ -34,9 +34,9 @@ local function fennel_filetype_callback(ev)
   if supported_path_3f(file_path) then
     local file_dir = fs.basename(file_path)
     local _let_6_ = config["find-and-load"](file_dir)
-    local config0 = _let_6_["config"]
+    local config0 = _let_6_.config
     local root_dir = _let_6_["root-dir"]
-    local cfg = _let_6_["cfg"]
+    local cfg = _let_6_.cfg
     if config0 then
       if cfg({"verbose"}) then
         notify.info("Found nfnl config, setting up autocmds: ", root_dir)

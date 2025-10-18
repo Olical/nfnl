@@ -1,7 +1,7 @@
 -- [nfnl] fnl/spec/nfnl/core_spec.fnl
 local _local_1_ = require("plenary.busted")
-local describe = _local_1_["describe"]
-local it = _local_1_["it"]
+local describe = _local_1_.describe
+local it = _local_1_.it
 local assert = require("luassert.assert")
 local core = require("nfnl.core")
 local fs = require("nfnl.fs")
@@ -395,7 +395,7 @@ local function _90_()
     assert.are.same({a = 1, b = 2}, core.assoc({a = 1}, "b", 2), "adding to existing")
     assert.are.same({a = 1, b = 2, c = 3}, core.assoc({a = 1}, "b", 2, "c", 3), "multi arg")
     assert.are.same({a = 1, b = 2, c = 3, d = 4}, core.assoc({a = 1}, "b", 2, "c", 3, "d", 4), "more multi arg")
-    local ok_3f, msg = nil, nil
+    local ok_3f, msg
     local function _92_()
       return core.assoc({a = 1}, "b", 2, "c")
     end
