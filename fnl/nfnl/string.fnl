@@ -12,9 +12,8 @@
         [sep xs] (if (= 2 (core.count args))
                    args
                    ["" (core.first args)])
-        len (core.count xs)]
-
-    (var result [])
+        len (core.count xs)
+        result []]
 
     (when (> len 0)
       (for [i 1 len]
@@ -29,8 +28,8 @@
 
 (fn M.split [s pat]
   "Split the given string into a sequential table using the pattern."
+  (local acc [])
   (var done? false)
-  (var acc [])
   (var index 1)
   (while (not done?)
     (let [(start end) (string.find s pat index)]

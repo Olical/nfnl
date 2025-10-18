@@ -39,8 +39,8 @@ M.join = function(...)
   return table.concat(result, sep)
 end
 M.split = function(s, pat)
-  local done_3f = false
   local acc = {}
+  local done_3f = false
   local index = 1
   while not done_3f do
     local start, _end = string.find(s, pat, index)
