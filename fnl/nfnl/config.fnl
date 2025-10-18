@@ -1,17 +1,20 @@
-(local {: autoload} (require :nfnl.module))
+(local {: autoload : define} (require :nfnl.module))
 (local core (autoload :nfnl.core))
 (local fs (autoload :nfnl.fs))
 (local str (autoload :nfnl.string))
 (local fennel (autoload :nfnl.fennel))
 (local notify (autoload :nfnl.notify))
+(local vim _G.vim)
+
+(local M (define :nfnl.config))
 
 (local config-file-name ".nfnl.fnl")
 
-(fn find [dir]
+(fn M.find [dir]
   "Find the nearest .nfnl.fnl file to the given directory."
   (fs.findfile config-file-name (.. dir ";")))
 
-(fn path-dirs [{: rtp-patterns : runtimepath : base-dirs}]
+(fn M.path-dirs [{: rtp-patterns : runtimepath : base-dirs}]
   "Takes the current runtimepath and a sequential table of rtp-patterns. Those
   patterns are used to filter down all of the runtimepath directories. Returns
   the runtime path items that match at least one of the rtp-patterns.
@@ -25,7 +28,7 @@
        (core.concat base-dirs)
        (core.distinct)))
 
-(fn default [opts]
+(fn M.default [opts]
   "Returns the default configuration that you should base your custom
   configuration on top of. Feel free to call this with no arguments and merge
   your changes on top. You can override opts.root-dir (which defaults to the dir of your .nfnl.fnl project root and the CWD as a backup) to whatever you need. The defaults with no arguments should be correct for most situations though.
@@ -50,14 +53,14 @@
 
                    ;; The closest .nfnl.fnl file parent directory to the cwd.
                    (-?> (vim.fn.getcwd)
-                        (find) ; returns nil if .nfnl.fnl is not found
+                        (M.find) ; returns nil if .nfnl.fnl is not found
                         (fs.full-path)
                         (fs.basename))
 
                    ;; The cwd, just in case nothing else works.
                    (vim.fn.getcwd))
 
-        dirs (path-dirs
+        dirs (M.path-dirs
                {:runtimepath vim.o.runtimepath
                 :rtp-patterns (core.get opts :rtp-patterns [(.. (fs.path-sep) "nfnl$")])
                 :base-dirs [root-dir]})]
@@ -108,28 +111,28 @@
      :source-file-patterns [".*.fnl" "*.fnl" (fs.join-path ["**" "*.fnl"])]
      :fnl-path->lua-path fs.fnl-path->lua-path}))
 
-(fn cfg-fn [t opts]
+(fn M.cfg-fn [t opts]
   "Builds a cfg fetcher for the config table t. Returns a function that takes a
   path sequential table, it looks up the value from the config with core.get-in
   and falls back to a matching value in (default) if not found."
 
-  (let [default-cfg (default opts)]
+  (let [default-cfg (M.default opts)]
     (fn [path]
       (core.get-in
         t path
         (core.get-in default-cfg path)))))
 
-(fn config-file-path? [path]
+(fn M.config-file-path? [path]
   (= config-file-name (fs.filename path)))
 
-(fn find-and-load [dir]
+(fn M.find-and-load [dir]
   "Attempt to find and load the .nfnl.fnl config file relative to the given dir.
   Returns an empty table when there's issues or if there isn't a config file.
   If there's some valid config you'll get table containing config, cfg (fn) and
   root-dir back."
 
   (or
-    (let [config-file-path (find dir)]
+    (let [config-file-path (M.find dir)]
       (when config-file-path
         (let [root-dir (fs.basename config-file-path)
               config-source (vim.secure.read config-file-path)
@@ -150,15 +153,10 @@
           (if ok
             {: config
              : root-dir
-             :cfg (cfg-fn config {: root-dir})}
+             :cfg (M.cfg-fn config {: root-dir})}
             (notify.error config)))))
 
     ;; Always default to an empty table for destructuring.
     {}))
 
-{: cfg-fn
- : find
- : find-and-load
- : config-file-path?
- : default
- : path-dirs}
+M
