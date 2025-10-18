@@ -49,7 +49,7 @@ local function default(opts)
     return core.map(fs["join-path"], {{root_dir0, "?.fnl"}, {root_dir0, "?", "init.fnl"}, {root_dir0, "fnl", "?.fnl"}, {root_dir0, "fnl", "?", "init.fnl"}})
   end
   local function _13_(root_dir0)
-    return core.map(fs["join-path"], {{root_dir0, "?.fnl"}, {root_dir0, "?", "init-macros.fnl"}, {root_dir0, "?", "init.fnl"}, {root_dir0, "fnl", "?.fnl"}, {root_dir0, "fnl", "?", "init-macros.fnl"}, {root_dir0, "fnl", "?", "init.fnl"}})
+    return core.map(fs["join-path"], {{root_dir0, "?.fnlm"}, {root_dir0, "?", "init.fnlm"}, {root_dir0, "fnl", "?.fnlm"}, {root_dir0, "fnl", "?", "init.fnlm"}, {root_dir0, "?.fnl"}, {root_dir0, "?", "init.fnl"}, {root_dir0, "?", "init-macros.fnl"}, {root_dir0, "fnl", "?.fnl"}, {root_dir0, "fnl", "?", "init.fnl"}, {root_dir0, "fnl", "?", "init-macros.fnl"}})
   end
   return {["header-comment"] = true, ["compiler-options"] = {["error-pinpoint"] = false}, ["orphan-detection"] = {["auto?"] = true, ["ignore-patterns"] = {}}, ["root-dir"] = root_dir, ["fennel-path"] = str.join(";", core.mapcat(_12_, dirs)), ["fennel-macro-path"] = str.join(";", core.mapcat(_13_, dirs)), ["source-file-patterns"] = {".*.fnl", "*.fnl", fs["join-path"]({"**", "*.fnl"})}, ["fnl-path->lua-path"] = fs["fnl-path->lua-path"], verbose = false}
 end

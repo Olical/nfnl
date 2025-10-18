@@ -83,6 +83,8 @@
               [root-dir "fnl" "?" "init.fnl"]]))
          dirs))
 
+     ;; Original string from Fennel v1.6.0
+     ;; "./?.fnlm;./?/init.fnlm;./?.fnl;./?/init-macros.fnl;./?/init.fnl"
      :fennel-macro-path
      (str.join
        ";"
@@ -90,12 +92,17 @@
          (fn [root-dir]
            (core.map
              fs.join-path
-             [[root-dir "?.fnl"]
-              [root-dir "?" "init-macros.fnl"]
+             [[root-dir "?.fnlm"]
+              [root-dir "?" "init.fnlm"]
+              [root-dir "fnl" "?.fnlm"]
+              [root-dir "fnl" "?" "init.fnlm"]
+
+              [root-dir "?.fnl"]
               [root-dir "?" "init.fnl"]
+              [root-dir "?" "init-macros.fnl"]
               [root-dir "fnl" "?.fnl"]
-              [root-dir "fnl" "?" "init-macros.fnl"]
-              [root-dir "fnl" "?" "init.fnl"]]))
+              [root-dir "fnl" "?" "init.fnl"]
+              [root-dir "fnl" "?" "init-macros.fnl"]]))
          dirs))
 
      :source-file-patterns [".*.fnl" "*.fnl" (fs.join-path ["**" "*.fnl"])]
