@@ -4,6 +4,8 @@ local autoload = _local_1_.autoload
 local define = _local_1_.define
 local core = autoload("nfnl.core")
 local str = autoload("nfnl.string")
+local vim = _G.vim
+local jit = _G.jit
 local M = define("nfnl.fs")
 M.basename = function(path)
   if path then
