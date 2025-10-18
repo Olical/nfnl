@@ -1,7 +1,9 @@
-(local {: autoload} (require :nfnl.module))
+(local {: autoload : define} (require :nfnl.module))
 (local core (autoload :nfnl.core))
 
-(fn join [...]
+(local M (define :nfnl.string))
+
+(fn M.join [...]
   "(join xs) (join sep xs)
   Joins all items of a table together with an optional separator.
   Separator defaults to an empty string.
@@ -25,7 +27,7 @@
 
     (table.concat result sep)))
 
-(fn split [s pat]
+(fn M.split [s pat]
   "Split the given string into a sequential table using the pattern."
   (var done? false)
   (var acc [])
@@ -41,24 +43,24 @@
           (set index (+ end 1))))))
   acc)
 
-(fn blank? [s]
+(fn M.blank? [s]
   "Check if the string is nil, empty or only whitespace."
   (or (core.empty? s)
       (not (string.find s "[^%s]"))))
 
-(fn triml [s]
+(fn M.triml [s]
   "Removes whitespace from the left side of string."
   (string.gsub s "^%s*(.-)" "%1"))
 
-(fn trimr [s]
+(fn M.trimr [s]
   "Removes whitespace from the right side of string."
   (string.gsub s "(.-)%s*$" "%1"))
 
-(fn trim [s]
+(fn M.trim [s]
   "Removes whitespace from both ends of string."
   (string.gsub s "^%s*(.-)%s*$" "%1"))
 
-(fn ends-with? [s suffix]
+(fn M.ends-with? [s suffix]
   "Check if the string ends with suffix."
   (let [suffix-len (# suffix)
         s-len (# s)]
@@ -66,10 +68,4 @@
       (= suffix (string.sub s (- s-len suffix-len -1)))
       false)))
 
-{: join
- : split
- : blank?
- : triml
- : trimr
- : trim
- : ends-with?}
+M
