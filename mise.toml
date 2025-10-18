@@ -1,5 +1,5 @@
 [tasks.fetch-fennel]
-run = "bash script/fetch-fennel.sh"
+run = "bash script/fetch-fennel"
 
 [tasks.render-api-documentation]
 run = "script/render-api-documentation"

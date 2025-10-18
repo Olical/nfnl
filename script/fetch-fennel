@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-FNL_VERSION=1.5.3
+FNL_VERSION=1.6.0
 FNL_NAME=fennel-$FNL_VERSION
 
 # Executable binary
