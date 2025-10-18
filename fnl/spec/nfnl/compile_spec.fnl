@@ -3,6 +3,30 @@
 (local config (require :nfnl.config))
 (local compile (require :nfnl.compile))
 
+(describe "macro-source?"
+  (fn []
+    (it "detects macro source by marker in source"
+      (fn []
+        (assert.is_true
+          (compile.macro-source?
+            ;; Funny formatting to prevent this file from being picked up as a macro.
+            {:source (.. "; " "[nfnl-macro]\n(+ 10 20)")}))
+        nil))
+    (it "detects macro source by .fnlm extension"
+      (fn []
+        (assert.is_true
+          (compile.macro-source?
+            {:path "/my/dir/foo.fnlm"
+             :source "(+ 10 20)"}))
+        nil))
+    (it "returns false for non-macro source"
+      (fn []
+        (assert.is_false
+          (compile.macro-source?
+            {:source "(+ 10 20)"
+             :path "/my/dir/foo.fnl"}))
+        nil))))
+
 (describe
   "into-string"
   (fn []

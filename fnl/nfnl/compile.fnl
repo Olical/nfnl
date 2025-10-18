@@ -1,12 +1,13 @@
-(local {: autoload} (require :nfnl.module))
+(local {: autoload : define} (require :nfnl.module))
 (local core (autoload :nfnl.core))
+(local str (autoload :nfnl.string))
 (local fs (autoload :nfnl.fs))
 (local fennel (autoload :nfnl.fennel))
 (local notify (autoload :nfnl.notify))
 (local config (autoload :nfnl.config))
 (local header (autoload :nfnl.header))
 
-(local mod {})
+(local M (define :nfnl.compile))
 
 (fn safe-target? [path]
   "Reads the given file and checks if it contains our header marker on the
@@ -15,8 +16,9 @@
   (let [line (fs.read-first-line path)]
     (or (not line) (header.tagged? line))))
 
-(fn macro-source? [source]
-  (string.find source "%s*;+%s*%[nfnl%-macro%]"))
+(fn M.macro-source? [{: source : path}]
+  (or (and (string.find source "%s*;+%s*%[nfnl%-macro%]") true)
+      (and path (str.ends-with? path ".fnlm"))))
 
 (fn valid-source-files [glob-fn {: root-dir : cfg}]
   "Return a list of all files we're allowed to compile. These are found by
@@ -30,8 +32,8 @@
   the configuration."
   (core.some #(fs.glob-matches? root-dir $ path) (cfg [:source-file-patterns])))
 
-(fn mod.into-string [{: root-dir : path : cfg : source : batch? &as opts}]
-  (let [macro? (macro-source? source)]
+(fn M.into-string [{: root-dir : path : cfg : source : batch? &as opts}]
+  (let [macro? (M.macro-source? opts)]
     (if
       (and macro? batch?)
       {:status :macros-are-not-compiled
@@ -40,7 +42,7 @@
       macro?
       (do
         (core.clear-table! fennel.macro-loaded)
-        (mod.all-files {: root-dir : cfg}))
+        (M.all-files {: root-dir : cfg}))
 
       (config.config-file-path? path)
       {:status :nfnl-config-is-not-compiled
@@ -79,11 +81,11 @@
              :error res
              :source-path path}))))))
 
-(fn mod.into-file [{: _root-dir : cfg : _source : path : batch? &as opts}]
+(fn M.into-file [{: _root-dir : cfg : _source : path : batch? &as opts}]
   (let [fnl-path->lua-path (cfg [:fnl-path->lua-path])
         destination-path (fnl-path->lua-path path)
         {: status : source-path : result &as res}
-        (mod.into-string opts)]
+        (M.into-string opts)]
     (if
       (not= :ok status)
       res
@@ -104,16 +106,16 @@
          :source-path path
          : destination-path}))))
 
-(fn mod.all-files [{: root-dir : cfg &as opts}]
+(fn M.all-files [{: root-dir : cfg &as opts}]
   (->> (valid-source-files fs.relglob opts)
        (core.map #(fs.join-path [root-dir $]))
        (core.map
          (fn [path]
-           (mod.into-file
+           (M.into-file
              {: root-dir
               : path
               : cfg
               :source (core.slurp path)
               :batch? true})))))
 
-mod
+M
