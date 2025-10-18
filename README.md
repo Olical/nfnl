@@ -104,10 +104,10 @@ fine!) will default to these values that should work fine for most people.
  ;; See :rtp-patterns below for more information on including other plugins in your path.
 
  ;; String to set the compiler's fennel.path to before compilation.
- :fennel-path "./?.fnl;./?/init.fnl;./fnl/?.fnl;./fnl/?/init.fnl"
+ :fennel-path "/home/.../?.fnlm;/home/.../?/init.fnlm;/home/.../fnl/?.fnlm;/home/.../fnl/?/init.fnlm;/home/.../?.fnl;/home/.../?/init.fnl;/home/.../?/init-macros.fnl;/home/.../fnl/?.fnl;/home/.../fnl/?/init.fnl;/home/.../fnl/?/init-macros.fnl"
 
  ;; String to set the compiler's fennel.macro-path to before compilation.
- :fennel-macro-path "./?.fnl;./?/init-macros.fnl;./?/init.fnl;./fnl/?.fnl;./fnl/?/init-macros.fnl;./fnl/?/init.fnl"
+ :fennel-macro-path "/home/.../?.fnlm;/home/.../?/init.fnlm;/home/.../fnl/?.fnlm;/home/.../fnl/?/init.fnlm;/home/.../?.fnl;/home/.../?/init.fnl;/home/.../?/init-macros.fnl;/home/.../fnl/?.fnl;/home/.../fnl/?/init.fnl;/home/.../fnl/?/init-macros.fnl"
 
  ;; A list of glob patterns (autocmd pattern syntax) of files that
  ;; should be compiled. This is used as configuration for the BufWritePost
@@ -202,12 +202,7 @@ documentation rendering time that we may not want.
 
 ## Macros
 
-Fennel allows you to write inline macros with the `(macro ...)` form but they're
-restricted to only being used in that one file. If you wish to have a macro
-module shared by the rest of your codebase you need to mark that file as a macro
-module by placing `;; [nfnl-macro]` somewhere within the source code. The exact
-amount of `;` and whitespace doesn't matter, you just need a comment with
-`[nfnl-macro]` inside of it.
+Fennel allows you to write inline macros with the `(macro ...)` form but they're restricted to only being used in that one file. If you wish to have a macro module shared by the rest of your codebase you need to mark that file as a macro module either by giving it the `.fnlm` suffix or by placing `;; [nfnl-macro]` somewhere within the source code. The exact amount of `;` and whitespace doesn't matter, you just need a comment with `[nfnl-macro]` inside of it.
 
 This marker does two things:
 
@@ -219,11 +214,10 @@ This marker does two things:
   your macro modules stays in sync and you never end up having to find old Lua
   that was compiled with old versions of your macros.
 
-For example, here's a simplified macro file from nfnl itself at
-`fnl/nfnl/macros.fnl`.
+For example, here's a simplified macro file from nfnl itself at `fnl/nfnl/macros.fnlm`.
 
 ```fennel
-;; [nfnl-macro]
+;; [nfnl-macro] <-- is only required if you don't use the `.fnlm` extension.
 
 ;; .nfnl.fnl config so you don't need to prefix globals like _G.vim.*
 ;; {:compiler-options {:compilerEnv _G}}
