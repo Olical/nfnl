@@ -1,5 +1,8 @@
-(local {: autoload} (require :nfnl.module))
+(local {: autoload : define} (require :nfnl.module))
 (local callback (autoload :nfnl.callback))
+(local vim _G.vim)
+
+(local M (define :nfnl))
 
 (local minimum-neovim-version "0.9.0")
 
@@ -18,10 +21,10 @@
       {:file (vim.fn.expand "%")
        :buf (vim.api.nvim_get_current_buf)})))
 
-(fn setup [opts]
+(fn M.setup [opts]
   "Sets the vim.g.nfnl#... variables in a slightly more Lua friendly way."
 
   (when opts
     (set vim.g.nfnl#compile_on_write opts.compile_on_write)))
 
-{: setup}
+M
