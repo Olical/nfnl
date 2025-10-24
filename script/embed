@@ -5,7 +5,7 @@
 #
 # Example: `conjure/fnl/conjure/**/*.fnl`.
 # Usage: ./embed ../conjure
-# Requires: rsync, fd, sd
+# Requires: rsync, fd, sd, find
 
 set -xe
 
@@ -19,9 +19,9 @@ DEST_PREFIX=${DEST_PREFIX:-"$DEST_PROJECT.$SRC_PROJECT."}
 
 rm -rf "$DEST_DIR/fnl/$DEST_PROJECT/$SRC_PROJECT" "$DEST_DIR/lua/$DEST_PROJECT/$SRC_PROJECT"
 rsync -av "$SRC_DIR/lua/$SRC_PROJECT" "$DEST_DIR/lua/$DEST_PROJECT/"
-rg -l '\[nfnl-macro\]' "$SRC_DIR/fnl/$SRC_PROJECT" --no-heading --replace '{path}' --path-separator '/' |
-	sed "s|$SRC_DIR/fnl/$SRC_PROJECT/||" |
-	rsync -av --files-from=- "$SRC_DIR/fnl/$SRC_PROJECT/" "$DEST_DIR/fnl/$DEST_PROJECT/$SRC_PROJECT"
+find "$SRC_DIR/fnl/$SRC_PROJECT" -name '*.fnlm' |
+  sed "s|$SRC_DIR/fnl/$SRC_PROJECT/||" |
+  rsync -av --files-from=- "$SRC_DIR/fnl/$SRC_PROJECT/" "$DEST_DIR/fnl/$DEST_PROJECT/$SRC_PROJECT"
 
-fd --no-ignore --extension .fnl . "$DEST_DIR/fnl/$DEST_PROJECT/$SRC_PROJECT" --exec sd " :$SRC_PREFIX" " :$DEST_PREFIX"
+fd --no-ignore --extension .fnlm . "$DEST_DIR/fnl/$DEST_PROJECT/$SRC_PROJECT" --exec sd " :$SRC_PREFIX" " :$DEST_PREFIX"
 fd --no-ignore --extension .lua . "$DEST_DIR/lua/$DEST_PROJECT/$SRC_PROJECT" --exec sd "\"$SRC_PREFIX" "\"$DEST_PREFIX"
