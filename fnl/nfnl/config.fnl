@@ -97,8 +97,10 @@
              fs.join-path
              [[root-dir "?.fnlm"]
               [root-dir "?" "init.fnlm"]
+              [root-dir "?" "init-macros.fnlm"]
               [root-dir "fnl" "?.fnlm"]
               [root-dir "fnl" "?" "init.fnlm"]
+              [root-dir "fnl" "?" "init-macros.fnlm"]
 
               [root-dir "?.fnl"]
               [root-dir "?" "init.fnl"]
