@@ -41,7 +41,7 @@ local function _6_()
   end
   it("won't compile the .nfnl.fnl config file", _10_)
   local function _11_()
-    return assert.are.same({error = "/my/dir/foo.fnl:1:3: Compile error: tried to reference a special form without calling it\n\n10 / 20\n* Try making sure to use prefix operators, not infix.\n* Try wrapping the special in a function if you need it to be first class.", ["source-path"] = "/my/dir/foo.fnl", status = "compilation-error"}, compile["into-string"]({["root-dir"] = "/my/dir", path = "/my/dir/foo.fnl", cfg = config["cfg-fn"]({}, {["root-dir"] = "/tmp/foo"}), ["batch?"] = true, source = "10 / 20"}))
+    return assert.are.same({error = "foo.fnl:1:3: Compile error: tried to reference a special form without calling it\n\n10 / 20\n* Try making sure to use prefix operators, not infix.\n* Try wrapping the special in a function if you need it to be first class.", ["source-path"] = "/my/dir/foo.fnl", status = "compilation-error"}, compile["into-string"]({["root-dir"] = "/my/dir", path = "/my/dir/foo.fnl", cfg = config["cfg-fn"]({}, {["root-dir"] = "/tmp/foo"}), ["batch?"] = true, source = "10 / 20"}))
   end
   return it("returns compilation errors", _11_)
 end
