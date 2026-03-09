@@ -61,7 +61,7 @@
                 fennel.compile-string
                 source
                 (core.merge
-                  {:filename path
+                  {:filename rel-file-name
                    :warn notify.warn}
                   (cfg [:compiler-options]))))]
         (if ok
