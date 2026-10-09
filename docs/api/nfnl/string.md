@@ -6,6 +6,7 @@
 - [`ends-with?`](#ends-with)
 - [`join`](#join)
 - [`split`](#split)
+- [`starts-with?`](#starts-with)
 - [`trim`](#trim)
 - [`triml`](#triml)
 - [`trimr`](#trimr)
@@ -48,6 +49,15 @@ Function signature:
 ```
 
 Split the given string into a sequential table using the pattern.
+
+## `starts-with?`
+Function signature:
+
+```
+(starts-with? s prefix)
+```
+
+Check if the string starts with prefix.
 
 ## `trim`
 Function signature:

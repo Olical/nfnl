@@ -77,3 +77,14 @@
           (assert.is_true (str.ends-with? "foobarbaz" "foobarbaz"))
           (assert.is_false (str.ends-with? "foobarbaz" "foo"))
           (assert.is_false (str.ends-with? "foobarbaz" "barbazz"))))))
+
+(describe
+  "starts-with?"
+  (fn []
+    (it "checks if a string starts with another string"
+        (fn []
+          (assert.is_true (str.starts-with? "foobarbaz" "foo"))
+          (assert.is_true (str.starts-with? "foobarbaz" "foobar"))
+          (assert.is_true (str.starts-with? "foobarbaz" "foobarbaz"))
+          (assert.is_false (str.starts-with? "foobarbaz" "baz"))
+          (assert.is_false (str.starts-with? "foobarbaz" "ffoobarbaz"))))))

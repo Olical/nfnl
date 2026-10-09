@@ -66,6 +66,9 @@ end
 M.trim = function(s)
   return string.gsub(s, "^%s*(.-)%s*$", "%1")
 end
+M["starts-with?"] = function(s, prefix)
+  return (prefix == string.sub(s, 1, #prefix))
+end
 M["ends-with?"] = function(s, suffix)
   local suffix_len = #suffix
   local s_len = #s

@@ -59,6 +59,10 @@
   "Removes whitespace from both ends of string."
   (string.gsub s "^%s*(.-)%s*$" "%1"))
 
+(fn M.starts-with? [s prefix]
+  "Check if the string starts with prefix."
+  (= prefix (string.sub s 1 (# prefix))))
+
 (fn M.ends-with? [s suffix]
   "Check if the string ends with suffix."
   (let [suffix-len (# suffix)

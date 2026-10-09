@@ -79,4 +79,15 @@ local function _14_()
   end
   return it("checks if a string ends with another string", _15_)
 end
-return describe("ends-with?", _14_)
+describe("ends-with?", _14_)
+local function _16_()
+  local function _17_()
+    assert.is_true(str["starts-with?"]("foobarbaz", "foo"))
+    assert.is_true(str["starts-with?"]("foobarbaz", "foobar"))
+    assert.is_true(str["starts-with?"]("foobarbaz", "foobarbaz"))
+    assert.is_false(str["starts-with?"]("foobarbaz", "baz"))
+    return assert.is_false(str["starts-with?"]("foobarbaz", "ffoobarbaz"))
+  end
+  return it("checks if a string starts with another string", _17_)
+end
+return describe("starts-with?", _16_)
