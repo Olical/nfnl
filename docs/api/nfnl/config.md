@@ -61,7 +61,11 @@ Function signature:
 (find dir)
 ```
 
-Find the nearest .nfnl.fnl file to the given directory.
+Find the nearest .nfnl.fnl file to the given directory, searching upwards.
+  Returns nil when there isn't one. We use vim.fs.find rather than findfile
+  because findfile takes a Vim 'path' string, in which a comma separates entries
+  and spaces have to be escaped, so directories containing either would silently
+  be searched for relative to the current working directory instead.
 
 ## `find-and-load`
 Function signature:
