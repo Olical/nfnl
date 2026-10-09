@@ -4,16 +4,17 @@
 
 (local M (define :nfnl.header))
 
-(local tag "[nfnl]")
+(local header-prefix "-- [nfnl]")
 
 (fn M.with-header [file src]
   "Return the source with an nfnl header prepended."
-  (.. "-- " tag " " file "\n" src))
+  (.. header-prefix " " file "\n" src))
 
 (fn M.tagged? [s]
-  "Is the line an nfnl tagged header line?"
-  (when s
-    (core.number? (s:find tag 1 true))))
+  "Is the line an nfnl tagged header line? It must start with the exact prefix
+  nfnl writes, so other comments that mention [nfnl] do not count."
+  (and (= :string (type s))
+       (str.starts-with? s (.. header-prefix " "))))
 
 (fn M.read [path max-lines]
   "Search the first max-lines lines for an nfnl header. Returns the header and

@@ -35,7 +35,8 @@ Function signature:
 (tagged? s)
 ```
 
-Is the line an nfnl tagged header line?
+Is the line an nfnl tagged header line? It must start with the exact prefix
+  nfnl writes, so other comments that mention [nfnl] do not count.
 
 ## `with-header`
 Function signature:
